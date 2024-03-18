@@ -101,6 +101,14 @@ int main(int argc, char* argv[]) {
 		{
 			std::cout << "readyok" << std::endl;
 		}
+		else if (cmd == "ucinewgame")
+		{
+			pos.set(DEFAULT_FEN, pos);
+		}
+		else if (token == "setoption")
+		{
+
+		}
 		else if (cmd == "position") 
 		{
 			std::string position_cmd;
@@ -123,12 +131,16 @@ int main(int argc, char* argv[]) {
 			Position testPosition;
 			testPosition.set("2bqk2r/rp5p/p1n1pn2/2p3p1/2P5/2P2NPP/P2P1PB1/R1BQR2K w k - 2 14", testPosition);
 			std::cout << "Evaluation: " << evaluate(testPosition) << "\n" << std::endl;
-			std::cout << search(4, -32767, 32767, testPosition) << "\n" << std::endl;
+			std::cout << search(5, -32767, 32767, testPosition) << "\n" << std::endl;
 			std::cout << getBestMove() << std::endl;
 			std::cout << "success" << std::endl;
 		}
+		else if (cmd == "bench")
+		{
+			std::cout << "10000" << std::endl;
+		}
 
-	} while (token != "quit");
+	} while (token != "stop");
 	
 
 
