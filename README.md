@@ -1,6 +1,6 @@
 # Schönemann
 - [About](#about)
-- [How it works](#how_it_works)
+- [How it works](#How_it_works)
 - [Install](#install)
 
 # About
@@ -10,7 +10,7 @@ This is a simple (currently not functional and not UCI-Compatible) chess engine 
 ```
 in this it seems that white is hanging a bishop but is not worst.
 
-# How it works(#how_it_works)
+# How it works
 Currently it is counting the piece values up for each side and uses a simple Alpha-Beta Search.
 
 # Install
