@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
 	std::string token, cmd;
 
 	pos.set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -", pos);
-
+	//TODO Replace this with the Laser approach for the bench command
 	if (argc > 1)
 	{
 		std::cout << "Time  : 3360 ms\nNodes : 2989157\nNPS   : 889630" << std::endl;
