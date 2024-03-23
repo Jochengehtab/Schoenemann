@@ -1,6 +1,6 @@
 # Schönemann
 - [About](#about)
-- [How it works](#How_it_works)
+- [How it works](#how-it-works)
 - [Install](#install)
 
 # About
