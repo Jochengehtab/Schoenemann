@@ -19,7 +19,7 @@ int search(int depth, int alpha, int beta, Board& board) {
 
 	if (movelist.size() == 0)
 	{
-		if (!(board.isGameOver().first == GameResultReason::NONE))
+		if (board.isGameOver().first == GameResultReason::NONE)
 		{
 			return -infinity;
 		}
