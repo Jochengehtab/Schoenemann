@@ -24,7 +24,7 @@ int search(int depth, int alpha, int beta, int ply, Board& board) {
     {
         if (board.inCheck() == true) 
         {
-            return infinity;
+            return -infinity;
         }
         else
         {
