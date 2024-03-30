@@ -6,6 +6,7 @@
 #include <sstream>
 #include "Evaluate.h"
 #include "Search.h"
+#include "psqt.h"
 #include "movegen/chess.hpp"
 #include "movegen/benchmark.hpp"
 

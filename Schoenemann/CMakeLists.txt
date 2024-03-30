@@ -3,7 +3,7 @@
 #
 
 # Fügen Sie der ausführbaren Datei dieses Projekts eine Quelle hinzu.
-add_executable (Schoenemann "Schoenemann.cpp" "Schoenemann.h" "Evaluate.cpp" "Evaluate.h" "Search.cpp" "Search.h"         "movegen/benchmark.hpp" "timeman.cpp" "timeman.h")
+add_executable (Schoenemann "Schoenemann.cpp" "Schoenemann.h" "Evaluate.cpp" "Evaluate.h" "Search.cpp" "Search.h"         "movegen/benchmark.hpp" "timeman.cpp" "timeman.h" "psqt.cpp" "psqt.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Schoenemann PROPERTY CXX_STANDARD 20)
