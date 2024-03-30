@@ -89,8 +89,6 @@ void iterative_deepening(Board& board)
     auto start = std::chrono::high_resolution_clock::now();
     int time_for_move = get_time_for_move();
 
-    std::cout << time_for_move;
-
     while (true)
     {
         for (int i = 1; i < 256; i++)
