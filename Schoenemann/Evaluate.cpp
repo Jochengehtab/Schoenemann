@@ -27,11 +27,11 @@ int evaluate(Board& board) {
 int count_material(Board& board, Color color) {
     int material = 0;
     psqt bouns;
-    material += count_amount(board, PieceType::PAWN, color) * (pawnValue + bouns.getPieceBounus(board, PieceType::PAWN));
-    material += count_amount(board, PieceType::KNIGHT, color) * (knightValue + bouns.getPieceBounus(board, PieceType::KNIGHT));
-    material += count_amount(board, PieceType::BISHOP, color) * (bishopValue + bouns.getPieceBounus(board, PieceType::BISHOP));
-    material += count_amount(board, PieceType::ROOK, color) * (rookValue + bouns.getPieceBounus(board, PieceType::ROOK));
-    material += count_amount(board, PieceType::QUEEN, color) * (queenValue + bouns.getPieceBounus(board, PieceType::QUEEN));
+    material += count_amount(board, PieceType::PAWN, color) * (pawnValue + bouns.getPieceBounus(board, PieceType::PAWN, color));
+    material += count_amount(board, PieceType::KNIGHT, color) * (knightValue + bouns.getPieceBounus(board, PieceType::KNIGHT, color));
+    material += count_amount(board, PieceType::BISHOP, color) * (bishopValue + bouns.getPieceBounus(board, PieceType::BISHOP, color));
+    material += count_amount(board, PieceType::ROOK, color) * (rookValue + bouns.getPieceBounus(board, PieceType::ROOK, color));
+    material += count_amount(board, PieceType::QUEEN, color) * (queenValue + bouns.getPieceBounus(board, PieceType::QUEEN, color));
     return material;
 }
 

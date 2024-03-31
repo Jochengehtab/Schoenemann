@@ -81,9 +81,8 @@ public:
 		-50,-30,-30,-30,-30,-30,-30,-50
 	};
 
-	int getPieceBounus(Board& board, PieceType piece);
+	int getPieceBounus(Board& board, PieceType piece, Color color);
 
 private:
-
-	int getSquareOfPiece(Board& board, Color color, PieceType piece);
+	std::vector<int> getSetBitsEfficient(Bitboard bitboard);
 };

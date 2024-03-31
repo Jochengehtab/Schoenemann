@@ -1,49 +1,57 @@
 #include "psqt.h"
 
 
-int psqt::getPieceBounus(Board& board, PieceType piece)
+int psqt::getPieceBounus(Board& board, PieceType piece, Color color)
 {
 	int bounus = 0;
-	int index = getSquareOfPiece(board, board.sideToMove(), piece);
-
-	if (index == -1)
-	{
-		return 0;
-	}
+	Bitboard pieces = board.pieces(piece, color);
+	std::vector<int> indexs = getSetBitsEfficient(pieces);
 
 	if (piece == PieceType::PAWN)
 	{
-		bounus = pawnTable[index];
+		for (int index : indexs)
+		{
+			bounus += pawnTable[index];
+		}
 	}
 	else if (piece == PieceType::KNIGHT)
 	{
-		bounus = knightTable[index];
+		for (int index : indexs)
+		{
+			bounus += knightTable[index];
+		}
 	}
 	else if (piece == PieceType::BISHOP)
 	{
-		bounus = bishopTable[index];
+		for (int index : indexs)
+		{
+			bounus += bishopTable[index];
+		}
 	}
 	else if (piece == PieceType::ROOK)
 	{
-		bounus = rookTable[index];
+		for (int index : indexs)
+		{
+			bounus += rookTable[index];
+		}
 	}
 	else if (piece == PieceType::QUEEN)
 	{
-		bounus = queenTable[index];
+		for (int index : indexs)
+		{
+			bounus += queenTable[index];
+		}
 	}
 	
 	return bounus;
 }
 
-
-int psqt::getSquareOfPiece(Board& board, Color color, PieceType piece)
-{
-	if (board.pieces(piece, color).getBits() == 0)
-	{
-		return -1;
+std::vector<int> psqt::getSetBitsEfficient(Bitboard bitboard) {
+	std::vector<int> setBits;
+	for (int i = 0; i < 64; ++i) {
+		if ((bitboard.getBits() >> i) & 1ULL) {
+			setBits.push_back(i);
+		}
 	}
-
-	Square target = board.pieces(piece, color).lsb();
-
-	return target.index();
+	return setBits;
 }

@@ -156,9 +156,10 @@ int main(int argc, char* argv[]) {
 		else if (cmd == "test")
 		{
 			Board test_board;
-			test_board.setFen("2kr2nr/ppp2ppp/1b6/8/4bp2/2P5/P4KPP/RNBq3R w - - 4 18");
-			search(1, -32767, 32767, 0, test_board);
-			std::cout << "\nbestmove " << getBestMove() << "\nNodes: " << getNodes() << std::endl;
+			test_board.setFen("n7/8/8/8/7n/8/8/K6k w - - 0 1");
+			//search(1, -32767, 32767, 0, test_board);
+			//std::cout << "\nbestmove " << getBestMove() << "\nNodes: " << getNodes() << std::endl;
+			std::cout << "The evaluation: " << evaluate(test_board) << std::endl;
 		}
 
 	} while (cmd != "quit");
