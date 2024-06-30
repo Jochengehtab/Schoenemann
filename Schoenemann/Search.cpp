@@ -36,6 +36,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     int hashedEval = 0;
     short hashedType = 0;
     int hashedDepth = 0;
+    Move hashedMove = Move::NULL_MOVE;
 
     const bool pvNode = alpha != beta - 1;
     const bool root = ply == 0;
@@ -61,6 +62,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
             hashedType = entry->type;
             hashedDepth = entry->depth;
             hashedEval = entry->eval;
+            hashedMove = entry->move;
         }
     }
 
@@ -149,6 +151,12 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 break;
             }
         }
+    }
+
+    //Reduce depth if we have no 'good' move in hash
+    if (depth >= 3 && hashedMove != Move::NULL_MOVE)
+    {
+        depth--;
     }
 
     if (!root)
