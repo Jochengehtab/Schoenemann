@@ -153,8 +153,8 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
-    //Reduce depth if we have no 'good' move in hash
-    if (depth >= 3 && hashedMove != Move::NULL_MOVE)
+    //Reduce depth if we have no previous good move
+    if (depth >= 2 && hashedMove != Move::NULL_MOVE)
     {
         depth--;
     }
