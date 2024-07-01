@@ -26,6 +26,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         shouldStop = true;
     }
+    nodes++;
 
     if (depth == 0)
     {
@@ -107,20 +108,53 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
     int score = 0;
     int bestScore = -infinity;
+    int externsions = 0;
     for (const Move& move : moveList)
     {
+        if (!nullptr)
+        {
+            if (depth >= 5 && !board.inCheck() && ply > 0 && hashedDepth >= depth - 3 && (hashedType == LOWER_BOUND || hashedType == UPPER_BOUND))
+            {
+                int betaCut = std::min(static_cast<int>(hashedScore - depth * 2), static_cast<int>(beta));
+                score = pvs(betaCut - 1, betaCut, depth >> 1, ply, board);
+
+                if (score < betaCut)
+                {
+                    externsions++;
+                }
+                else if (score >= beta)
+                {
+                    return score;
+                }
+                else if (hashedScore >= beta)
+                {
+                    score = pvs(beta - 1, beta, (depth >> 1) + 3, ply, board);
+                    if (score >= beta)
+                    {
+                        return score;
+                    }
+                }
+            }
+        }
         board.makeMove(move);
-        nodes++;
+
+        // adjust the extension policy for checks.
+        if (externsions == 0 && depth > 4 && board.inCheck())
+        {
+            externsions = 1;
+        }
+            
+
         if (bSearchPv)
         {
-            score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + externsions, ply + 1, board);
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1, ply + 1, board);
+            score = -pvs(-alpha - 1, -alpha, depth - 1 + externsions, ply + 1, board);
             if (score > alpha && score < beta)
             {
-                score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1 + externsions, ply + 1, board);
             }
         }
 
@@ -136,7 +170,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 bSearchPv = false;
                 type = EXACT;
 
-                //If we are ate the root we set the bestMove
+                //If we are at the root we set the bestMove
                 if (ply == 0)
                 {
                     bestMove = move;
@@ -182,6 +216,8 @@ int searcher::qs(int alpha, int beta, Board& board, int ply)
     const bool pvNode = alpha != beta - 1;
 
     bool isNullptr;
+
+    nodes++;
 
     if (entry == nullptr)
     {
