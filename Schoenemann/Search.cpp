@@ -294,6 +294,7 @@ void searcher::iterativeDeepening(Board& board)
     Move bestMoveThisIteration = Move::NULL_MOVE;
     isNormalSearch = false;
     bool hasFoundMove = false;
+    int score = 0;
 
     if (timeForMove == -20)
     {
@@ -307,7 +308,30 @@ void searcher::iterativeDeepening(Board& board)
 
     for (int i = 1; i <= 256; i++)
     {
-        pvs(-32767, 32767, i, 0, board);
+        int window = 10;
+
+        int alpha = score - window;
+        int beta = score + window;
+        int sDepth = i;
+        sDepth = sDepth < i - 3 ? i - 3 : i;
+        score = pvs(-32767, 32767, sDepth, 0, board);
+
+        window += window;
+        // dont widen the window above a size of 500
+        if (window > 500)
+            window = 0;
+        // adjust the alpha/beta bound based on which side has failed
+        if (score >= beta) {
+            beta += window;
+            sDepth--;
+        }
+        else if (score <= alpha) {
+            beta = (alpha + beta) / 2;
+            alpha -= window;
+        }
+        else {
+            break;
+        }
 
         if (!shouldStop)
         {
