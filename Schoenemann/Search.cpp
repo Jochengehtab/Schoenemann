@@ -116,7 +116,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
             if (depth >= 5 && !board.inCheck() && ply > 0 && hashedDepth >= depth - 3 && (hashedType == LOWER_BOUND || hashedType == UPPER_BOUND))
             {
                 int betaCut = std::min(static_cast<int>(hashedScore - depth * 2), static_cast<int>(beta));
-                score = pvs(betaCut - 1, betaCut, depth >> 1, ply, board);
+                score = pvs(betaCut - 1, betaCut, depth + 1, ply, board);
 
                 if (score < betaCut)
                 {
@@ -128,7 +128,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 }
                 else if (hashedScore >= beta)
                 {
-                    score = pvs(beta - 1, beta, (depth >> 1) + 3, ply, board);
+                    score = pvs(beta - 1, beta, depth + 4, ply, board);
                     if (score >= beta)
                     {
                         return score;
@@ -137,13 +137,6 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
             }
         }
         board.makeMove(move);
-
-        // adjust the extension policy for checks.
-        if (externsions == 0 && depth > 4 && board.inCheck())
-        {
-            externsions = 1;
-        }
-            
 
         if (bSearchPv)
         {
