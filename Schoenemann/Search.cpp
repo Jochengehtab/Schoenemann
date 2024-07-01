@@ -86,7 +86,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
-    int matingValue = infinity - ply;
+    int matingValue = 16383 - ply;
     if (matingValue < beta) {
         beta = matingValue;
         if (alpha >= matingValue) {
@@ -95,7 +95,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     
-    matingValue = -infinity + ply;
+    matingValue = -16383 + ply;
     if (matingValue > alpha) {
         alpha = matingValue;
         if (beta <= matingValue) {
