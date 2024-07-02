@@ -37,6 +37,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     int hashedEval = 0;
     short hashedType = 0;
     int hashedDepth = 0;
+    Move hashedMove = Move::NULL_MOVE;
 
     const bool pvNode = alpha != beta - 1;
     const bool root = ply == 0;
@@ -62,6 +63,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
             hashedType = entry->type;
             hashedDepth = entry->depth;
             hashedEval = entry->eval;
+            hashedMove = entry->move;
         }
     }
 
@@ -113,7 +115,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         if (!nullptr)
         {
-            if (depth >= 5 && !board.inCheck() && ply > 0 && hashedDepth >= depth - 3 && (hashedType == LOWER_BOUND || hashedType == UPPER_BOUND))
+            if (depth >= 5 && !board.inCheck() && ply > 0 && hashedDepth >= depth - 3 && (hashedType == LOWER_BOUND || hashedType == EXACT))
             {
                 int betaCut = std::min(static_cast<int>(hashedScore - depth * 2), static_cast<int>(beta));
                 score = pvs(betaCut - 1, betaCut, depth >> 1, ply, board);
@@ -140,6 +142,11 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         // adjust the extension policy for checks.
         if (externsions == 0 && depth > 4 && board.inCheck())
+        {
+            externsions = 1;
+        }
+
+        if ((hashedMove == move) && !pvNode && hashedType == EXACT)
         {
             externsions = 1;
         }
