@@ -115,7 +115,7 @@ int searcher::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         if (!nullptr)
         {
-            if (depth >= 5 && !board.inCheck() && ply > 0 && hashedDepth >= depth - 3 && (hashedType == LOWER_BOUND || hashedType == EXACT))
+            if (depth >= 5 && (move == hashedMove) && !board.inCheck() && ply > 0 && hashedDepth >= depth - 3 && (hashedType == LOWER_BOUND || hashedType == EXACT))
             {
                 int betaCut = std::min(static_cast<int>(hashedScore - depth * 2), static_cast<int>(beta));
                 score = pvs(betaCut - 1, betaCut, depth >> 1, ply, board);
