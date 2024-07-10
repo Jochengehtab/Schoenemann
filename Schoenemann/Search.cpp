@@ -152,7 +152,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         short checkExtension = 0;
 
-        if (board.inCheck() == true && checkExtension == 0 && depth > 4)
+        if (board.inCheck() == true && checkExtension == 0)
         {
             checkExtension = 1;
         }
