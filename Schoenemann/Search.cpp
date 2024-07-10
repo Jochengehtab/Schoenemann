@@ -123,6 +123,26 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
+    int matingValue = infinity - ply;
+    if (matingValue < beta) 
+    {
+        beta = matingValue;
+        if (alpha >= matingValue) 
+        {
+            return matingValue;
+        }
+    }
+
+    matingValue = -infinity + ply;
+    if (matingValue > alpha) 
+    {
+        alpha = matingValue;
+        if (beta <= matingValue)
+        {
+            return matingValue;
+        }
+    }
+
     short type = UPPER_BOUND;
 
     bool bSearchPv = true;
