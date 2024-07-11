@@ -8,6 +8,7 @@ using namespace chess;
 const short EXACT = 0;
 const short UPPER_BOUND = 1;
 const short LOWER_BOUND = 2; //Lower bound
+const short NO_NODE_INFO = 3;
 const short infinity = 32767;
 
 struct Hash {

@@ -46,13 +46,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     const bool pvNode = alpha != beta - 1;
     const bool root = ply == 0;
 
+    const uint64_t zobristKey = board.hash();
+
     Hash* entry = transpositionTabel.getHash(board);
 
     bool isNullptr = (entry == nullptr) ? true : false;
 
     if (!isNullptr)
     {
-        if (board.hash() == entry->key)
+        if (zobristKey == entry->key)
         {
             hashedScore = transpositionTabel.ScoreFromTT(entry->score, ply);
             hashedType = entry->type;
@@ -87,6 +89,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     if (staticEval == 50000)
     {
         staticEval = evaluate(board);
+        transpositionTabel.storeEvaluation(zobristKey, 0, NO_NODE_INFO, 0, Move::NULL_MOVE, staticEval);
     }
 
     //Reverse futility pruning
@@ -154,7 +157,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 bSearchPv = false;
                 type = EXACT;
 
-                //If we are ate the root we set the bestMove
+                //If we are at the root we set the bestMove
                 if (ply == 0)
                 {
                     bestMove = move;
@@ -202,13 +205,15 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     int hashedEval = 0;
     short hashedType = 0;
     int standPat = 50000;
+
     const bool pvNode = alpha != beta - 1;
+    const uint64_t zobristKey = board.hash();
 
     bool isNullptr = (entry == nullptr) ? true : false;
 
     if (!isNullptr)
     {
-        if (board.hash() == entry->key)
+        if (zobristKey == entry->key)
         {
             hashedScore = transpositionTabel.ScoreFromTT(entry->score, ply);
             hashedType = entry->type;
@@ -241,6 +246,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     if (standPat == 50000)
     {
         standPat = evaluate(board);
+        transpositionTabel.storeEvaluation(zobristKey, 0, NO_NODE_INFO, 0, Move::NULL_MOVE, standPat);
     }
 
     if (!board.inCheck() && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
