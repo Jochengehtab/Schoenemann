@@ -231,6 +231,11 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         return beta;
     }
 
+    if (standPat < alpha - queenValue)
+    {
+        return alpha;
+    }
+
     if (alpha < standPat)
     {
         alpha = standPat;
