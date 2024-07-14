@@ -98,7 +98,7 @@ void uciPrint()
 
 void run_benchmark() {
 	//Setting up the bench Board
-	Board benchBoard;
+	Board* benchBoard = new Board;
 
 	//Setting up the clock 
 	auto start = std::chrono::high_resolution_clock::now();
@@ -108,7 +108,7 @@ void run_benchmark() {
 
 	//Looping over all bench positions
 	for (const auto& test : testStrings) {
-		benchBoard.setFen(test);
+		benchBoard->setFen(test);
 		seracher.pvs(-infinity, infinity, benchDepth, 0, benchBoard);
 	}
 

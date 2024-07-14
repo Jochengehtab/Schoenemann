@@ -19,16 +19,16 @@ int newTranspositionTableSize = 8;
 int main(int argc, char* argv[]) {
 
 	//The main board
-	Board board;
+	Board *board = new Board;
 
 	//UCI-Command stuff
 	std::string token, cmd;
 
 	//Reset the board
-	board.setFen(STARTPOS);
+	board->setFen(STARTPOS);
 
 	//Disable FRC (Fisher-Random-Chess)
-	board.set960(false);
+	board->set960(false);
 
 	//Load the neural network
 	LoadNetwork();
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 		else if (token == "ucinewgame")
 		{
 			//Reset the board
-			board.setFen(STARTPOS);
+			board->setFen(STARTPOS);
 
 			//Clear the transposition table
 			transpositionTabel.clear();
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 		}
 		else if (token == "position")
 		{
-			board.setFen(STARTPOS);
+			board->setFen(STARTPOS);
 			std::string fen;
 			std::vector<std::string> moves;
 			bool isFen = false;
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
 						fen += token + " ";
 					}
 					fen = fen.substr(0, fen.size() - 1);
-					board.setFen(fen);
+					board->setFen(fen);
 				}
 				else if (token != "moves" && isFen)
 				{
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 
 			for (const auto& move : moves)
 			{
-				board.makeMove(uci::uciToMove(board, move));
+				board->makeMove(uci::uciToMove(*board, move));
 			}
 		}
 		else if (token == "go")
@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (hasTime)
 			{
-				if (board.sideToMove() == Color::WHITE)
+				if (board->sideToMove() == Color::WHITE)
 				{
 					timeLeft = number[0];
 					increment = number[2];
@@ -197,11 +197,11 @@ int main(int argc, char* argv[]) {
 		}
 		else if (token == "ttest")
 		{
-			transpositionTableTest(board);
+			transpositionTableTest(*board);
 		}
 		else if (token == "nn")
 		{
-			nnTest(board);
+			nnTest(*board);
 		}
 		else if (token == "test")
 		{

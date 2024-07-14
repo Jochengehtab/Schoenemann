@@ -12,7 +12,7 @@ using namespace chess;
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
+int Search::pvs(int alpha, int beta, int depth, int ply, Board* board)
 {
     //Increment nodes by one
     nodes++;
@@ -44,7 +44,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     const bool pvNode = alpha != beta - 1;
     const bool root = ply == 0;
 
-    uint64_t key = board.hash();
+    uint64_t key = board->hash();
 
     Hash* entry = transpositionTabel.getHash(key);
 
@@ -74,11 +74,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (staticEval == 50000)
     {
-        staticEval = evaluate(board);
+        staticEval = evaluate(*board);
     }
 
     //Reverse futility pruning
-    if (!pvNode && !board.inCheck() && depth <= 6 && staticEval - 70 * depth >= beta)
+    if (!pvNode && !board->inCheck() && depth <= 6 && staticEval - 70 * depth >= beta)
     {
         return staticEval;
     }
@@ -88,14 +88,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     bool bSearchPv = true;
 
     Movelist moveList;
-    movegen::legalmoves(moveList, board);
+    movegen::legalmoves(moveList, *board);
 
     //Sort the list
     moveList = orderMoves(moveList, entry);
 
     if (moveList.size() == 0)
     {
-        if (board.inCheck() == true)
+        if (board->inCheck() == true)
         {
             return -infinity + ply;
         }
@@ -108,11 +108,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     int bestScore = -infinity;
     for (const Move& move : moveList)
     {
-        board.makeMove(move);
+        board->makeMove(move);
 
         short checkExtension = 0;
 
-        if (board.inCheck() == true)
+        if (board->inCheck() == true)
         {
             checkExtension = 1;
         }
@@ -130,7 +130,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             }
         }
 
-        board.unmakeMove(move);
+        board->unmakeMove(move);
 
         if (score > bestScore)
         {
@@ -173,13 +173,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         {
             finalType = UPPER_BOUND;
         }
-        transpositionTabel.storeEvaluation(board.hash(), depth, finalType, transpositionTabel.ScoreToTT(bestScore, ply), bestMove, staticEval);
+        transpositionTabel.storeEvaluation(key, depth, finalType, transpositionTabel.ScoreToTT(bestScore, ply), bestMove, staticEval);
     }
 
     return bestScore;
 }
 
-int Search::qs(int alpha, int beta, Board& board, int ply)
+int Search::qs(int alpha, int beta, Board* board, int ply)
 {
     //Increment nodes by one
     nodes++;
@@ -190,7 +190,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     int standPat = 50000;
     const bool pvNode = alpha != beta - 1;
 
-    uint64_t key = board.hash();
+    uint64_t key = board->hash();
 
     Hash* entry = transpositionTabel.getHash(key);
 
@@ -216,14 +216,14 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         }
     }
 
-    if (!board.inCheck() && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
+    if (!board->inCheck() && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
     {
         standPat = hashedScore;
     }
 
     if (standPat == 50000)
     {
-        standPat = evaluate(board);
+        standPat = evaluate(*board);
     }
 
     if (standPat >= beta)
@@ -237,18 +237,18 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     }
 
     Movelist moveList;
-    movegen::legalmoves<movegen::MoveGenType::CAPTURE>(moveList, board);
+    movegen::legalmoves<movegen::MoveGenType::CAPTURE>(moveList, *board);
 
     int bestScore = standPat;
     Move bestMoveInQs = Move::NULL_MOVE;
 
     for (const Move& move : moveList)
     {
-        board.makeMove(move);
+        board->makeMove(move);
 
         int score = -qs(-beta, -alpha, board, ply);
 
-        board.unmakeMove(move);
+        board->unmakeMove(move);
 
         //Our current Score is better then the previos bestScore so we update it 
         if (score > bestScore)
@@ -272,17 +272,17 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     }
 
     //Checks for checkmate
-    if (board.inCheck() && bestScore == -infinity)
+    if (board->inCheck() && bestScore == -infinity)
     {
         return -infinity + ply;
     }
 
-    transpositionTabel.storeEvaluation(board.hash(), 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.ScoreToTT(bestScore, ply), bestMoveInQs, standPat);
+    transpositionTabel.storeEvaluation(key, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.ScoreToTT(bestScore, ply), bestMoveInQs, standPat);
 
     return bestScore;
 }
 
-void Search::iterativeDeepening(Board& board)
+void Search::iterativeDeepening(Board* board)
 {
     start = std::chrono::high_resolution_clock::now();
     timeForMove = getTimeForMove();

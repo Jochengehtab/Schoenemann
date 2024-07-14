@@ -11,10 +11,11 @@ public:
 	bool isNormalSearch = true;
 	int timeForMove = 0;
 
+	int transpositions = 0;
 	int nodes = 0;
 
-	int pvs(int alpha, int beta, int depth, int ply, Board& board);
-	int qs(int alpha, int beta, Board& board, int ply);
-	void iterativeDeepening(Board& board);
+	int pvs(int alpha, int beta, int depth, int ply, Board* board);
+	int qs(int alpha, int beta, Board* board, int ply);
+	void iterativeDeepening(Board* board);
 private:
 };
