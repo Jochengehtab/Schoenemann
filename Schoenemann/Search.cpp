@@ -117,6 +117,17 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             checkExtension = 1;
         }
 
+        Rank rank = move.to().rank();
+
+        if (!bSearchPv)
+        {
+            if (rank.back_rank(rank, board.sideToMove()))
+            {
+                checkExtension = 1;
+            }
+            
+        }
+
         if (bSearchPv)
         {
             score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
