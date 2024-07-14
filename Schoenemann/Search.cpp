@@ -21,10 +21,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return beta;
     }
 
-    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end - start;
-    bool isOver = elapsed.count() >= timeForMove;
-
     if (isOver && !isNormalSearch)
     {
         shouldStop = true;
@@ -32,6 +28,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (depth == 0)
     {
+        std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        isOver = elapsed.count() >= timeForMove;
         return qs(alpha, beta, board, ply);
     }
 
@@ -305,6 +304,7 @@ void Search::iterativeDeepening(Board& board)
     for (int i = 1; i <= 256; i++)
     {
         pvs(-32767, 32767, i, 0, board);
+        isOver = false;
 
         if (!shouldStop)
         {
@@ -342,4 +342,5 @@ void Search::iterativeDeepening(Board& board)
     }
     shouldStop = false;
     isNormalSearch = true;
+    isOver = false;
 }

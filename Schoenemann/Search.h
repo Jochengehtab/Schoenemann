@@ -9,6 +9,7 @@ public:
 	Move bestMove = Move::NULL_MOVE;
 	bool shouldStop = false;
 	bool isNormalSearch = true;
+	bool isOver = false;
 	int timeForMove = 0;
 
 	int nodes = 0;
