@@ -121,7 +121,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         if (!bSearchPv)
         {
-            if (rank.back_rank(rank, board.sideToMove()))
+            if (rank == Rank::RANK_7 || rank == Rank::RANK_2)
             {
                 checkExtension = 1;
             }
