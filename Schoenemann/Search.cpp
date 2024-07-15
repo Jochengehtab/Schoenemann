@@ -117,6 +117,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             checkExtension = 1;
         }
 
+        if (moveList.size() == 1 && !bSearchPv)
+        {
+            checkExtension = 1;
+        }
+
         if (bSearchPv)
         {
             score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
