@@ -308,7 +308,7 @@ void Search::iterativeDeepening(Board& board)
     for (int i = 1; i <= 256; i++)
     {
 
-        int deltaAlpha = 14 - std::min(i / 4, 6) + abs(bestScore) / 25;
+        int deltaAlpha = 14 - std::min(i / 4, 6) + std::abs(bestScore) / 25;
         int deltaBeta = deltaAlpha;
 
 
@@ -334,8 +334,9 @@ void Search::iterativeDeepening(Board& board)
             {
                 break;
             }
-            bestScore = score;
         }
+
+        bestScore = score;
 
         if (!shouldStop)
         {
