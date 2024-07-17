@@ -91,6 +91,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         depth--;
     }
 
+
     short type = UPPER_BOUND;
 
     bool bSearchPv = true;
