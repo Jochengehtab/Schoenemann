@@ -292,7 +292,7 @@ void Search::iterativeDeepening(Board& board)
     bool hasFoundMove = false;
 
     int score = 0;
-    int bestScore = 0;
+    int bestScore = -infinity;
 
     //If there is no time left make a search at depth 1
     if (timeForMove == -20)
@@ -308,6 +308,10 @@ void Search::iterativeDeepening(Board& board)
     for (int i = 1; i <= 256; i++)
     {
 
+        int deltaAlpha = 14 - std::min(i / 4, 6) + abs(bestScore) / 25;
+        int deltaBeta = deltaAlpha;
+
+
         int aspirationAlpha = -infinity;
         int aspirationBeta = infinity;
 
@@ -317,17 +321,20 @@ void Search::iterativeDeepening(Board& board)
             if (!shouldStop)
             {
                 aspirationBeta = (aspirationAlpha + aspirationBeta) / 2;
-                aspirationAlpha = bestScore;
+                aspirationAlpha = bestScore - deltaAlpha;
+                deltaAlpha = 3 * deltaAlpha / 2;
             }
             else if (bestScore >= aspirationBeta)
             {
                 aspirationAlpha = (aspirationAlpha + aspirationBeta) / 2;
-                aspirationBeta = bestScore;
+                aspirationBeta = bestScore + deltaBeta;
+                deltaBeta = 3 * deltaBeta / 2;
             }
             else
             {
                 break;
             }
+            bestScore = score;
         }
 
         if (!shouldStop)
