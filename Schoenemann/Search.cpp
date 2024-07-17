@@ -86,7 +86,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     //Internal iterative reduction based on Rebel's idea
-    if (pvNode && depth >= 3 && hashedMove != Move::NULL_MOVE)
+    if (pvNode && depth >= 4 && hashedMove != Move::NULL_MOVE)
     {
         depth--;
     }
