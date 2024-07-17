@@ -39,6 +39,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     int hashedEval = 0;
     short hashedType = 0;
     int hashedDepth = 0;
+    Move hashedMove = Move::NULL_MOVE;
     int staticEval = 50000;
 
     const bool pvNode = alpha != beta - 1;
@@ -59,6 +60,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             hashedDepth = entry->depth;
             hashedEval = entry->eval;
             staticEval = hashedEval;
+            hashedMove = entry->move;
         }
 
         if (!pvNode && hashedDepth >= depth && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
@@ -81,6 +83,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     if (!pvNode && !board.inCheck() && depth <= 6 && staticEval - 70 * depth >= beta)
     {
         return staticEval;
+    }
+
+    //Internal iterative reduction based on Rebel's idea
+    if (pvNode && depth >= 3 && hashedMove != Move::NULL_MOVE)
+    {
+        depth--;
     }
 
     short type = UPPER_BOUND;
