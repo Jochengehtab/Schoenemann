@@ -291,6 +291,9 @@ void Search::iterativeDeepening(Board& board)
     isNormalSearch = false;
     bool hasFoundMove = false;
 
+    int score = 0;
+    int bestScore = 0;
+
     //If there is no time left make a search at depth 1
     if (timeForMove == -20)
     {
@@ -304,7 +307,28 @@ void Search::iterativeDeepening(Board& board)
 
     for (int i = 1; i <= 256; i++)
     {
-        pvs(-32767, 32767, i, 0, board);
+
+        int aspirationAlpha = -infinity;
+        int aspirationBeta = infinity;
+
+        while (!shouldStop)
+        {
+            score = pvs(aspirationAlpha, aspirationBeta, i, 0, board);
+            if (!shouldStop)
+            {
+                aspirationBeta = (aspirationAlpha + aspirationBeta) / 2;
+                aspirationAlpha = bestScore;
+            }
+            else if (bestScore >= aspirationBeta)
+            {
+                aspirationAlpha = (aspirationAlpha + aspirationBeta) / 2;
+                aspirationBeta = bestScore;
+            }
+            else
+            {
+                break;
+            }
+        }
 
         if (!shouldStop)
         {
