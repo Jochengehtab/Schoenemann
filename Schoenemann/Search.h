@@ -11,6 +11,19 @@ public:
 	bool isNormalSearch = true;
 	int timeForMove = 0;
 
+	int rvpDepth = 6;
+	int betaReduction = 70;
+	int alphaReduction = 334;
+	int razorDepth = 2;
+	int depthMultiply = 66;
+
+	//Evaluation consts
+	short pawnValue = 126;
+	short knightValue = 781;
+	short bishopValue = 825;
+	short rookValue = 1276;
+	short queenValue = 2538;
+
 	int nodes = 0;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);

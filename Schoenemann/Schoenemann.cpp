@@ -95,6 +95,105 @@ int main(int argc, char* argv[]) {
 						transpositionTabel.setSize(newTranspositionTableSize);
 					}
 				}
+				if (token == "rvpDepth")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+					}
+				}
+				if (token == "betaReduction")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.betaReduction = intputFromUCI;
+					}
+				}
+				if (token == "alphaReduction")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.alphaReduction = intputFromUCI;
+					}
+				}
+				if (token == "razorDepth")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.razorDepth = intputFromUCI;
+					}
+				}
+				if (token == "depthMultiply")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.depthMultiply = intputFromUCI;
+					}
+				}
+				if (token == "pawnValue")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.pawnValue = intputFromUCI;
+					}
+				}
+				if (token == "knightValue")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.knightValue = intputFromUCI;
+					}
+				}
+				if (token == "bishopValue")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.bishopValue = intputFromUCI;
+					}
+				}
+				if (token == "rookValue")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.rookValue = intputFromUCI;
+					}
+				}
+				if (token == "queenValue")
+				{
+					is >> token;
+					if (token == "value")
+					{
+						is >> token;
+						int intputFromUCI = std::stoi(token);
+						seracher.queenValue = intputFromUCI;
+					}
+				}
 			}
 		}
 		else if (token == "position")

@@ -10,13 +10,6 @@ const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq
 //Bench depth 
 const short benchDepth = 3;
 
-//Evaluation consts
-const short pawnValue = 126;
-const short knightValue = 781;
-const short bishopValue = 825;
-const short rookValue = 1276;
-const short queenValue = 2538;
-
 const std::string testStrings[] = {
 		STARTPOS,
 		"r2q4/pp1k1pp1/2p1r1np/5p2/2N5/1P5Q/5PPP/3RR1K1 b - -",

@@ -93,6 +93,26 @@ void uciPrint()
 	std::cout << "id name Schoenemann" << std::endl
 		<< "option name Threads type spin default 1 min 1 max 16" << std::endl
 		<< "option name Hash type spin default 64 min 1 max 4096" << std::endl
+		<< "option name rvpDepth type spin default 6 min 2 max 10" << std::endl
+
+		<< "option name betaReduction type spin default 70 min 20 max 500" << std::endl
+
+		<< "option name alphaReduction type spin default 334 min 100 max 1200" << std::endl
+
+		<< "option name razorDepth type spin default 2 min 1 max 5" << std::endl
+
+		<< "option name depthMultiply type spin default 66 min 10 max 600" << std::endl
+
+		<< "option name pawnValue type spin default 126 min 50 max 600" << std::endl
+
+		<< "option name knightValue type spin default 781 min 300 max 2500" << std::endl
+
+		<< "option name bishopValue type spin default 825 min 300 max 2600" << std::endl
+
+		<< "option name rookValue type spin default 1276 min 500 max 3000" << std::endl
+
+		<< "option name queenValue type spin default 2538 min 1250 max 4500" << std::endl
+
 		<< "uciok" << std::endl;
 }
 

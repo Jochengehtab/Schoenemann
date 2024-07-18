@@ -26,12 +26,12 @@ int count_material(Board& board, Color color) {
     psqt bouns;
     //Pawn
     short amountPawn = count_amount(board, PieceType::PAWN, color);
-    int valuePawn = pawnValue + bouns.getPieceBounus(board, PieceType::PAWN, color);
+    int valuePawn = seracher.pawnValue + bouns.getPieceBounus(board, PieceType::PAWN, color);
     material += amountPawn * valuePawn;
     //std::cout << "color " << color << " pawnvalue " << count_amount(board, PieceType::PAWN, color) * (pawnValue + bouns.getPieceBounus(board, PieceType::PAWN, color)) << " amount " << count_amount(board, PieceType::PAWN, color) << " bounus " << bouns.getPieceBounus(board, PieceType::PAWN, color) << std::endl;
     
     short amountKnight = count_amount(board, PieceType::KNIGHT, color);
-    int valueKnight = knightValue + bouns.getPieceBounus(board, PieceType::KNIGHT, color);
+    int valueKnight = seracher.knightValue + bouns.getPieceBounus(board, PieceType::KNIGHT, color);
     material += amountKnight * valueKnight;
 
 
@@ -42,17 +42,17 @@ int count_material(Board& board, Color color) {
         material += 50;
     }
 
-    int valueBishop = bishopValue + bouns.getPieceBounus(board, PieceType::BISHOP, color);
+    int valueBishop = seracher.bishopValue + bouns.getPieceBounus(board, PieceType::BISHOP, color);
 
     material += bishopAmount * valueBishop;
 
     short amountRook = count_amount(board, PieceType::ROOK, color);
-    int valueRook = rookValue + bouns.getPieceBounus(board, PieceType::ROOK, color);
+    int valueRook = seracher.rookValue + bouns.getPieceBounus(board, PieceType::ROOK, color);
 
     material += amountRook * valueRook;
 
     short amountQueen = count_amount(board, PieceType::QUEEN, color);
-    int valueQueen = queenValue + bouns.getPieceBounus(board, PieceType::QUEEN, color);
+    int valueQueen = seracher.queenValue + bouns.getPieceBounus(board, PieceType::QUEEN, color);
 
     material += amountQueen * valueQueen;
     
