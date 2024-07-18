@@ -86,7 +86,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Razoring
     if (!pvNode && !board.inCheck() && depth <= 2)
     {
-        const int ralpha = alpha - depth;
+        const int ralpha = alpha - 334 - depth * 66;
 
         if (staticEval < ralpha)
         {
