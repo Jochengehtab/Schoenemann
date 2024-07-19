@@ -78,7 +78,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     //Reverse futility pruning
-    if (!pvNode && !board.inCheck() && depth <= 6 && staticEval - 72 * depth >= beta)
+    if (!pvNode && !board.inCheck() && depth <= 6 && staticEval - 82 * depth >= beta)
     {
         return staticEval;
     }
@@ -86,7 +86,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Razoring
     if (!pvNode && !board.inCheck() && depth <= 2)
     {
-        const int ralpha = alpha - 338 - depth * 68;
+        const int ralpha = alpha - 342 - depth * 74;
 
         if (staticEval < ralpha)
         {
