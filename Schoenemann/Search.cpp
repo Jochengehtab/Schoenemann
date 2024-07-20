@@ -148,12 +148,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                     bestMove = move;
                 }
             }
-
-            //Beta cutoff
-            if (score >= beta)
-            {
-                break;
-            }
+        }
+        //Beta cutoff
+        if (score >= beta)
+        {
+            break;
         }
     }
 
@@ -262,12 +261,12 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
                 bestMoveInQs = move;
             }
+        }
 
-            //Beta cutoff
-            if (score >= beta)
-            {
-                break;
-            }
+        //Beta cutoff
+        if (score >= beta)
+        {
+            break;
         }
     }
 
