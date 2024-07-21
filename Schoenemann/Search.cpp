@@ -83,6 +83,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
+    if (staticEval < alpha - 488 - 306 * depth * depth)
+    {
+        int val = qs(alpha - 1, alpha, board, ply);
+        if (val < alpha)
+        {
+            return val;
+        }
+    }
+
     short type = UPPER_BOUND;
 
     bool bSearchPv = true;
