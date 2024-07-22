@@ -22,6 +22,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return beta;
     }
 
+    if (depth == 0)
+    {
+        return qs(alpha, beta, board, ply);
+    }
+
     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
     bool isOver = elapsed.count() >= timeForMove;
@@ -29,11 +34,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     if (isOver && !isNormalSearch)
     {
         shouldStop = true;
-    }
-
-    if (depth == 0)
-    {
-        return qs(alpha, beta, board, ply);
     }
 
     int hashedScore = 0;
@@ -316,10 +316,6 @@ void Search::iterativeDeepening(Board& board)
             hasFoundMove = true;
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-        bool isOver = elapsed.count() >= timeForMove;
-
         //std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
         if (i == 256 && hasFoundMove)
         {
@@ -327,7 +323,7 @@ void Search::iterativeDeepening(Board& board)
             break;
         }
 
-        if (isOver && hasFoundMove)
+        if (shouldStop && hasFoundMove)
         {
             std::cout << "bestmove " << bestMoveThisIteration << std::endl;
             shouldStop = true;
