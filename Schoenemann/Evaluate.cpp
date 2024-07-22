@@ -15,8 +15,7 @@ int evaluate(Board& board) {
 
 int getBishopPairBounus(Board& board, Color color)
 {
-    short bishopAmount = countAmount(board, PieceType::BISHOP, color);
-    return bishopAmount >= 2 ? bishopPairValue * (bishopAmount - 1) : 0;
+    return countAmount(board, PieceType::BISHOP, color) == 2 ? bishopPairValue : 0;
 }
 
 int getMobility(Board& borad, Color color)
