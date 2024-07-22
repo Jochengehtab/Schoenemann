@@ -65,6 +65,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
+    if (depth == 0)
+    {
+        return qs(alpha, beta, board, ply);
+    }
+
     if (staticEval == NO_VALUE)
     {
         staticEval = evaluate(board);
@@ -75,12 +80,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         return staticEval;
     }
-
-    if (depth == 0)
-    {
-        return qs(alpha, beta, board, ply);
-    }
-
     short type = UPPER_BOUND;
 
     bool bSearchPv = true;
