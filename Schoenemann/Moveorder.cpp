@@ -24,6 +24,13 @@ Movelist orderMoves(Movelist moveList, Hash* entry)
 				//std::cout << "hash move is: " << hashMove << "    the front is " << moveList.front() << std::endl;
 				break;
 			}
+
+			if (move.typeOf() == Move::PROMOTION && move.promotionType() == PieceType::QUEEN)
+			{
+				Move cache = moveList[1];
+				moveList[1] = move;
+				moveList.add(cache);
+			}
 		}
 	}
 	return moveList;
