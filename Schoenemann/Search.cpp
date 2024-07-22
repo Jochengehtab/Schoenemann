@@ -31,11 +31,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         shouldStop = true;
     }
 
-    if (depth == 0)
-    {
-        return qs(alpha, beta, board, ply);
-    }
-
     int hashedScore = 0;
     short hashedType = 0;
     int hashedDepth = 0;
@@ -79,6 +74,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     if (!pvNode && !board.inCheck() && depth <= 6 && staticEval - 70 * depth >= beta)
     {
         return staticEval;
+    }
+
+    if (depth == 0)
+    {
+        return qs(alpha, beta, board, ply);
     }
 
     short type = UPPER_BOUND;
