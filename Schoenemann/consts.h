@@ -18,6 +18,8 @@ const short bishopValue = 825;
 const short rookValue = 1276;
 const short queenValue = 2538;
 
+const short bishopPairValue = 55;
+
 const short NO_VALUE = 50000;
 const std::string testStrings[] = {
 		STARTPOS,

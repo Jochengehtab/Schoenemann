@@ -6,10 +6,16 @@ int evaluate(Board& board) {
     int evaluation = 0;
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
     evaluation += getMobility(board, Color::WHITE) - getMobility(board, Color::BLACK);
+    evaluation += getBishopPairBounus(board, Color::WHITE) - getBishopPairBounus(board, Color::BLACK);
 
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
 
     return evaluation * perspective;
+}
+
+int getBishopPairBounus(Board& board, Color color)
+{
+    return countAmount(board, PieceType::BISHOP, color) * bishopPairValue;
 }
 
 int getMobility(Board& borad, Color color)
