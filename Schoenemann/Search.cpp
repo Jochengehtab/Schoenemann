@@ -75,12 +75,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         staticEval = evaluate(board);
     }
 
-    //Reverse futility pruning
-    if (!pvNode && !board.inCheck() && depth <= 6 && staticEval - 70 * depth >= beta)
-    {
-        return staticEval;
-    }
-
     short type = UPPER_BOUND;
 
     Movelist moveList;
@@ -159,7 +153,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 break;
             }
             bestScore = score;
-            type = EXACT;
+            if (score > alpha)
+            {
+                type = EXACT;
+            }
 
             //If we are ate the root we set the bestMove
             if (ply == 0)
