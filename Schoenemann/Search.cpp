@@ -83,8 +83,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     short type = UPPER_BOUND;
 
-    bool bSearchPv = true;
-
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
@@ -104,8 +102,32 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
     int score = 0;
     int bestScore = -infinity;
+
+    board.makeMove(moveList[0]);
+
+    bestScore = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
+
+    board.unmakeMove(moveList[0]);
+
+    if (bestScore > alpha)
+    {
+        if (bestScore >= beta)
+        {
+            return bestScore;
+        }
+
+        alpha = bestScore;
+    }
+
+    moveList[0] = Move::NULL_MOVE;
+
     for (const Move& move : moveList)
     {
+        if (move == Move::NULL_MOVE)
+        {
+            continue;
+        }
+
         board.makeMove(move);
 
         short checkExtension = 0;
@@ -115,16 +137,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             checkExtension = 1;
         }
 
-        if (bSearchPv)
+        score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
+
+        if (score > alpha && score < beta)
         {
+            //Research with a full window
             score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
-        }
-        else
-        {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
-            if (score > alpha && score < beta)
+            if (score > alpha)
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                alpha = score;
             }
         }
 
@@ -132,25 +153,18 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         if (score > bestScore)
         {
-            bestScore = score;
-            if (score > alpha)
-            {
-                alpha = score;
-
-                bSearchPv = false;
-                type = EXACT;
-
-                //If we are ate the root we set the bestMove
-                if (ply == 0)
-                {
-                    bestMove = move;
-                }
-            }
-
             //Beta cutoff
             if (score >= beta)
             {
                 break;
+            }
+            bestScore = score;
+            type = EXACT;
+
+            //If we are ate the root we set the bestMove
+            if (ply == 0)
+            {
+                bestMove = move;
             }
         }
     }
