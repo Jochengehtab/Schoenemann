@@ -40,6 +40,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     short hashedType = 0;
     int hashedDepth = 0;
     int staticEval = NO_VALUE;
+    Move hashedMove = Move::NULL_MOVE;
 
     const bool pvNode = (alpha != beta) - 1;
     const bool root = (ply == 0);
@@ -57,6 +58,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             hashedType = entry->type;
             hashedDepth = entry->depth;
             staticEval = entry->eval;
+            hashedMove = entry->move;
         }
 
         if (!pvNode && hashedDepth >= depth && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
@@ -68,6 +70,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 return hashedScore;
             }
         }
+    }
+
+    if (pvNode && hashedMove == Move::NULL_MOVE)
+    {
+        depth -= 1;
     }
 
     if (staticEval == NO_VALUE)
