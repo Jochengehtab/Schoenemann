@@ -72,9 +72,15 @@ void transpositionTableTest(Board& board)
 
 void testCommand()
 {
-	Board test_board;
-	evaluate(test_board);
-	test_board.setFen("8/4R3/6kp/6p1/8/7P/3r4/6K1 w - - 0 28");
+	Board testBoard;
+	testBoard.setFen("rnbq1rk1/ppppbppp/4pn2/8/8/P7/RPPPPPPP/1NBQKBNR w K - 4 5");
+
+	Bitboard pawnBoard = testBoard.pieces(PieceType::PAWN, Color::BLACK);
+	const Square kingSquare = testBoard.kingSq(Color::BLACK);
+	int kingIndex = kingSquare.index();
+	
+	std::cout << pawnBoard.fromSquare(kingSquare - 8);
+	
 }
 
 //Print the uci info

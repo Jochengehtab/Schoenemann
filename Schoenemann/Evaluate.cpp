@@ -6,6 +6,7 @@ int evaluate(Board& board) {
     int evaluation = 0;
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
     evaluation += getMobility(board, Color::WHITE) - getMobility(board, Color::BLACK);
+    evaluation += kingSafety(board, Color::WHITE) - kingSafety(board, Color::BLACK);
 
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
 
@@ -23,6 +24,40 @@ int getMobility(Board& borad, Color color)
         }
     }
     return mobility;
+}
+
+int kingSafety(Board& board, Color color)
+{
+    int safeScore = 0;
+
+    Bitboard pawnBoard = board.pieces(PieceType::PAWN, color);
+    int kingIndex = board.kingSq(color).index();
+
+    bool perspective = color == Color::WHITE ? true : false;
+
+
+    if (perspective)
+    {
+        for (short i = 7; i < 9; i++)
+        {
+            if (pawnBoard.check(kingIndex + i))
+            {
+                safeScore += 80;
+            }
+        }
+    }
+    else
+    {
+        for (short i = 7; i < 9; i++)
+        {
+            if (pawnBoard.check(kingIndex - i))
+            {
+                safeScore += 80;
+            }
+        }
+    }
+
+    return safeScore;
 }
 
 int countMaterial(Board& board, Color color) {
