@@ -34,7 +34,7 @@ int kingSafety(Board& board, Color color)
     int kingIndex = board.kingSq(color).index();
 
     const bool perspective = color == Color::WHITE ? true : false;
-
+    short amountPawnShilds = 0;
 
     if (perspective)
     {
@@ -42,12 +42,7 @@ int kingSafety(Board& board, Color color)
         {
             if (pawnBoard.check(kingIndex + i))
             {
-                safeScore += 30;
-            }
-
-            if (board.isAttacked(i, color))
-            {
-                safeScore -= 15;
+                amountPawnShilds++;
             }
         }
     }
@@ -57,14 +52,16 @@ int kingSafety(Board& board, Color color)
         {
             if (pawnBoard.check(kingIndex - i))
             {
-                safeScore += 30;
-            }
-
-            if (board.isAttacked(i, color))
-            {
-                safeScore -= 15;
+                amountPawnShilds++;
             }
         }
+    }
+
+    safeScore = static_cast<int>(10 * amountPawnShilds);
+
+    if (safeScore == 0)
+    {
+        safeScore = -10;
     }
 
     return safeScore;

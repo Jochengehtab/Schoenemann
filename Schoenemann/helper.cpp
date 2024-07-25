@@ -85,6 +85,8 @@ void testCommand()
 		std::cout << pawnBoard.fromSquare(kingIndex + 8) << std::endl;
 	}
 
+	short amountPawnShilds = 0;
+
 	if (perspective)
 	{
 		for (short i = 7; i < 10; i++)
