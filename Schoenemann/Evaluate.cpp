@@ -30,8 +30,8 @@ int kingSafety(Board& board, Color color)
 {
     int safeScore = 0;
 
-    Bitboard pawnBoard = board.pieces(PieceType::PAWN, color);
-    int kingIndex = board.kingSq(color).index();
+    const Bitboard pawnBoard = board.pieces(PieceType::PAWN, color);
+    const int kingIndex = board.kingSq(color).index();
 
     const bool perspective = color == Color::WHITE ? true : false;
     short amountPawnShilds = 0;
@@ -57,7 +57,7 @@ int kingSafety(Board& board, Color color)
         }
     }
 
-    safeScore = static_cast<int>(10 * amountPawnShilds);
+    safeScore = 10 * amountPawnShilds;
 
     if (safeScore == 0)
     {
