@@ -13,3 +13,4 @@ int evaluate(Board& board);
 int countMaterial(Board& board, Color color);
 int countAmount(Board& board, PieceType type, Color color);
 int getMobility(Board& borad, Color color);
+int realMobility(Board& board, Color color);

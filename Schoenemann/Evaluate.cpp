@@ -6,6 +6,7 @@ int evaluate(Board& board) {
     int evaluation = 0;
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
     evaluation += getMobility(board, Color::WHITE) - getMobility(board, Color::BLACK);
+    evaluation += realMobility(board, Color::WHITE) - realMobility(board, Color::BLACK);
 
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
 
@@ -15,9 +16,23 @@ int evaluate(Board& board) {
 int getMobility(Board& borad, Color color)
 {
     int mobility = 0;
-    for (size_t i = 0; i < 63; i++)
+    for (short i = 0; i < 64; i++)
     {
         if (borad.isAttacked(i, color))
+        {
+            mobility += 5;
+        }
+    }
+    return mobility;
+}
+
+int realMobility(Board& board, Color color)
+{
+    int mobility = 0;
+    const Bitboard allBoard = board.us(color);
+    for (short i = 0; i < 64; i++)
+    {
+        if (allBoard.check(i) == 0 && !board.isAttacked(i, color))
         {
             mobility += 5;
         }
