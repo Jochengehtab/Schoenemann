@@ -33,7 +33,7 @@ int kingSafety(Board& board, Color color)
     Bitboard pawnBoard = board.pieces(PieceType::PAWN, color);
     int kingIndex = board.kingSq(color).index();
 
-    bool perspective = color == Color::WHITE ? true : false;
+    const bool perspective = color == Color::WHITE ? true : false;
 
 
     if (perspective)
@@ -44,13 +44,12 @@ int kingSafety(Board& board, Color color)
             {
                 safeScore += 30;
             }
-        }
 
-        if (safeScore == 0)
-        {
-            safeScore -= 50;
+            if (board.isAttacked(i, color))
+            {
+                safeScore -= 15;
+            }
         }
-
     }
     else
     {
@@ -60,11 +59,11 @@ int kingSafety(Board& board, Color color)
             {
                 safeScore += 30;
             }
-        }
 
-        if (safeScore == 0)
-        {
-            safeScore -= 50;
+            if (board.isAttacked(i, color))
+            {
+                safeScore -= 15;
+            }
         }
     }
 

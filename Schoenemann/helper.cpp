@@ -73,14 +73,17 @@ void transpositionTableTest(Board& board)
 void testCommand()
 {
 	Board testBoard;
-	testBoard.setFen("6k1/8/5nb1/8/8/8/8/4K3 w - - 0 1");
+	testBoard.setFen("rnbqkbnr/pppppppp/8/8/8/2NPQ3/PPPBPPPP/2KR1BNR w kq - 11 7");
 
 	int safeScore = 0;
-	Bitboard pawnBoard = testBoard.pieces(PieceType::PAWN, Color::BLACK);
-	int kingIndex = testBoard.kingSq(Color::BLACK).index();
+	Bitboard pawnBoard = testBoard.pieces(PieceType::PAWN, Color::WHITE);
+	int kingIndex = testBoard.kingSq(Color::WHITE).index();
 
 	bool perspective = Color::BLACK == Color::WHITE ? true : false;
-
+	if (pawnBoard.check(kingIndex + 8))
+	{
+		std::cout << pawnBoard.fromSquare(kingIndex + 8) << std::endl;
+	}
 
 	if (perspective)
 	{
