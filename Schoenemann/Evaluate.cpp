@@ -46,6 +46,11 @@ int kingSafety(Board& board, Color color)
             }
         }
 
+        if (safeScore == 0)
+        {
+            safeScore -= 50;
+        }
+
     }
     else
     {
@@ -55,6 +60,11 @@ int kingSafety(Board& board, Color color)
             {
                 safeScore += 30;
             }
+        }
+
+        if (safeScore == 0)
+        {
+            safeScore -= 50;
         }
     }
 
