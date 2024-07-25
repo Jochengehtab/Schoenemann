@@ -38,7 +38,7 @@ int kingSafety(Board& board, Color color)
 
     if (perspective)
     {
-        for (short i = 7; i < 9; i++)
+        for (short i = 7; i < 10; i++)
         {
             if (pawnBoard.check(kingIndex + i))
             {
@@ -48,7 +48,7 @@ int kingSafety(Board& board, Color color)
     }
     else
     {
-        for (short i = 7; i < 9; i++)
+        for (short i = 7; i < 10; i++)
         {
             if (pawnBoard.check(kingIndex - i))
             {

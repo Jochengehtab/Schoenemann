@@ -75,11 +75,34 @@ void testCommand()
 	Board testBoard;
 	testBoard.setFen("rnbq1rk1/ppppbppp/4pn2/8/8/P7/RPPPPPPP/1NBQKBNR w K - 4 5");
 
+	int safeScore = 0;
+
 	Bitboard pawnBoard = testBoard.pieces(PieceType::PAWN, Color::BLACK);
-	const Square kingSquare = testBoard.kingSq(Color::BLACK);
-	int kingIndex = kingSquare.index();
-	
-	std::cout << pawnBoard.fromSquare(kingSquare - 8);
+	int kingIndex = testBoard.kingSq(Color::BLACK).index();
+
+	bool perspective = Color::BLACK == Color::WHITE ? true : false;
+
+
+	if (perspective)
+	{
+		for (short i = 7; i < 9; i++)
+		{
+			if (pawnBoard.check(kingIndex + i))
+			{
+				safeScore += 80;
+			}
+		}
+	}
+	else
+	{
+		for (short i = 7; i < 10; i++)
+		{
+			if (pawnBoard.check(kingIndex - i))
+			{
+				std::cout << pawnBoard.fromSquare(kingIndex - i) << std::endl;
+			}
+		}
+	}
 	
 }
 
