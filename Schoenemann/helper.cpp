@@ -73,10 +73,9 @@ void transpositionTableTest(Board& board)
 void testCommand()
 {
 	Board testBoard;
-	testBoard.setFen("rnbq1rk1/ppppbppp/4pn2/8/8/P7/RPPPPPPP/1NBQKBNR w K - 4 5");
+	testBoard.setFen("6k1/8/5nb1/8/8/8/8/4K3 w - - 0 1");
 
 	int safeScore = 0;
-
 	Bitboard pawnBoard = testBoard.pieces(PieceType::PAWN, Color::BLACK);
 	int kingIndex = testBoard.kingSq(Color::BLACK).index();
 
@@ -85,21 +84,39 @@ void testCommand()
 
 	if (perspective)
 	{
-		for (short i = 7; i < 9; i++)
+		for (short i = 7; i < 10; i++)
 		{
 			if (pawnBoard.check(kingIndex + i))
 			{
-				safeScore += 80;
+				safeScore += 50;
+			}
+		}
+
+		if (safeScore == 0)
+		{
+			for (short i = 15; i < 18; i++)
+			{
+				if (pawnBoard.check(kingIndex + i))
+				{
+					safeScore += 20;
+				}
+			}
+
+			if (safeScore == 0)
+			{
+				safeScore -= 100;
 			}
 		}
 	}
 	else
 	{
-		for (short i = 7; i < 10; i++)
+		Bitboard allBoard = testBoard.all();
+		std::cout << allBoard.fromSquare(kingIndex - 16) << std::endl;
+		for (short i = 15; i < 18; i++)
 		{
-			if (pawnBoard.check(kingIndex - i))
+			if (allBoard.check(kingIndex - i))
 			{
-				std::cout << pawnBoard.fromSquare(kingIndex - i) << std::endl;
+				std::cout << allBoard.fromSquare(kingIndex - i);
 			}
 		}
 	}

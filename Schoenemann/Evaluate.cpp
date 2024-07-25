@@ -42,7 +42,24 @@ int kingSafety(Board& board, Color color)
         {
             if (pawnBoard.check(kingIndex + i))
             {
-                safeScore += 80;
+                safeScore += 50;
+            }
+        }
+
+        if (safeScore == 0)
+        {
+            Bitboard allBoard = board.all();
+            for (short i = 15; i < 18; i++)
+            {
+                if (allBoard.check(kingIndex + i))
+                {
+                    safeScore += 20;
+                }
+            }
+
+            if (safeScore == 0)
+            {
+                safeScore -= 120;
             }
         }
     }
@@ -52,7 +69,24 @@ int kingSafety(Board& board, Color color)
         {
             if (pawnBoard.check(kingIndex - i))
             {
-                safeScore += 80;
+                safeScore += 50;
+            }
+        }
+
+        if (safeScore == 0)
+        {
+            Bitboard allBoard = board.all();
+            for (short i = 15; i < 18; i++)
+            {
+                if (allBoard.check(kingIndex - i))
+                {
+                    safeScore += 20;
+                }
+            }
+
+            if (safeScore == 0)
+            {
+                safeScore -= 120;
             }
         }
     }
