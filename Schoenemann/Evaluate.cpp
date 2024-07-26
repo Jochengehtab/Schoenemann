@@ -5,7 +5,7 @@
 int evaluate(Board& board) {
     int evaluation = 0;
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
-    evaluation += getMobility(board, Color::WHITE) - getMobility(board, Color::BLACK);
+    //evaluation += getMobility(board, Color::WHITE) - getMobility(board, Color::BLACK);
     evaluation += kingSafety(board, Color::WHITE) - kingSafety(board, Color::BLACK);
 
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
