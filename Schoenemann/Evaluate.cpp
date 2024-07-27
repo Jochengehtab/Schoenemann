@@ -21,6 +21,10 @@ int getMobility(Board& borad, Color color)
         {
             mobility += 5;
         }
+        else
+        {
+            mobility -= 1;
+        }
     }
     return mobility;
 }
