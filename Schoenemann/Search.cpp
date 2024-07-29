@@ -37,6 +37,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return qs(alpha, beta, board, ply);
     }
 
+    alpha = std::max(-infinity + ply, alpha);
+    beta = std::min(infinity - ply + 1, beta);
+    if (alpha >= beta)
+    {
+        return alpha;
+    }
+
     int hashedScore = 0;
     short hashedType = 0;
     int hashedDepth = 0;
