@@ -25,7 +25,7 @@ THIS FILE IS AUTO GENERATED DO NOT CHANGE MANUALLY.
 
 Source: https://github.com/Disservin/chess-library
 
-VERSION: 0.6.46
+VERSION: 0.6.55
 */
 
 #ifndef CHESS_HPP
@@ -39,17 +39,17 @@ VERSION: 0.6.46
 
 
 #if __cplusplus >= 202002L
-#include <bit>
+#    include <bit>
 #endif
-#include <string>
-#include <bitset>
 #include <algorithm>
-#include <iostream>
+#include <bitset>
 #include <cassert>
+#include <iostream>
+#include <string>
 
 #if defined(_MSC_VER)
-#include <intrin.h>
-#include <nmmintrin.h>
+#    include <intrin.h>
+#    include <nmmintrin.h>
 #endif
 
 
@@ -148,9 +148,7 @@ namespace chess {
             return result;
         }
 
-        constexpr char tolower(char c) {
-            return (c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c;
-        }
+        constexpr char tolower(char c) { return (c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c; }
 
     }  // namespace utils
 
@@ -546,21 +544,20 @@ namespace chess {
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            int
-            lsb() const noexcept {
+            int lsb() const noexcept {
             assert(bits != 0);
 #if __cplusplus >= 202002L
             return std::countr_zero(bits);
 #else
-#if defined(__GNUC__)
+#    if defined(__GNUC__)
             return __builtin_ctzll(bits);
-#elif defined(_MSC_VER)
+#    elif defined(_MSC_VER)
             unsigned long idx;
             _BitScanForward64(&idx, bits);
             return static_cast<int>(idx);
-#else
-#error "Compiler not supported."
-#endif
+#    else
+#        error "Compiler not supported."
+#    endif
 #endif
         }
 
@@ -568,22 +565,21 @@ namespace chess {
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            int
-            msb() const noexcept {
+            int msb() const noexcept {
             assert(bits != 0);
 
 #if __cplusplus >= 202002L
             return std::countl_zero(bits) ^ 63;
 #else
-#if defined(__GNUC__)
+#    if defined(__GNUC__)
             return 63 ^ __builtin_clzll(bits);
-#elif defined(_MSC_VER)
+#    elif defined(_MSC_VER)
             unsigned long idx;
             _BitScanReverse64(&idx, bits);
             return static_cast<int>(idx);
-#else
-#error "Compiler not supported."
-#endif
+#    else
+#        error "Compiler not supported."
+#    endif
 #endif
         }
 
@@ -591,16 +587,15 @@ namespace chess {
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            int
-            count() const noexcept {
+            int count() const noexcept {
 #if __cplusplus >= 202002L
             return std::popcount(bits);
 #else
-#if defined(_MSC_VER) || defined(__INTEL_COMPILER)
+#    if defined(_MSC_VER) || defined(__INTEL_COMPILER)
             return static_cast<int>(_mm_popcnt_u64(bits));
-#else
+#    else
             return __builtin_popcountll(bits);
-#endif
+#    endif
 #endif
         }
 
@@ -608,8 +603,7 @@ namespace chess {
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            std::uint8_t
-            pop() noexcept {
+            std::uint8_t pop() noexcept {
             assert(bits != 0);
             std::uint8_t index = lsb();
             bits &= bits - 1;
@@ -866,7 +860,6 @@ namespace chess {
 
 #include <array>
 #include <cctype>
-#include <charconv>
 #include <optional>
 
 
@@ -1762,20 +1755,28 @@ namespace chess {
             int hm = 0;
             int fm = 1;
 
+            static auto parseStringViewToInt = [](std::string_view sv) -> std::optional<int> {
+                if (!sv.empty() && sv.back() == ';') sv.remove_suffix(1);
+                try {
+                    size_t pos;
+                    int value = std::stoi(std::string(sv), &pos);
+                    if (pos == sv.size()) return value;
+                }
+                catch (...) {
+                }
+                return std::nullopt;
+                };
+
             if (auto it = std::find(parts.begin(), parts.end(), "hmvc"); it != parts.end()) {
                 auto num = *(it + 1);
-                auto max = num.size() - 1;
 
-                auto [p, ec] = std::from_chars(num.data(), num.data() + max, hm);
-                if (ec != std::errc()) throw std::runtime_error("Invalid EPD");
+                hm = parseStringViewToInt(num).value_or(0);
             }
 
             if (auto it = std::find(parts.begin(), parts.end(), "fmvn"); it != parts.end()) {
                 auto num = *(it + 1);
-                auto max = num.size() - 1;
-                auto [p, ec] = std::from_chars(num.data(), num.data() + max, fm);
 
-                if (ec != std::errc()) throw std::runtime_error("Invalid EPD");
+                fm = parseStringViewToInt(num).value_or(1);
             }
 
             auto fen = std::string(parts[0]) + " " + std::string(parts[1]) + " " + std::string(parts[2]) + " " +
@@ -1874,6 +1875,7 @@ namespace chess {
             return ss;
         }
 
+        template <bool EXACT = false>
         void makeMove(const Move move) {
             const auto capture = at(move.to()) != Piece::NONE && move.typeOf() != Move::CASTLING;
             const auto captured = at(move.to());
@@ -1931,9 +1933,29 @@ namespace chess {
 
                     // add enpassant hash if enemy pawns are attacking the square
                     if (static_cast<bool>(ep_mask & pieces(PieceType::PAWN, ~stm_))) {
-                        assert(at(move.to().ep_square()) == Piece::NONE);
-                        ep_sq_ = move.to().ep_square();
-                        key_ ^= Zobrist::enpassant(move.to().ep_square().file());
+                        if constexpr (EXACT) {
+                            static constexpr auto is_legal = [](const Board& board, Move move) {
+                                static Movelist moves;
+                                movegen::legalmoves(moves, board);
+
+                                return std::find(moves.begin(), moves.end(), move) != moves.end();
+                                };
+
+                            while (ep_mask) {
+                                const auto possible_move = Move::make(ep_mask.pop(), move.to().ep_square());
+                                if (is_legal(*this, possible_move)) {
+                                    assert(at(move.to().ep_square()) == Piece::NONE);
+                                    ep_sq_ = move.to().ep_square();
+                                    key_ ^= Zobrist::enpassant(move.to().ep_square().file());
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            assert(at(move.to().ep_square()) == Piece::NONE);
+                            ep_sq_ = move.to().ep_square();
+                            key_ ^= Zobrist::enpassant(move.to().ep_square().file());
+                        }
                     }
                 }
             }
@@ -2274,6 +2296,17 @@ namespace chess {
                     Square::same_color(pieces(PieceType::BISHOP, Color::WHITE).lsb(),
                         pieces(PieceType::BISHOP, Color::BLACK).lsb()))
                     return true;
+
+                // one side with two bishops which have the same color
+                auto white_bishops = pieces(PieceType::BISHOP, Color::WHITE);
+                auto black_bishops = pieces(PieceType::BISHOP, Color::BLACK);
+
+                if (white_bishops.count() == 2) {
+                    if (Square::same_color(white_bishops.lsb(), white_bishops.msb())) return true;
+                }
+                else if (black_bishops.count() == 2) {
+                    if (Square::same_color(black_bishops.lsb(), black_bishops.msb())) return true;
+                }
             }
 
             return false;
@@ -2431,13 +2464,13 @@ namespace chess {
             static auto split_fen = [](std::string_view fen) {
                 std::array<std::optional<std::string_view>, 6> arr = {};
 
-                size_t start = 0;
-                size_t end = 0;
+                std::size_t start = 0;
+                std::size_t end = 0;
 
-                for (size_t i = 0; i < 6; i++) {
+                for (std::size_t i = 0; i < 6; i++) {
                     end = fen.find(' ', start);
                     if (end == std::string::npos) {
-                        if (i == 5) arr[i] = fen.substr(start);
+                        arr[i] = fen.substr(start);
                         break;
                     }
                     arr[i] = fen.substr(start, end - start);
@@ -2455,11 +2488,23 @@ namespace chess {
             const auto half_move = params[4].has_value() ? *params[4] : "0";
             const auto full_move = params[5].has_value() ? *params[5] : "1";
 
+            static auto parseStringViewToInt = [](std::string_view sv) -> std::optional<int> {
+                if (!sv.empty() && sv.back() == ';') sv.remove_suffix(1);
+                try {
+                    size_t pos;
+                    int value = std::stoi(std::string(sv), &pos);
+                    if (pos == sv.size()) return value;
+                }
+                catch (...) {
+                }
+                return std::nullopt;
+                };
+
             // Half move clock
-            std::from_chars(half_move.data(), half_move.data() + half_move.size(), hfm_);
+            hfm_ = parseStringViewToInt(half_move).value_or(0);
 
             // Full move number
-            std::from_chars(full_move.data(), full_move.data() + full_move.size(), plies_);
+            plies_ = parseStringViewToInt(full_move).value_or(1);
 
             plies_ = plies_ * 2 - 2;
             ep_sq_ = en_passant == "-" ? Square::underlying::NO_SQ : Square(en_passant);
@@ -2806,11 +2851,6 @@ namespace chess {
             initSliders(static_cast<Square>(i), RookTable, RookMagics[i], rookAttacks);
         }
     }
-
-    inline auto init = []() {
-        attacks::initAttacks();
-        return 0;
-        }();
 }  // namespace chess
 
 
@@ -3383,7 +3423,10 @@ namespace chess {
             legalmoves<Color::BLACK, mt>(movelist, board, pieces);
     }
 
-    inline const std::array<std::array<Bitboard, 64>, 64> movegen::SQUARES_BETWEEN_BB = movegen::init_squares_between();
+    inline const std::array<std::array<Bitboard, 64>, 64> movegen::SQUARES_BETWEEN_BB = [] {
+        attacks::initAttacks();
+        return movegen::init_squares_between();
+        }();
 
 }  // namespace chess
 
@@ -3428,8 +3471,12 @@ namespace chess::pgn {
     };
 
     template <std::size_t BUFFER_SIZE =
-#ifdef __unix__
+#if defined(__unix__) || defined(__unix) || defined(unix) || defined(__APPLE__) || defined(__MACH__)
+#    if defined(__APPLE__) || defined(__MACH__)
+        256
+#    else
         1024
+#    endif
 #else
         256
 #endif
@@ -4074,7 +4121,7 @@ namespace chess {
 
             // convert to king captures rook
             // in chess960 the move should be sent as king captures rook already!
-            if (!board.chess960() && piece == PieceType::KING && Square::distance(target, source) >= 2) {
+            if (!board.chess960() && piece == PieceType::KING && Square::distance(target, source) == 2) {
                 target = Square(target > source ? File::FILE_H : File::FILE_A, source.rank());
                 return Move::make<Move::CASTLING>(source, target);
             }

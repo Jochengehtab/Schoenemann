@@ -3,12 +3,9 @@
 
 #include "Search.h"
 #include "evaluate.h"
-#include "movegen/chess.hpp"
 #include "timeman.h"
 #include "Moveorder.h"
 #include "consts.h"
-
-using namespace chess;
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
@@ -80,7 +77,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (!isNullptr)
     {
-        int probCutBeta = beta + 390;
+        const int probCutBeta = beta + 390;
         if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity)
         {
             return probCutBeta;
