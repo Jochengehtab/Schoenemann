@@ -81,7 +81,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     if (!isNullptr)
     {
         int probCutBeta = beta + 390;
-        if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity)
+        if ((hashedType & LOWER_BOUND) && hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity && std::abs(hashedScore) < infinity)
         {
             return probCutBeta;
         }
