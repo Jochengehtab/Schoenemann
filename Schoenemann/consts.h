@@ -9,7 +9,7 @@
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 //Bench depth 
-const short benchDepth = 3;
+const short benchDepth = 4;
 
 //Evaluation consts
 const short pawnValue = 126;

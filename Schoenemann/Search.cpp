@@ -100,6 +100,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
+    if (pvNode && depth >= 1 && (isNullptr ? false : hashedDepth + 4 <= depth))
+    {
+        depth--;
+    }
+
     short type = UPPER_BOUND;
 
     bool bSearchPv = true;
