@@ -100,6 +100,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
+    if (staticEval < alpha - knightValue)
+    {
+        int score = qs(alpha, beta, board, ply);
+        if (score < alpha)
+        {
+            return score;
+        }
+    }
+
     short type = UPPER_BOUND;
 
     bool bSearchPv = true;
