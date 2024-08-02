@@ -247,7 +247,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
     if (alpha < standPat)
     {
-        alpha = standPat;
+        return standPat;
     }
 
     Movelist moveList;
