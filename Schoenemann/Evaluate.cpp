@@ -6,6 +6,7 @@ int evaluate(Board& board) {
     int evaluation = 0;
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
     evaluation += getMobility(board, Color::WHITE) - getMobility(board, Color::BLACK);
+    evaluation += pawnShieldBounus(board, Color::WHITE) - pawnShieldBounus(board, Color::BLACK);
 
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
 
@@ -15,17 +16,57 @@ int evaluate(Board& board) {
 int getMobility(Board& borad, Color color)
 {
     int mobility = 0;
-    for (size_t i = 0; i < 63; i++)
+    for (size_t i = 0; i < 64; i++)
     {
         if (borad.isAttacked(i, color))
         {
-            mobility += 5;
+            mobility += 2;
         }
     }
     return mobility;
 }
 
-int countMaterial(Board& board, Color color) {
+int pawnShieldBounus(Board& board, Color color)
+{
+    const Bitboard pawns = board.pieces(PieceType::PAWN, color);
+    //std::cout << pawns << std::endl;;
+    const Square kingSq = board.kingSq(color);
+    //std::cout << "King sq index is: " << kingSq.index() << std::endl;
+    if (!kingSq.back_rank(kingSq, color))
+    {
+        return 0;
+    }
+
+    const short kingIndex = board.kingSq(color).index();
+    short counter = 0;
+
+
+    if (color == Color::WHITE)
+    {
+        for (short i = 1; i < 4; i++)
+        {
+            counter += pawns.check(kingIndex + 6 + i);
+        }
+    }
+    else
+    {
+        for (short i = 1; i < 4; i++)
+        {
+            counter += pawns.check(kingIndex - 6 - i);
+        }
+    }
+    //std::cout << "The counter is: " << counter << std::endl;
+
+    if (counter >= 2)
+    {
+        return 50;
+    }
+
+    return 0;
+}
+
+int countMaterial(Board& board, Color color) 
+{
     int material = 0;
 
     //Pawn

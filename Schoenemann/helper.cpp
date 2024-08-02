@@ -73,9 +73,9 @@ void transpositionTableTest(Board& board)
 void testCommand()
 {
 	Board testBoard;
-	testBoard.setFen("8/4p3/8/8/8/8/8/8 w - - 0 1");
-	std::cout << bouns.getPieceBounus(testBoard, PieceType::PAWN, Color::BLACK);
-	testBoard.setFen("8/4R3/6kp/6p1/8/7P/3r4/6K1 w - - 0 28");
+	testBoard.setFen("rnbq1rk1/4pppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ - 0 1");
+	int b = pawnShieldBounus(testBoard, Color::BLACK);
+	std::cout << "The bounus is: " << b ;
 }
 
 //Print the uci info
