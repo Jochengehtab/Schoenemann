@@ -133,5 +133,44 @@ short psqt::bounusCalculation(PieceType type, Bitboard bitboard, const bool isWh
 			}
 		}
 	}
+	else if (type == PieceType::KING)
+	{
+		const bool isEndgame = bitboard.count() < 10;
+		if (isWhite)
+		{
+			for (short i = 0; i < 64; i++)
+			{
+
+				if (bitboard.check(i))
+				{
+					if (isEndgame)
+					{
+						return endgameKingTable[63 - i];
+					}
+					else
+					{
+						return middlegameKingTable[63 - i];
+					}
+				}
+			}
+		}
+		else
+		{
+			for (short i = 0; i < 64; i++)
+			{
+				if (bitboard.check(i))
+				{
+					if (isEndgame)
+					{
+						return endgameKingTable[i];
+					}
+					else
+					{
+						return middlegameKingTable[i];
+					}
+				}
+			}
+		}
+	}
 	return 0;
 }

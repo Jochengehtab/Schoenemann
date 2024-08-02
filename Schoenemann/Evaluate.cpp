@@ -59,7 +59,7 @@ int countMaterial(Board& board, Color color) {
 
     material += amountQueen * valueQueen;
     
-    //material += bouns.getPieceBounus(board, PieceType::KING, color);
+    material += bouns.getPieceBounus(board, PieceType::KING, color);
     return material;
 }
 
