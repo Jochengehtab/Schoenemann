@@ -12,7 +12,7 @@ Movelist orderMoves(Movelist moveList, Hash* entry)
 
 	Move hashMove = entry->move;
 
-	if (hashMove != Move::NO_MOVE && hashMove != Move::NULL_MOVE)
+	if (hashMove != Move::NULL_MOVE)
 	{
 		for (Move move : moveList)
 		{
