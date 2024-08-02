@@ -278,7 +278,11 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
             }
 
             //Beta cutoff
-            if (score >= beta)
+            if (score < beta)
+            {
+                alpha = score;
+            }
+            else
             {
                 break;
             }
