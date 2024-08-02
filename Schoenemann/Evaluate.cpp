@@ -32,7 +32,7 @@ int pawnShieldBounus(Board& board, Color color)
     //std::cout << pawns << std::endl;;
     const Square kingSq = board.kingSq(color);
     //std::cout << "King sq index is: " << kingSq.index() << std::endl;
-    if (!kingSq.back_rank(kingSq, color))
+    if (!kingSq.back_rank(kingSq, color) || board.castlingRights().has(color))
     {
         return 0;
     }
@@ -59,7 +59,7 @@ int pawnShieldBounus(Board& board, Color color)
 
     if (counter >= 2)
     {
-        return 50;
+        return 30;
     }
 
     return 0;

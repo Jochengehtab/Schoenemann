@@ -73,7 +73,7 @@ void transpositionTableTest(Board& board)
 void testCommand()
 {
 	Board testBoard;
-	testBoard.setFen("rnbq1rk1/4pppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQ - 0 1");
+	testBoard.setFen("rnbqk2r/ppppppbp/5np1/8/8/3BPN2/PPPP1PPP/RNBQ1RK1 w - - 0 1");
 	int b = pawnShieldBounus(testBoard, Color::BLACK);
 	std::cout << "The bounus is: " << b ;
 }
