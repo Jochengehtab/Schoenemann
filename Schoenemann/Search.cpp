@@ -17,26 +17,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Increment nodes by one
     nodes++;
 
-    if (shouldStop)
-    {
-        return beta;
-    }
-
-    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end - start;
-    bool isOver = elapsed.count() >= timeForMove;
-
-    if (isOver && !isNormalSearch)
-    {
-        shouldStop = true;
-    }
-
-    //If depth is 0 we drop into qs to get a neutral position
-    if (depth == 0)
-    {
-        return qs(alpha, beta, board, ply);
-    }
-
     int hashedScore = 0;
     short hashedType = 0;
     int hashedDepth = 0;
@@ -85,6 +65,26 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         {
             return probCutBeta;
         }
+    }
+
+    if (shouldStop)
+    {
+        return beta;
+    }
+
+    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+    bool isOver = elapsed.count() >= timeForMove;
+
+    if (isOver && !isNormalSearch)
+    {
+        shouldStop = true;
+    }
+
+    //If depth is 0 we drop into qs to get a neutral position
+    if (depth == 0)
+    {
+        return qs(alpha, beta, board, ply);
     }
 
     //If no evaluation was found in the transposition table
