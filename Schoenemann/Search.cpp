@@ -253,6 +253,8 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     Movelist moveList;
     movegen::legalmoves<movegen::MoveGenType::CAPTURE>(moveList, board);
 
+    moveList = orderMoves(moveList, entry);
+
     int bestScore = standPat;
     Move bestMoveInQs = Move::NULL_MOVE;
 
