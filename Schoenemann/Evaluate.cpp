@@ -5,7 +5,7 @@
 int evaluate(Board& board) {
     int evaluation = 0;
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
-    evaluation += getComplexity(board, Color::WHITE) - getComplexity(board, Color::BLACK);
+    //evaluation += getComplexity(board, Color::WHITE) - getComplexity(board, Color::BLACK);
 
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
 
