@@ -8,7 +8,7 @@ using namespace chess;
 const short EXACT = 0;
 const short UPPER_BOUND = 1;
 const short LOWER_BOUND = 2; //Lower bound
-const short infinity = 32767;
+const int VALUE_INFINITE = 32001;
 
 struct Hash {
     std::uint64_t key;
@@ -46,16 +46,16 @@ public:
 
     int ScoreToTT(int score, int ply) 
     {
-        return score >= infinity ? score + ply
-            : score <= -infinity ? score - ply
+        return score >= VALUE_INFINITE ? score + ply
+            : score <= -VALUE_INFINITE ? score - ply
             : score;
     }
 
     
     int ScoreFromTT(int score, int ply) 
     {
-        return score >= infinity ? score - ply
-            : score <= -infinity ? score + ply
+        return score >= VALUE_INFINITE ? score - ply
+            : score <= -VALUE_INFINITE ? score + ply
             : score;
     }
 

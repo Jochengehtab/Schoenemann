@@ -11,6 +11,20 @@ const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq
 //Bench depth 
 const short benchDepth = 3;
 
+constexpr int MAX_MOVES = 256;
+constexpr int MAX_PLY = 246;
+constexpr int VALUE_ZERO = 0;
+constexpr int VALUE_DRAW = 0;
+constexpr int VALUE_NONE = 32002;
+
+constexpr int VALUE_MATE = 32000;
+constexpr int VALUE_MATE_IN_MAX_PLY = VALUE_MATE - MAX_PLY;
+constexpr int VALUE_MATED_IN_MAX_PLY = -VALUE_MATE_IN_MAX_PLY;
+
+constexpr int VALUE_TB = VALUE_MATE_IN_MAX_PLY - 1;
+constexpr int VALUE_TB_WIN_IN_MAX_PLY = VALUE_TB - MAX_PLY;
+constexpr int VALUE_TB_LOSS_IN_MAX_PLY = -VALUE_TB_WIN_IN_MAX_PLY;
+
 //Evaluation consts
 const short pawnValue = 126;
 const short knightValue = 781;

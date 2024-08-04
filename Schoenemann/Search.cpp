@@ -80,8 +80,34 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (!isNullptr)
     {
+        int pScore = 0;
+        int probCutBeta = beta + 180;
+        if (!pvNode && depth > 3 && std::abs(beta) < VALUE_TB_WIN_IN_MAX_PLY && (hashedDepth >= depth - 3 && hashedScore < probCutBeta))
+        {
+            Movelist moveList;
+            movegen::legalmoves(moveList, board);
+            for (const Move& move : moveList)
+            {
+                board.makeMove(move);
+                pScore = -qs(-probCutBeta, -probCutBeta + 1, board, ply);
+                if (pScore >= probCutBeta)
+                {
+                    pScore = -pvs(-probCutBeta, -probCutBeta + 1, depth - 4, ply, board);
+                }
+                board.unmakeMove(move);
+                if (pScore >= probCutBeta)
+                {
+                    transpositionTabel.storeEvaluation(zobristKey, depth - 3, LOWER_BOUND, pScore, move, staticEval);
+                    return std::abs(pScore) < VALUE_TB_WIN_IN_MAX_PLY ? pScore - (probCutBeta - beta) : pScore;
+                }
+            }
+        }
+    }
+
+    if (!isNullptr)
+    {
         int probCutBeta = beta + 390;
-        if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity)
+        if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < VALUE_TB_WIN_IN_MAX_PLY && std::abs(hashedScore) < VALUE_TB_WIN_IN_MAX_PLY)
         {
             return probCutBeta;
         }
@@ -114,7 +140,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         if (board.inCheck() == true)
         {
-            return -infinity + ply;
+            return -VALUE_INFINITE + ply;
         }
         else
         {
@@ -122,7 +148,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
     int score = 0;
-    int bestScore = -infinity;
+    int bestScore = -VALUE_INFINITE;
     for (const Move& move : moveList)
     {
         board.makeMove(move);
@@ -286,9 +312,9 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     }
 
     //Checks for checkmate
-    if (board.inCheck() && bestScore == -infinity)
+    if (board.inCheck() && bestScore == -VALUE_INFINITE)
     {
-        return -infinity + ply;
+        return -VALUE_INFINITE + ply;
     }
 
     transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.ScoreToTT(bestScore, ply), bestMoveInQs, standPat);
