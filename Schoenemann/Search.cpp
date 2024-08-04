@@ -52,7 +52,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     //Check if we this stored position is valid
     const bool isNullptr = entry == nullptr ? true : false;
-
+    
     if (!isNullptr)
     {
         //If we have a transposition
@@ -74,6 +74,33 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 hashedType == LOWER_BOUND && hashedScore >= beta)
             {
                 return hashedScore;
+            }
+        }
+    }
+
+
+    if (!isNullptr)
+    {
+        int pScore = 0;
+        int probCutBeta = beta + 180;
+        if (!pvNode && depth > 3 && std::abs(beta) < infinity && (hashedDepth >= depth - 3 && hashedScore < probCutBeta))
+        {
+            Movelist moveList;
+            movegen::legalmoves(moveList, board);
+            for (const Move& move : moveList)
+            {
+                board.makeMove(move);
+                pScore = -qs(-probCutBeta, -probCutBeta + 1, board, ply);
+                if (pScore >= probCutBeta)
+                {
+                    pScore = -pvs(-probCutBeta, -probCutBeta + 1, depth - 4, ply, board);
+                }
+                board.unmakeMove(move);
+                if (pScore >= probCutBeta)
+                {
+                    transpositionTabel.storeEvaluation(zobristKey, depth - 3, LOWER_BOUND, pScore, move, staticEval);
+                    return std::abs(pScore) < infinity ? pScore - (probCutBeta - beta) : pScore;
+                }
             }
         }
     }
