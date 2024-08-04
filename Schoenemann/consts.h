@@ -18,6 +18,15 @@ const short bishopValue = 825;
 const short rookValue = 1276;
 const short queenValue = 2538;
 
+
+//Trapped evaluation consts
+const short pawnPhase = 0;
+const short knightPhase = 1;
+const short bishopPhase = 1;
+const short rookPhase = 2;
+const short queenPhase = 4;
+const short totalPhase = pawnPhase * 16 + knightPhase * 4 + bishopPhase * 4 + rookPhase * 4 + queenPhase * 2;
+
 const short NO_VALUE = 50000;
 const std::string testStrings[] = {
 		STARTPOS,

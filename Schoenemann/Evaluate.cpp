@@ -7,6 +7,12 @@ int evaluate(Board& board) {
     evaluation = countMaterial(board, Color::WHITE) - countMaterial(board, Color::BLACK);
     evaluation += getComplexity(board, Color::WHITE) - getComplexity(board, Color::BLACK);
 
+
+    int currentPhase = calculatePhase(board);
+
+    evaluation = ((evaluation * (256 - currentPhase)) + (evaluation * currentPhase)) / 256;
+
+
     int perspective = board.sideToMove() == Color::WHITE ? 1 : -1;
 
     return evaluation * perspective;
@@ -24,6 +30,28 @@ int getComplexity(Board& borad, Color color)
     }
     return mobility;
 }
+
+int calculatePhase(Board& board)
+{
+    int phase = totalPhase;
+
+    phase -= countAmount(board, PieceType::PAWN, Color::WHITE) * pawnPhase;
+    phase -= countAmount(board, PieceType::KNIGHT, Color::WHITE) * pawnPhase;
+    phase -= countAmount(board, PieceType::BISHOP, Color::WHITE) * pawnPhase;
+    phase -= countAmount(board, PieceType::ROOK, Color::WHITE) * pawnPhase;
+    phase -= countAmount(board, PieceType::QUEEN, Color::WHITE) * pawnPhase;
+
+    phase -= countAmount(board, PieceType::PAWN, Color::BLACK) * pawnPhase;
+    phase -= countAmount(board, PieceType::KNIGHT, Color::BLACK) * pawnPhase;
+    phase -= countAmount(board, PieceType::BISHOP, Color::BLACK) * pawnPhase;
+    phase -= countAmount(board, PieceType::ROOK, Color::BLACK) * pawnPhase;
+    phase -= countAmount(board, PieceType::QUEEN, Color::BLACK) * pawnPhase;
+
+    phase = (phase * 256 + (totalPhase / 2)) / totalPhase;
+
+    return phase;
+}
+
 
 int countMaterial(Board& board, Color color) {
     int material = 0;
