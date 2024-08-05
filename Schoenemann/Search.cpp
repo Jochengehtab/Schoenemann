@@ -42,7 +42,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (ply > 0)
     {
-        if (board.isHalfMoveDraw())
+        if (board.isHalfMoveDraw() || board.isInsufficientMaterial() || board.isRepetition())
         {
             return 0;
         }
@@ -50,7 +50,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         if (contains(zobristKey))
         {
             return 0;
-
         }
     }
 
