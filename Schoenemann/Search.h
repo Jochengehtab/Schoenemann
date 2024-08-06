@@ -5,7 +5,7 @@ using namespace chess;
 
 class Search {
 public:
-	const short infinity = 32767;
+	const int infinity = 32767;
 	Move bestMove = Move::NULL_MOVE;
 	bool shouldStop = false;
 	bool isNormalSearch = true;
