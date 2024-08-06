@@ -301,6 +301,20 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         }
     }
 
+    if (shouldStop)
+    {
+        return beta;
+    }
+
+    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+    bool isOver = elapsed.count() >= timeForMove;
+
+    if (isOver && !isNormalSearch)
+    {
+        shouldStop = true;
+    }
+
     //Checks for checkmate
     if (board.inCheck() && bestScore == -infinity)
     {
