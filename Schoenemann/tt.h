@@ -71,7 +71,7 @@ public:
             tempType = UPPER_BOUND;
         }
 
-        return type & tempType;
+        return type && tempType;
     }
 
 private:
