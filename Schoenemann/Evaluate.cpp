@@ -30,34 +30,21 @@ int countMaterial(Board& board, Color color) {
 
     //Pawn
     short amountPawn = countAmount(board, PieceType::PAWN, color);
-    int valuePawn = pawnValue + bouns.getPieceBounus(board, PieceType::PAWN, color);
-    material += amountPawn * valuePawn;
+    material += amountPawn * pawnValue;
     //std::cout << "color " << color << " pawnvalue " << count_amount(board, PieceType::PAWN, color) * (pawnValue + bouns.getPieceBounus(board, PieceType::PAWN, color)) << " amount " << count_amount(board, PieceType::PAWN, color) << " bounus " << bouns.getPieceBounus(board, PieceType::PAWN, color) << std::endl;
     
     short amountKnight = countAmount(board, PieceType::KNIGHT, color);
-    int valueKnight = knightValue + bouns.getPieceBounus(board, PieceType::KNIGHT, color);
-    material += amountKnight * valueKnight;
+    material += amountKnight * knightValue;
 
     short bishopAmount = countAmount(board, PieceType::BISHOP, color);
-
-    if (bishopAmount >= 2)
-    {
-        material += 50;
-    }
-
-    int valueBishop = bishopValue + bouns.getPieceBounus(board, PieceType::BISHOP, color);
-
-    material += bishopAmount * valueBishop;
+    material += bishopAmount * bishopValue;
 
     short amountRook = countAmount(board, PieceType::ROOK, color);
-    int valueRook = rookValue + bouns.getPieceBounus(board, PieceType::ROOK, color);
 
-    material += amountRook * valueRook;
+    material += amountRook * rookValue;
 
     short amountQueen = countAmount(board, PieceType::QUEEN, color);
-    int valueQueen = queenValue + bouns.getPieceBounus(board, PieceType::QUEEN, color);
-
-    material += amountQueen * valueQueen;
+    material += amountQueen * queenValue;
     
     //material += bouns.getPieceBounus(board, PieceType::KING, color);
     return material;
