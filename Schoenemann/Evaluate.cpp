@@ -38,8 +38,6 @@ int countMaterial(Board& board, Color color) {
 
     short bishopAmount = countAmount(board, PieceType::BISHOP, color);
 
-
-
     short amountRook = countAmount(board, PieceType::ROOK, color);
 
     material += amountRook ;
