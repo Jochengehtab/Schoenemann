@@ -185,23 +185,32 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         Move move = sortByScore(moveList, scoreMoves, i);
         board.makeMove(move);
 
-        short checkExtension = 0;
+        short searchExtensions = 0;
 
         if (board.inCheck() == true)
         {
-            checkExtension = 1;
+            searchExtensions = 1;
+        }
+
+
+        if (board.isCapture(move))
+        {
+            if (!see(board, move, 0))
+            {
+                continue;
+            }
         }
 
         if (bSearchPv)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + searchExtensions, ply + 1, board);
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-alpha - 1, -alpha, depth - 1 + searchExtensions, ply + 1, board);
             if (score > alpha && score < beta)
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1 + searchExtensions, ply + 1, board);
             }
         }
         board.unmakeMove(move);
@@ -216,7 +225,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 bSearchPv = false;
                 type = EXACT;
 
-                //If we are ate the root we set the bestMove
+                //If we are at the root we set the bestMove
                 if (ply == 0)
                 {
                     bestMove = move;
