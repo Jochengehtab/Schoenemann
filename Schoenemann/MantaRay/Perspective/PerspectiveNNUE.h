@@ -41,44 +41,14 @@ namespace MantaRay
             uint16_t AccumulatorStackSize, T Scale, T QuantizationFeature, T QuantizationOutput>
     class PerspectiveNetwork
     {
-
-        // Support more types in the future, but currently disable all others.
-        static_assert(std::is_same_v<T, int16_t> && std::is_same_v<OT, int32_t>,
-                "This type is currently not supported.");
-
-        // Support less sizes in the future, but currently disable.
-        static_assert(InputSize == 768 && HiddenSize >= 32, "This network size is currently not supported.");
-
-        // The accumulator stack size should not be 0 or less.
-        static_assert(AccumulatorStackSize > 0, "The accumulator stack size must at least be greater than zero.");
-
-        // The constants used should make sense. Change this later if requested.
-        static_assert(Scale > 0 && QuantizationFeature > 127 && QuantizationOutput > 31,
-                "These scale and quantization constants don't seem right.");
-
         private:
             constexpr static uint16_t ColorStride = 64 * 6;
             constexpr static uint8_t  PieceStride = 64    ;
-
-#ifdef __AVX512BW__
-            alignas(64) std::array<T , InputSize * HiddenSize     > FeatureWeight;
-            alignas(64) std::array<T , HiddenSize                 > FeatureBias  ;
-            alignas(64) std::array<T , HiddenSize * 2 * OutputSize> OutputWeight ;
-            alignas(64) std::array<T , OutputSize                 > OutputBias   ;
-            alignas(64) std::array<OT, OutputSize                 > Output       ;
-#elifdef __AVX2__
-            alignas(32) std::array<T , InputSize * HiddenSize     > FeatureWeight;
-            alignas(32) std::array<T , HiddenSize                 > FeatureBias  ;
-            alignas(32) std::array<T , HiddenSize * 2 * OutputSize> OutputWeight ;
-            alignas(32) std::array<T , OutputSize                 > OutputBias   ;
-            alignas(32) std::array<OT, OutputSize                 > Output       ;
-#else
             std::array<T , InputSize * HiddenSize     > FeatureWeight;
             std::array<T , HiddenSize                 > FeatureBias  ;
             std::array<T , HiddenSize * 2 * OutputSize> OutputWeight ;
             std::array<T , OutputSize                 > OutputBias   ;
             std::array<OT, OutputSize                 > Output       ;
-#endif
 
             std::array<PerspectiveAccumulator<T, HiddenSize>, AccumulatorStackSize> Accumulators;
             uint16_t CurrentAccumulator = 0;
