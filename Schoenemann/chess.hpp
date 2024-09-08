@@ -2385,7 +2385,7 @@ namespace chess {
             PieceType pieceType = piece.type();
             Color colorPiece = piece.color();
 
-            network.EfficientlyUpdateAccumulator<MantaRay::AccumulatorOperation::Activate>((int)pieceType, (int)colorPiece, sq.index());
+            net.efficientlyUpdateAccumulator<operations::Activate>((int)pieceType, (int)colorPiece, sq.index());
         }
 
         virtual void removePiece(Piece piece, Square sq) {
@@ -2406,7 +2406,7 @@ namespace chess {
             PieceType pieceType = piece.type();
             Color colorPiece = piece.color();
 
-            network.EfficientlyUpdateAccumulator<MantaRay::AccumulatorOperation::Deactivate>((int)pieceType, (int)colorPiece, sq.index());
+            net.efficientlyUpdateAccumulator<operations::Deactivate>((int)pieceType, (int)colorPiece, sq.index());
         }
 
         std::vector<State> prev_states_;
@@ -2429,8 +2429,8 @@ namespace chess {
         /// @param fen
         void setFenInternal(std::string_view fen) {
 
-            network.ResetAccumulator();
-            network.RefreshAccumulator();
+            net.ResetAccumulator();
+            net.RefreshAccumulator();
 
             original_fen_ = fen;
 

@@ -128,7 +128,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //we perform an static evaulation
     if (staticEval == NO_VALUE)
     {
-        staticEval = network.Evaluate((int)board.sideToMove());
+        staticEval = net.evaluate((int)board.sideToMove());
     }
 
     //Reverse futility pruning
@@ -293,7 +293,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
     if (standPat == NO_VALUE)
     {
-        standPat = network.Evaluate((int)board.sideToMove());
+        standPat = net.evaluate((int)board.sideToMove());
     }
 
     if (standPat >= beta)

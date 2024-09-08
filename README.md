@@ -29,4 +29,3 @@ Type
 
 #  Thanks
 Special thanks to Disservin's [chess libary](https://github.com/Disservin/chess-library/) witch made the wohle development process simpler.
-MantaRay for [NNUE](https://github.com/TheBlackPlague/MantaRay)
