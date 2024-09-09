@@ -10,8 +10,7 @@
 #include "search.h"
 #include "consts.h"
 #include "helper.h"
-#include "chess.hpp"
-#include "nnue.hpp"
+#include "nnue.h"
 #include "simple-167.h"
 
 using namespace chess;
@@ -19,10 +18,10 @@ using namespace chess;
 Search seracher;
 tt transpositionTabel(8);
 
-BinaryFileStream stream(simple_167_bin, simple_167_bin_len);
+memorystream memoryStream(simple_167_bin, simple_167_bin_len);
 
 // Define & load the network from the stream
-network net(stream);
+network net(memoryStream);
 
 int timeLeft = 0;
 int increment = 0;

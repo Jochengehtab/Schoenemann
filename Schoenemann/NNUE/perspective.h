@@ -5,137 +5,129 @@
 #include <cassert>
 #include <sstream>
 
-#include "PerspectiveAccumulator.h"
+#include "accumulator.h"
 #include "utils.h"
-#include "BinaryFileStream.h"
-
-enum class operations
-{
-    Activate,
-    Deactivate
-};
-
-class crelu
-{
-    public:
-        static inline std::int16_t Activate(int input)
-        {
-            return std::max(0, std::min(255, input));
-        }
-};
+#include "stream.h"
 
 class network
 {
 private:
-    std::array<std::int16_t, inputSize * hiddenSize> FeatureWeight;
-    std::array<std::int16_t, hiddenSize> FeatureBias;
-    std::array<std::int16_t, hiddenSize * 2 * outputSize> OutputWeight;
-    std::array<std::int16_t, outputSize> OutputBias;
-    std::array<std::int32_t, outputSize> Output;
+    std::array<std::int16_t, inputHidden> featureWeight;
+    std::array<std::int16_t, hiddenSize> featureBias;
 
-    std::array<PerspectiveAccumulator, stackSize> accumulators;
-    uint16_t currentAccumulator = 0;
+    std::array<std::int16_t, hiddenSize * 2 * outputSize> outputWeight;
+    std::array<std::int16_t, outputSize> outputBias;
 
-    
-    void InitializeAccumulatorStack()
+    std::array<std::int32_t, outputSize> finalOutput;
+
+    std::array<accumulator, stackSize> accumulators;
+    std::uint16_t currentAccumulator = 0;
+
+    void initAccumulator()
     {
-        PerspectiveAccumulator accumulator;
+        accumulator accumulator;
         std::fill(std::begin(accumulators), std::end(accumulators), accumulator);
     }
 
 public:
-    
     network()
     {
-        InitializeAccumulatorStack();
+        initAccumulator();
     }
 
     // Read the in memory network which is sotred in a headerfile
-    explicit network(BinaryFileStream &stream)
+    explicit network(memorystream &stream)
     {
-        InitializeAccumulatorStack();
+        initAccumulator();
 
-        stream.ReadArray(FeatureWeight);
-        stream.ReadArray(FeatureBias);
-        stream.ReadArray(OutputWeight);
-        stream.ReadArray(OutputBias);
+        stream.readArray(featureWeight);
+        stream.readArray(featureBias);
+        stream.readArray(outputWeight);
+        stream.readArray(outputBias);
     }
-    
-    inline void ResetAccumulator()
+
+    inline void resetAccumulator()
     {
         currentAccumulator = 0;
     }
 
-    inline void RefreshAccumulator()
+    inline void refreshAccumulator()
     {
-        PerspectiveAccumulator &accumulator = accumulators[currentAccumulator];
+        accumulator &accumulator = accumulators[currentAccumulator];
         accumulator.zeroAccumulator();
-        accumulator.loadBias(FeatureBias);
+        accumulator.loadBias(featureBias);
     }
 
-    inline void efficientlyUpdateAccumulator(const uint8_t piece, const uint8_t color, const uint8_t from, const uint8_t to)
+    inline void updateAccumulator(
+        const std::uint8_t piece,
+        const std::uint8_t color,
+        const std::uint8_t from,
+        const std::uint8_t to)
     {
-        // Calculate the stride necessary to get to the correct piece:
-        const uint16_t pieceStride = piece * PieceStride;
+        const std::uint16_t pieceIndex = piece * whiteSquares;
 
-        // Calculate the indices for the square of the piece that is moved with respect to both perspectives:
-        const uint32_t whiteIndexFrom = color * ColorStride + pieceStride + from;
-        const uint32_t blackIndexFrom = (color ^ 1) * ColorStride + pieceStride + (from ^ 56);
+        // Get the squre index based on the colour
+        const std::uint16_t whiteIndexFrom = color * blackSqures + pieceIndex + from;
+        const std::uint16_t blackIndexFrom = (color ^ 1) * blackSqures + pieceIndex + (from ^ 56);
+        const std::uint16_t whiteIndexTo = color * blackSqures + pieceIndex + to;
+        const std::uint16_t blackIndexTo = (color ^ 1) * blackSqures + pieceIndex + (to ^ 56);
 
-        // Calculate the indices for the square the piece is moved to with respect to both perspectives:
-        const uint32_t whiteIndexTo = color * ColorStride + pieceStride + to;
-        const uint32_t blackIndexTo = (color ^ 1) * ColorStride + pieceStride + (to ^ 56);
+        // Get the current accumulator
+        accumulator &accumulator = accumulators[currentAccumulator];
 
-        // Fetch the current accumulator:
-        PerspectiveAccumulator &accumulator = accumulators[currentAccumulator];
-
-        // Efficiently update the accumulator:
-        utilitys::subAddAll(accumulator.white, accumulator.black,
-                                  FeatureWeight,
-                                  whiteIndexFrom * hiddenSize,
-                                  whiteIndexTo * hiddenSize,
-                                  blackIndexFrom * hiddenSize,
-                                  blackIndexTo * hiddenSize);
+        // update the accumulator
+        utilitys::subAddAll(accumulator.white,
+                            accumulator.black,
+                            featureWeight,
+                            whiteIndexFrom * hiddenSize,
+                            whiteIndexTo * hiddenSize,
+                            blackIndexFrom * hiddenSize,
+                            blackIndexTo * hiddenSize);
     }
 
-    template <operations Operation>
-    inline void efficientlyUpdateAccumulator(const uint8_t piece, const uint8_t color,
-                                             const uint8_t sq)
+    inline void updateAccumulator(
+        const std::uint8_t piece,
+        const std::uint8_t color,
+        const std::uint8_t sq,
+        const bool operation)
     {
         // Calculate the stride necessary to get to the correct piece:
-        const uint16_t pieceStride = piece * PieceStride;
+        const std::uint16_t pieceIndex = piece * whiteSquares;
 
-        // Calculate the indices for the square of the piece that is inserted or removed with respect to both
-        // perspectives:
-        const uint32_t whiteIndex = color * ColorStride + pieceStride + sq;
-        const uint32_t blackIndex = (color ^ 1) * ColorStride + pieceStride + (sq ^ 56);
+        // Get the squre index based on the colour
+        const std::uint16_t whiteIndex = color * blackSqures + pieceIndex + sq;
+        const std::uint16_t blackIndex = (color ^ 1) * blackSqures + pieceIndex + (sq ^ 56);
 
-        // Fetch the current accumulator:
-        PerspectiveAccumulator &accumulator = accumulators[currentAccumulator];
+        // Get the accumulatror
+        accumulator &accumulator = accumulators[currentAccumulator];
 
         // Update the accumolator
-        if (Operation == operations::Activate)
+        if (operation == activate)
         {
-            utilitys::addAll(accumulator.white, accumulator.black, FeatureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
+            utilitys::addAll(accumulator.white, accumulator.black, featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
         }
         else
         {
-            utilitys::subAll(accumulator.white, accumulator.black, FeatureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
+            utilitys::subAll(accumulator.white, accumulator.black, featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
         }
     }
-    
-    inline std::int32_t evaluate(const uint8_t colorToMove)
+
+    inline std::int32_t evaluate(const std::uint8_t sideToMove)
     {
-        // Fetch the current accumulator:
-        PerspectiveAccumulator &accumulator = accumulators[currentAccumulator];
+        // Get the accumulatror
+        accumulator &accumulator = accumulators[currentAccumulator];
 
-        // Activate, flatten, and forward-propagate the accumulator to evaluate the network:
-        if (colorToMove == 0)
-            utilitys::activate<crelu>(accumulator.white, accumulator.black, OutputWeight, OutputBias, Output, 0);
+        // Make a forward pass throw the network based on the sideToMove
+        if (sideToMove == 0)
+        {
+            utilitys::activate(accumulator.white, accumulator.black, outputWeight, outputBias, finalOutput);
+        }
         else
-            utilitys::activate<crelu>(accumulator.black, accumulator.white, OutputWeight, OutputBias, Output, 0);
+        {
+            utilitys::activate(accumulator.black, accumulator.white, outputWeight, outputBias, finalOutput);
+        }
 
-        // Scale the output with respect to the quantization and return it:
-        return Output[0] * scale / (QA * QB);
+        // Scale ouput and dived it by QAB
+        return finalOutput[0] * scale / (QA * QB);
     }
 };

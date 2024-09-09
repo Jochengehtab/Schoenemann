@@ -8,7 +8,7 @@
 #include "timeman.h"
 #include "moveorder.h"
 #include "consts.h"
-#include "nnue.hpp"
+#include "nnue.h"
 #include "see.h"
 
 using namespace chess;

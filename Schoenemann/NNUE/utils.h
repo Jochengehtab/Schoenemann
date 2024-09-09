@@ -2,86 +2,88 @@
 
 #include <array>
 
+#include "nnueconstants.h"
+
 class utilitys
 {
 public:
-    
-    template <typename T, size_t InputSize, size_t DeltaSize>
-    static inline void addAll(std::array<T, InputSize> &inputA, std::array<T, InputSize> &inputB,
-                                const std::array<T, DeltaSize> &delta,
-                                const uint32_t oA, const uint32_t oB)
+
+    static inline std::int16_t crelu(int input)
     {
-        // Add the delta to the input arrays:
-        for (size_t i = 0; i < InputSize; i++)
+        return std::max(0, std::min(255, input));
+    }
+
+    static inline void addAll(
+        std::array<std::int16_t, hiddenSize> &firstAccumulator,
+        std::array<std::int16_t, hiddenSize> &secondAccumulator,
+        const std::array<std::int16_t, inputHidden> &bias,
+        const std::uint32_t firstDelta,
+        const std::uint32_t secondDelta)
+    {
+        for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            inputA[i] += delta[oA + i];
+            firstAccumulator[i] += bias[firstDelta + i];
         }
-        for (size_t i = 0; i < InputSize; i++)
+        for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            inputB[i] += delta[oB + i];
+            secondAccumulator[i] += bias[secondDelta + i];
+        }
+    }
+    static inline void subAll(
+        std::array<std::int16_t, hiddenSize> &firstAccumulator,
+        std::array<std::int16_t, hiddenSize> &secondAccumulator,
+        const std::array<std::int16_t, inputHidden> &bias,
+        const std::uint32_t firstDelta,
+        const std::uint32_t secondDelta)
+    {
+        // Subtract the bias from the input arrays:
+        for (std::uint16_t i = 0; i < hiddenSize; i++)
+        {
+            firstAccumulator[i] -= bias[firstDelta + i];
+        }
+        for (std::uint16_t i = 0; i < hiddenSize; i++)
+        {
+            secondAccumulator[i] -= bias[secondDelta + i];
         }
     }
 
-    
-    template <typename T, size_t InputSize, size_t DeltaSize>
-    static inline void subAll(std::array<T, InputSize> &inputA, std::array<T, InputSize> &inputB,
-                                       const std::array<T, DeltaSize> &delta,
-                                       const uint32_t oA, const uint32_t oB)
+    static inline void subAddAll(
+        std::array<std::int16_t, hiddenSize> &firstAccumulator,
+        std::array<std::int16_t, hiddenSize> &secondAccumulator,
+        const std::array<std::int16_t, inputHidden> &bias,
+        const std::uint32_t firstBiasWithSub,
+        const std::uint32_t firstBiasWithAdd,
+        const std::uint32_t secondBiasWithSub,
+        const std::uint32_t secondBiasWithAdd)
     {
-        // Subtract the delta from the input arrays:
-        for (size_t i = 0; i < InputSize; i++)
+        // Subtract and add the bias to the input arrays:
+        for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            inputA[i] -= delta[oA + i];
-        }
-        for (size_t i = 0; i < InputSize; i++)
-        {
-            inputB[i] -= delta[oB + i];
+            firstAccumulator[i] = firstAccumulator[i] - bias[firstBiasWithSub + i] + bias[firstBiasWithAdd + i];
+            secondAccumulator[i] = secondAccumulator[i] - bias[secondBiasWithSub + i] + bias[secondBiasWithAdd + i];
         }
     }
 
-    template <typename T, size_t InputSize, size_t DeltaSize>
-    static inline void subAddAll(std::array<T, InputSize> &inputA, std::array<T, InputSize> &inputB,
-                                           const std::array<T, DeltaSize> &delta,
-                                           const uint32_t oAS, const uint32_t oAA,
-                                           const uint32_t oBS, const uint32_t oBA)
-    {
-        // Subtract and add the delta to the input arrays:
-        for (size_t i = 0; i < InputSize; i++)
-        {
-            inputA[i] = inputA[i] - delta[oAS + i] + delta[oAA + i];
-            inputB[i] = inputB[i] - delta[oBS + i] + delta[oBA + i];
-        }
-    }
-
-    template <typename Activation, typename T, typename OT, size_t InputSize, size_t OutputSize>
     static void activate(
-        const std::array<T, InputSize> &inputA, const std::array<T, InputSize> &inputB,
-        const std::array<T, InputSize * 2 * OutputSize> &weight,
-        const std::array<T, OutputSize> &bias,
-        std::array<OT, OutputSize> &output, const uint32_t o)
+        const std::array<std::int16_t, hiddenSize> &firstAccumulator,
+        const std::array<std::int16_t, hiddenSize> &secondAccumulator,
+        const std::array<std::int16_t, hiddenSize * 2 * outputSize> &weight,
+        const std::array<std::int16_t, outputSize> &bias,
+        std::array<std::int32_t, outputSize> &output)
     {
-        // Define the stride with respect to the weight array:
-        size_t stride = 0;
-
-        // Perform the joint activation-flattening-forward propagation using matrix multiplication, defined as
-        // output = activation(flatten(input)) * weight + bias:
-        for (size_t i = 0; i < OutputSize; i++)
+        std::uint16_t step = 0;
+        for (std::uint16_t i = 0; i < outputSize; i++)
         {
-            // Define the sum accumulation variable:
-            OT sum = 0;
+            std::int32_t sum = 0;
 
-            for (size_t j = 0; j < InputSize; j++)
+            for (std::uint16_t j = 0; j < hiddenSize; j++)
             {
-                // Add the activation of the input multiplied by the weight to the sum:
-                sum += Activation::Activate(inputA[j]) * weight[stride + j];
-                sum += Activation::Activate(inputB[j]) * weight[InputSize + stride + j];
+                // Activate everything
+                sum += crelu(firstAccumulator[j]) * weight[step + j];
+                sum += crelu(secondAccumulator[j]) * weight[hiddenSize + step + j];
             }
-
-            // Stride to the next set of weights:
-            stride += InputSize * 2;
-
-            // Store the sum with respect to the bias:
-            output[o + i] = sum + bias[o + i];
+            step += hiddenSize * 2;
+            output[i] = sum + bias[i];
         }
     }
 };

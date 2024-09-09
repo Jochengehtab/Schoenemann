@@ -43,7 +43,7 @@ VERSION: 0.6.46
 #include <algorithm>
 #include <iostream>
 #include <cassert>
-#include "nnue.hpp"
+#include "nnue.h"
 
 #if defined(_MSC_VER)
 #include <intrin.h>
@@ -2385,7 +2385,7 @@ namespace chess {
             PieceType pieceType = piece.type();
             Color colorPiece = piece.color();
 
-            net.efficientlyUpdateAccumulator<operations::Activate>((int)pieceType, (int)colorPiece, sq.index());
+            net.updateAccumulator((int)pieceType, (int)colorPiece, sq.index(), true);
         }
 
         virtual void removePiece(Piece piece, Square sq) {
@@ -2406,7 +2406,7 @@ namespace chess {
             PieceType pieceType = piece.type();
             Color colorPiece = piece.color();
 
-            net.efficientlyUpdateAccumulator<operations::Deactivate>((int)pieceType, (int)colorPiece, sq.index());
+            net.updateAccumulator((int)pieceType, (int)colorPiece, sq.index(), false);
         }
 
         std::vector<State> prev_states_;
@@ -2429,8 +2429,8 @@ namespace chess {
         /// @param fen
         void setFenInternal(std::string_view fen) {
 
-            net.ResetAccumulator();
-            net.RefreshAccumulator();
+            net.resetAccumulator();
+            net.refreshAccumulator();
 
             original_fen_ = fen;
 

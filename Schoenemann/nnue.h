@@ -3,5 +3,5 @@
 #include <iostream>
 #include "NNUE/perspective.h"
 
-extern BinaryFileStream stream;
+extern memorystream memoryStream;
 extern network net;
