@@ -70,6 +70,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     short hashedType = 0;
     int hashedDepth = 0;
     int staticEval = NO_VALUE;
+    Move hashedMove = Move::NULL_MOVE;
 
     //Get some important search constants
     const bool pvNode = (alpha != beta) - 1;
@@ -92,6 +93,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             hashedType = entry->type;
             hashedDepth = entry->depth;
             staticEval = entry->eval;
+            hashedMove = entry->move;
         }
 
         //Check if we can return a stored score
@@ -186,6 +188,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
         board.makeMove(move);
+
+        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= 5 && !see(board, move, -100 * depth))
+        {
+            continue;
+        }
 
         short checkExtension = 0;
 
