@@ -4,17 +4,20 @@ int getTimeForMove()
 {
 	int timeLeft = getTime();
 	int increment = getIncrement();
-	int timeForThisMove = timeLeft / 20 + (increment / 2);
-
-	if (timeForThisMove >= timeLeft)
+	if (timeLeft < 0)
 	{
-		timeForThisMove = timeLeft - 300;
+		timeLeft = 1000;
 	}
 
-	if (timeForThisMove < 0)
-	{
-		timeForThisMove = -20;
-	}
+	timeLeft -= timeLeft / 2;
+	long hardLimit;
+	long softLimit;
+	hardLimit = softLimit = timeLeft;
 
-	return timeForThisMove;
+	int baseTime = (int) (timeLeft * 0.054 + increment * 0.85);
+	int maxTime = (int) (timeLeft * 0.76);
+
+	hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
+	softLimit = std::min(maxTime, (int) (baseTime * 0.76));
+	return hardLimit;
 }
