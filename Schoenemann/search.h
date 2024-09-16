@@ -13,6 +13,8 @@ public:
 	int index = 0;
 
 	int nodes = 0;
+	long hardLimit = 0;
+	long softLimit = 0;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);
 	int qs(int alpha, int beta, Board& board, int ply);

@@ -27,9 +27,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = end - start;
-    bool isOver = elapsed.count() >= timeForMove;
 
-    if (isOver && !isNormalSearch)
+    if (shouldStopSoft(start) && !isNormalSearch)
     {
         shouldStop = true;
     }
@@ -372,10 +371,7 @@ int Search::aspiration(int depth, int score, Board& board)
     while (true)
     {
         score = pvs(alpha, beta, depth, 0, board);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-        if (elapsed.count() >= timeForMove) 
+        if (shouldStopSoft(start)) 
         {
             return score;
         }
@@ -404,7 +400,7 @@ int Search::aspiration(int depth, int score, Board& board)
 void Search::iterativeDeepening(Board& board, bool isInfinite)
 {
     start = std::chrono::high_resolution_clock::now();
-    timeForMove = getTimeForMove();
+    getTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
     isNormalSearch = false;
@@ -425,7 +421,6 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
-        bool isOver = timeCount >= timeForMove;
         if (!shouldStop)
         {
             bestMoveThisIteration = rootBestMove;
@@ -451,7 +446,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
             break;
         }
 
-        if (isOver && hasFoundMove && !isInfinite)
+        if (shouldStopID(start) && hasFoundMove && !isInfinite)
         {
             std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
             shouldStop = true;

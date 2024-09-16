@@ -1,6 +1,6 @@
 #include "timeman.h"
 
-int getTimeForMove()
+void getTimeForMove()
 {
 	int timeLeft = getTime();
 	int increment = getIncrement();
@@ -10,14 +10,11 @@ int getTimeForMove()
 	}
 
 	timeLeft -= timeLeft / 2;
-	long hardLimit;
-	long softLimit;
-	hardLimit = softLimit = timeLeft;
+	seracher.hardLimit = seracher.softLimit = timeLeft;
 
 	int baseTime = (int) (timeLeft * 0.054 + increment * 0.85);
 	int maxTime = (int) (timeLeft * 0.76);
 
-	hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
-	softLimit = std::min(maxTime, (int) (baseTime * 0.76));
-	return hardLimit;
+	seracher.hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
+	seracher.softLimit = std::min(maxTime, (int) (baseTime * 0.76));
 }
