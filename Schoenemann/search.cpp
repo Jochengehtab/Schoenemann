@@ -253,6 +253,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
 int Search::qs(int alpha, int beta, Board& board, int ply)
 {
+
+    if (shouldStopSoft(start) && timeForMove != 0) 
+    {
+        return beta;
+    }
+
     nodes++;
     const bool pvNode = (alpha != beta) - 1;
     const std::uint64_t zobristKey = board.zobrist();
