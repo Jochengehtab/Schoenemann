@@ -25,9 +25,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return beta;
     }
 
-    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end - start;
-
     if (shouldStopSoft(start) && !isNormalSearch)
     {
         shouldStop = true;
@@ -254,7 +251,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 int Search::qs(int alpha, int beta, Board& board, int ply)
 {
 
-    if (shouldStopSoft(start) && timeForMove != 0) 
+    if (shouldStopSoft(start) && !isNormalSearch) 
     {
         return beta;
     }
