@@ -7,16 +7,11 @@
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 //Bench depth 
-const int benchDepth = 5;
+constexpr int benchDepth = 5;
 
-//Evaluation consts
-const int pawnValue = 126;
-const int knightValue = 781;
-const int bishopValue = 825;
-const int rookValue = 1276;
-const int queenValue = 2538;
+constexpr int SEE_PIECE_VALUES[7] = {100, 300, 300, 500, 900, 0, 0};
 
-const int NO_VALUE = 50000;
+constexpr int NO_VALUE = 50000;
 const std::string testStrings[] = {
 		STARTPOS,
 		"r2q4/pp1k1pp1/2p1r1np/5p2/2N5/1P5Q/5PPP/3RR1K1 b - -",

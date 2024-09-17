@@ -1,12 +1,15 @@
+#pragma once
+
 #include <iostream>
-
-#include "tt.h"
-
-#include "chess.hpp"
-#include "consts.h"
-#include "tt.h"
 #include <array>
 #include <cassert>
+
+#include "tt.h"
+#include "chess.hpp"
+#include "consts.h"
+#include "consts.h"
+#include "see.h"
+
 
 using namespace chess;
 

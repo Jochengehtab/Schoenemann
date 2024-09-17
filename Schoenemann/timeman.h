@@ -5,12 +5,10 @@ void getTimeForMove();
 
 bool shouldStopSoft(auto s)
 {
-    std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
-    return elapsed.count() > seracher.hardLimit;
+    return (std::chrono::high_resolution_clock::now() - s).count() > seracher.hardLimit;
 }
 
 bool shouldStopID(auto s)
 {
-    std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
-    return elapsed.count() > seracher.softLimit;
+    return (std::chrono::high_resolution_clock::now() - s).count() > seracher.softLimit;
 }

@@ -1,8 +1,5 @@
 #include "moveorder.h"
 
-#include "consts.h"
-#include "tt.h"
-#include "see.h"
 
 void orderMoves(Movelist moveList, Hash* entry, Board& board, int scores[])
 {

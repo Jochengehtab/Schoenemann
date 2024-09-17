@@ -6,6 +6,5 @@
 #include <chrono>
 
 void transpositionTableTest(Board& board);
-void testCommand();
 void runBenchmark();
 void uciPrint();
