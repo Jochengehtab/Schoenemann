@@ -1,7 +1,13 @@
 ﻿#pragma once
 
 #include <iostream>
-#include <chrono>
+#include <thread>
+#include <atomic>
+#include <sstream>
+#include <cstring>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
 #include "chess.hpp"
 using namespace chess;

@@ -1,8 +1,9 @@
+#pragma once
+
 #include "chess.hpp"
+#include "consts.h"
 
 using namespace chess;
-
-const int SEE_PIECE_VALUES[7] = {100, 300, 300, 500, 900, 0, 0};
 
 int getPieceValue(const Board &board, Move &move);
 bool see(const Board &board, Move &move, int cutoff);
