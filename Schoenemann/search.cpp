@@ -1,15 +1,17 @@
-#include "search.h"
-
 #include <chrono>
 #include <iostream>
 #include <cmath>
 #include <cassert>
 
+#include "search.h"
+#include "chess.hpp"
 #include "timeman.h"
 #include "moveorder.h"
 #include "consts.h"
 #include "nnue.h"
 #include "see.h"
+
+using namespace chess;
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 

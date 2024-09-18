@@ -70,6 +70,12 @@ void transpositionTableTest(Board& board)
 	board.setFen(STARTPOS);
 }
 
+void testCommand()
+{
+	Board testBoard;
+	testBoard.setFen("8/4p3/8/8/8/8/8/8 w - - 0 1");
+}
+
 //Print the uci info
 void uciPrint()
 {
@@ -83,18 +89,18 @@ void runBenchmark() {
 	Board benchBoard;
 
 	//Setting up the clock 
-	std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+	auto start = std::chrono::high_resolution_clock::now();
 
 	//Reseting the nodes
 	seracher.nodes = 0;
 
 	//Looping over all bench positions
-	for (const std::string& test : testStrings) {
+	for (const auto& test : testStrings) {
 		benchBoard.setFen(test);
 		seracher.pvs(-infinity, infinity, benchDepth, 0, benchBoard);
 	}
 
-	std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+	auto end = std::chrono::high_resolution_clock::now();
 
 	//Calculates the total time used
 	std::chrono::duration<double, std::milli> timeElapsed = end - start;

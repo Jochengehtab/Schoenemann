@@ -1,4 +1,12 @@
-﻿#include "schoenemann.h"
+﻿#include <iostream>
+#include <thread>
+#include <atomic>
+#include <sstream>
+#include <cstring>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include "schoenemann.h"
 #include "search.h"
 #include "consts.h"
 #include "helper.h"
@@ -213,6 +221,10 @@ void processCommand(const std::string& cmd, Board& board)
     else if (token == "eval") 
 	{
         std::cout << "The evaluation is: " << net.evaluate((int)board.sideToMove()) << " cp" << std::endl;
+    }
+    else if (token == "test") 
+	{
+        testCommand();
     }
     else if (token == "stop") 
 	{

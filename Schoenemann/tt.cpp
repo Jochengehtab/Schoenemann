@@ -1,3 +1,6 @@
+#include <iostream>
+#include <cstring>
+
 #include "tt.h"
 
 void tt::storeEvaluation(std::uint64_t key, short depth, short type, int score, Move move, int eval)
