@@ -272,7 +272,6 @@ int uciLoop(int argc, char* argv[])
             seracher.shouldStop = true;
             break;
         }
-
         processCommand(cmd, board);
     }
 
