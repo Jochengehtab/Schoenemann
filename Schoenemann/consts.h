@@ -9,7 +9,7 @@ const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq
 //Bench depth 
 constexpr int benchDepth = 5;
 
-constexpr int SEE_PIECE_VALUES[7] = {100, 300, 300, 500, 900, 0, 0};
+constexpr int SEE_PIECE_VALUES[7] = {126, 781, 825, 1276, 2538, 0, 0};
 
 constexpr int NO_VALUE = 50000;
 const std::string testStrings[] = {
