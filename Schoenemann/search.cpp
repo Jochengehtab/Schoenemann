@@ -182,7 +182,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
-        if (ply > 0)
+        if (ply > 0 && bestScore > -infinity)
         {
             if (depth <= 9 && !see(board, move, depth * ((board.isCapture(move) || (move.typeOf() == Move::PROMOTION)) ? -90 : -50)))
             {
