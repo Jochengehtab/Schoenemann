@@ -159,6 +159,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             board.makeMove(move);
 
             int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
+
+            board.unmakeMove(move);
             if (score >= probCutMargin)
             {
                 return score;
