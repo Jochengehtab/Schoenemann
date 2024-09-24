@@ -135,6 +135,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
+    //Idea by Laser
+    //If we can make a winning move and can confirm that when we do a lower depth search
+    //it causes a beta cuttoff we can make that beta cutoff
     if (!pvNode && !inCheck && depth >= 6 && staticEval >= beta - 100 - 20 * depth && std::abs(beta) < infinity)
     {
         int probCutMargin = beta + 90;
@@ -151,6 +154,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             probCutCount++;
             Move move = sortByScore(moveList, scoreMoves, i);
 
+            //We don't want to prune the hashed move
             if (move == hashedMove)
             {
                 continue;
@@ -161,6 +165,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
 
             board.unmakeMove(move);
+            
             if (score >= probCutMargin)
             {
                 return score;
