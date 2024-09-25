@@ -57,7 +57,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //If depth is 0 we drop into qs to get a neutral position
     if (depth == 0)
     {
-        return qs(alpha, beta, board, ply);
+        return qs(alpha, beta, board, 0);
     }
 
 
@@ -371,7 +371,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         
         board.makeMove(move);
 
-        int score = -qs(-beta, -alpha, board, ply);
+        int score = -qs(-beta, -alpha, board, ply + 1);
 
         board.unmakeMove(move);
         //Our current Score is better then the previos bestScore so we update it 
