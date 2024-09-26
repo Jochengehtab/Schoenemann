@@ -22,7 +22,7 @@ Hash *tt::getHash(std::uint64_t zobristKey)
 	//Getting the node by the index
 	Hash* node = table + index;
 
-	//Check all two buckets
+	//Check if we got the key in our Hash
 	if (node->key == zobristKey)
 	{
 		return node;
@@ -55,7 +55,7 @@ void tt::init(std::uint64_t MB)
 
 std::uint64_t tt::getSize() const 
 {
-	return (2 * size);
+	return size;
 }
 
 void tt::setSize(std::uint64_t MB) 

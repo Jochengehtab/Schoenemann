@@ -85,7 +85,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         //is the same as the hash entry zobrist key 
         if (zobristKey == entry->key)
         {
-            hashedScore = transpositionTabel.ScoreFromTT(entry->score, ply);
+            hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
             hashedType = entry->type;
             hashedDepth = entry->depth;
             staticEval = entry->eval;
@@ -243,6 +243,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
             }
         }
+        
         board.unmakeMove(move);
 
         if (score > bestScore)
@@ -289,14 +290,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         finalType = UPPER_BOUND;
     }
-    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.ScoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
+    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
 
     return bestScore;
 }
 
 int Search::qs(int alpha, int beta, Board& board, int ply)
 {
-
+    //Check for a timeout
     if (shouldStopSoft(start) && !isNormalSearch) 
     {
         return beta;
@@ -318,7 +319,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     {
         if (zobristKey == entry->key)
         {
-            hashedScore = transpositionTabel.ScoreFromTT(entry->score, ply);
+            hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
             hashedType = entry->type;
             standPat = entry->eval;
         }
@@ -406,7 +407,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         return -infinity + ply;
     }
 
-    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.ScoreToTT(bestScore, ply), bestMoveInQs, standPat);
+    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
 
     return bestScore;
 }

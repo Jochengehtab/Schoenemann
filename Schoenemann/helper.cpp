@@ -7,7 +7,7 @@ void transpositionTableTest(Board& board)
 	std::uint64_t key = board.hash();
 
 	//Store the information
-	transpositionTabel.storeEvaluation(key, 2, LOWER_BOUND, transpositionTabel.ScoreToTT(200, 1), uci::uciToMove(board, "d5e4"), 1);
+	transpositionTabel.storeEvaluation(key, 2, LOWER_BOUND, transpositionTabel.scoreToTT(200, 1), uci::uciToMove(board, "d5e4"), 1);
 
 	//Try to get the information out of the table
 	Hash* entry = transpositionTabel.getHash(key);
