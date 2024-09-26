@@ -265,6 +265,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             //Beta cutoff
             if (score >= beta)
             {
+                if (!board.isCapture(move))
+                {
+                    countinuationButterfly[move.from().index()][move.to().index()] = move;
+                }
+                
                 break;
             }
         }

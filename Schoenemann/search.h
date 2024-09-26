@@ -15,6 +15,7 @@ public:
 	int nodes = 0;
 	long hardLimit = 0;
 	long softLimit = 0;
+	Move countinuationButterfly[64][64];
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);
 	int qs(int alpha, int beta, Board& board, int ply);

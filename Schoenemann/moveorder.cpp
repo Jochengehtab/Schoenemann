@@ -35,6 +35,10 @@ void orderMoves(Movelist moveList, Hash* entry, Board& board, int scores[])
 		{
 			scores[i] = promotion;
 		}
+		else if(seracher.countinuationButterfly[move.from().index()][move.to().index()] == move)
+		{
+			scores[i] += 50000;
+		}
 	}
 	
 }
