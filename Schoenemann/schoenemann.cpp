@@ -248,6 +248,9 @@ int uciLoop(int argc, char* argv[])
     // Disable FRC (Fisher-Random-Chess)
     board.set960(false);
 
+    //Init LMR
+    seracher.initLMR();
+
     transpositionTabel.setSize(8);
     if (argc > 1 && strcmp(argv[1], "bench") == 0) 
 	{

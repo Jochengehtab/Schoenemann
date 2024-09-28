@@ -218,10 +218,35 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     int score = 0;
     int bestScore = -infinity;
+    int moveCount = 0;
     Move bestMoveInPVS = Move::NULL_MOVE;
     for (int i = 0; i < moveList.size(); i++)
     {
+        moveCount++;
         Move move = sortByScore(moveList, scoreMoves, i);
+        const bool isQuiet = !board.isCapture(move);
+        if (ply > 0 && bestScore > -infinity && moveCount >= 3 )
+        {
+            if (moveCount >= 2 + pvNode + board.inCheck() + depth * depth * 1.08)
+            {
+                break;
+            }
+
+            const std::uint32_t lmrDepth = depth - LMRTable[isQuiet][depth][moveCount];
+
+            if (lmrDepth <= 7 && !board.inCheck() && alpha < infinity && alpha > staticEval + 160 && lmrDepth * 157)
+            {
+                break;
+            }
+
+            const std::uint32_t holder = depth * (isQuiet ? -55 : -124);
+
+            if (depth <= 8 && !see(board, move, holder))
+            {
+                continue;
+            } 
+        }
+        
         board.makeMove(move);
 
         short checkExtension = 0;
@@ -410,6 +435,19 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
 
     return bestScore;
+}
+
+void Search::initLMR()
+{
+    for (std::uint64_t depth = 1; depth < 101; depth++)
+    {
+        for (std::uint64_t move = 1; move < 256; move++)
+        {
+            LMRTable[0][depth][move] = round(0.685 + std::log(depth) * std::log(move) * 0.33);
+
+            LMRTable[1][depth][move] = round(0.735 + std::log(depth) * std::log(move) * 0.5);
+        }
+    }
 }
 
 int Search::aspiration(int depth, int score, Board& board)
