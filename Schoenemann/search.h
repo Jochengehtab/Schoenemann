@@ -32,7 +32,7 @@ public:
 	template <typename T, std::size_t... Ns>
 	using MultiArray = typename MultiArrayImpl<T, Ns...>::Type;
 
-	MultiArray<std::uint32_t, 2, 101, 256> LMRTable;
+	MultiArray<std::uint32_t, 2, 256, 256> LMRTable;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);
 	int qs(int alpha, int beta, Board& board, int ply);

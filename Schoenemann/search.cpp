@@ -217,15 +217,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     orderMoves(moveList, entry, board, scoreMoves);
 
     int score = 0;
-    int bestScore = -infinity;
+    int bestScore = -infinity; 
     int moveCount = 0;
     Move bestMoveInPVS = Move::NULL_MOVE;
     for (int i = 0; i < moveList.size(); i++)
     {
         moveCount++;
         Move move = sortByScore(moveList, scoreMoves, i);
-        const bool isQuiet = !board.isCapture(move);
-        if (ply > 0 && bestScore > -infinity && moveCount >= 3 )
+        const bool isQuiet = !board.isCapture(move) && move.typeOf() != Move::PROMOTION;
+        if (ply > 0 && bestScore > -(infinity - 256) && moveCount >= 3 && isQuiet)
         {
             if (moveCount >= 2 + pvNode + board.inCheck() + depth * depth * 1.08)
             {
@@ -234,7 +234,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
             const std::uint32_t lmrDepth = depth - LMRTable[isQuiet][depth][moveCount];
 
-            if (lmrDepth <= 7 && !board.inCheck() && alpha < infinity && alpha > staticEval + 160 && lmrDepth * 157)
+            if (lmrDepth <= 7 && !board.inCheck() && alpha < (infinity - 256) && alpha > staticEval + 160 + lmrDepth * 157)
             {
                 break;
             }
@@ -439,7 +439,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
 void Search::initLMR()
 {
-    for (std::uint64_t depth = 1; depth < 101; depth++)
+    for (std::uint64_t depth = 1; depth < 256; depth++)
     {
         for (std::uint64_t move = 1; move < 256; move++)
         {
