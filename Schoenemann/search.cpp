@@ -234,7 +234,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
             const std::uint32_t lmrDepth = depth - LMRTable[isQuiet][depth][moveCount];
 
-            if (lmrDepth <= 7 && !board.inCheck() && alpha < (infinity - 256) && alpha > staticEval + 160 + lmrDepth * 157)
+            if (lmrDepth <= 7 && !board.inCheck() && alpha < (infinity - 256) && alpha > staticEval + 160 + std::max((int)lmrDepth, 0) * 157)
             {
                 break;
             }
