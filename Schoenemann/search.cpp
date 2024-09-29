@@ -234,14 +234,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
             if (lmrDepth <= 7 && !board.inCheck() && alpha < (infinity - 256) && alpha > staticEval + 160 + std::max(lmrDepth, 0) * 157)
             {
-                continue;
-            }
-
-            const int holder = depth * (isQuiet ? -55 : -124);
-
-            if (depth <= 8 && !see(board, move, holder))
-            {
-                continue;
+                break;
             } 
         }
         
