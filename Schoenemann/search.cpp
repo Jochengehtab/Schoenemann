@@ -229,12 +229,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         if (ply > 0 && bestScore > -(infinity - 256) && moveCount >= 3 && isQuiet)
         {
-            if (moveCount >= (2 + pvNode + board.inCheck() + depth * depth * 1.08))
+
+            const int lmrDepth = depth - LMRTable[isQuiet][depth][moveCount];
+
+            if (lmrDepth <= 7 && !board.inCheck() && alpha < (infinity - 256) && alpha > staticEval + 160 + std::max(lmrDepth, 0) * 157)
             {
                 continue;
             }
-
-            
 
             const int holder = depth * (isQuiet ? -55 : -124);
 
