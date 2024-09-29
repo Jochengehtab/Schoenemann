@@ -15,7 +15,7 @@ using namespace chess;
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
+int Search::pvs(int alpha, int beta, int depth, SearchStack* ss, Board& board)
 {
     //Increment nodes by one
     nodes++;
@@ -32,7 +32,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     // Mate distance Prunning
 
-    int mateValueUpper = infinity - ply;
+    int mateValueUpper = infinity - ss->ply;
 
     if (mateValueUpper < beta)
     {
@@ -43,7 +43,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
-    int mateValueLower = -infinity + ply;
+    int mateValueLower = -infinity + ss->ply;
 
     if (mateValueLower > alpha)
     {
@@ -57,7 +57,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //If depth is 0 we drop into qs to get a neutral position
     if (depth == 0)
     {
-        return qs(alpha, beta, board, ply);
+        return qs(alpha, beta, board, ss);
     }
 
 
@@ -85,7 +85,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         //is the same as the hash entry zobrist key 
         if (zobristKey == entry->key)
         {
-            hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
+            hashedScore = transpositionTabel.scoreFromTT(entry->score, ss->ply);
             hashedType = entry->type;
             hashedDepth = entry->depth;
             staticEval = entry->eval;
@@ -162,7 +162,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
             board.makeMove(move);
 
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ss + 1, board);
 
             board.unmakeMove(move);
             
@@ -180,7 +180,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         {
             board.makeNullMove();
             int depthReduction = 3 + depth / 3;
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
+            int score = -pvs(-beta, -alpha, depth - depthReduction, ss + 1, board);
             board.unmakeNullMove();
             if (score >= beta)
             {
@@ -200,7 +200,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         if (inCheck == true)
         {
-            return -infinity + ply;
+            return -infinity + ss->ply;
         }
         else
         {
@@ -233,14 +233,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         if (bSearchPv)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ss + 1, board);
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ss + 1, board);
             if (score > alpha && score < beta)
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ss + 1, board);
             }
         }
         
@@ -257,7 +257,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 bestMoveInPVS = move;
 
                 //If we are ate the root we set the bestMove
-                if (ply == 0)
+                if (ss->ply == 0)
                 {
                     rootBestMove = move;
                 }
@@ -290,12 +290,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         finalType = UPPER_BOUND;
     }
-    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
+    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ss->ply), bestMoveInPVS, staticEval);
 
     return bestScore;
 }
 
-int Search::qs(int alpha, int beta, Board& board, int ply)
+int Search::qs(int alpha, int beta, Board& board, SearchStack* ss)
 {
     //Check for a timeout
     if (shouldStopSoft(start) && !isNormalSearch) 
@@ -319,7 +319,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     {
         if (zobristKey == entry->key)
         {
-            hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
+            hashedScore = transpositionTabel.scoreFromTT(entry->score, ss->ply);
             hashedType = entry->type;
             standPat = entry->eval;
         }
@@ -377,7 +377,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         
         board.makeMove(move);
 
-        int score = -qs(-beta, -alpha, board, ply);
+        int score = -qs(-beta, -alpha, board, ss);
 
         board.unmakeMove(move);
         //Our current Score is better then the previos bestScore so we update it 
@@ -404,10 +404,10 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     //Checks for checkmate
     if (inCheck && bestScore == -infinity)
     {
-        return -infinity + ply;
+        return -infinity + ss->ply;
     }
 
-    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
+    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ss->ply), bestMoveInQs, standPat);
 
     return bestScore;
 }
@@ -420,7 +420,7 @@ int Search::aspiration(int depth, int score, Board& board)
 
     while (true)
     {
-        score = pvs(alpha, beta, depth, 0, board);
+        score = pvs(alpha, beta, depth, ss, board);
         if (shouldStopSoft(start)) 
         {
             return score;
@@ -467,7 +467,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, ss, board);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
