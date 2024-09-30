@@ -139,6 +139,7 @@ void processCommand(const std::string& cmd, Board& board)
         bool hasTime = false;
         seracher.shouldStop = false;
         memset(seracher.countinuationButterfly, 0, sizeof(seracher.countinuationButterfly));
+        memset(seracher.historyQuietBounus, 0, sizeof(seracher.historyQuietBounus));
 
         listenerActive = true; // Activate listener to capture stop/quit during search
 
