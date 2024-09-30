@@ -273,13 +273,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
                 if (!board.isCapture(move) && move.typeOf() != move.PROMOTION)
                 {
-                    int bouns = depth * depth;
-                    if (bouns >= 8192)
-                    {
-                        bouns = 8192;
-                    }
-
-                    historyQuietBounus[board.sideToMove()][move.from().index()][move.to().index()] += bouns;
+                    int bouns = std::min(1570, 370 * (depth - 1));
+                    historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()] = bouns;
                 }
                 
                 break;
