@@ -279,7 +279,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                         bouns = 8192;
                     }
 
-                    historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()] += bouns;
+                    historyQuietBounus[board.sideToMove()][move.from().index()][move.to().index()] += bouns;
                 }
                 
                 break;
