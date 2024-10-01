@@ -224,6 +224,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         Move move = sortByScore(moveList, scoreMoves, i);
         board.makeMove(move);
 
+        int *currentHistory = &historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()];
+
+        bool isQuiet = !board.isCapture(move) && move.typeOf() != move.PROMOTION;
+
         short checkExtension = 0;
 
         if (board.inCheck() == true)
@@ -266,17 +270,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             //Beta cutoff
             if (score >= beta)
             {
-                if (!board.isCapture(move))
+                if (isQuiet)
                 {
                     countinuationButterfly[move.from().index()][move.to().index()] = move;
+                    *currentHistory += depth * depth;
                 }
-
-                if (!board.isCapture(move) && move.typeOf() != move.PROMOTION)
-                {
-                    int bouns = std::min(1570, 370 * (depth - 1));
-                    historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()] = bouns;
-                }
-                
                 break;
             }
         }

@@ -42,8 +42,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[])
 		}
 		else
 		{
-			scores[i] = 0;
-			scores[i] += seracher.historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()];
+			scores[i] = seracher.historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()];
 		}
 	}
 	
