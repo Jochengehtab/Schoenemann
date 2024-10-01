@@ -18,7 +18,7 @@ public:
 	Move countinuationButterfly[64][64];
 	// This array is structured as follows
 	// [Color][Move.from()][Move.to()]
-	int historyQuietBounus[2][64][64];
+	int historyQuietBounus[2][6][64];
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);
 	int qs(int alpha, int beta, Board& board, int ply);
