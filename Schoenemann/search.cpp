@@ -38,11 +38,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     const bool inCheck = board.inCheck();
 
-
-    short type = UPPER_BOUND;
-
-    bool bSearchPv = true;
-
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
@@ -62,7 +57,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return 0;
     }
 
-    int scoreMoves[218] = {0};
+    //int scoreMoves[218] = {0};
     //Sort the list
     //orderMoves(moveList, entry, board, scoreMoves);
 
