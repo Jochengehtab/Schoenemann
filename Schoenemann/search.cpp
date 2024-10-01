@@ -224,8 +224,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         Move move = sortByScore(moveList, scoreMoves, i);
         board.makeMove(move);
 
-        int *currentHistory = &historyQuietBounus[board.sideToMove()][board.at<PieceType>(move.from())][move.to().index()];
-
         bool isQuiet = !board.isCapture(move) && move.typeOf() != move.PROMOTION;
 
         short checkExtension = 0;
@@ -273,7 +271,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 if (isQuiet)
                 {
                     countinuationButterfly[move.from().index()][move.to().index()] = move;
-                    *currentHistory += depth * depth;
+                    historyQuietBounus[board.sideToMove()][move.from().index()][move.to().index()] += depth * depth;
                 }
                 break;
             }
