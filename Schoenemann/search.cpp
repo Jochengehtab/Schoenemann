@@ -30,164 +30,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         shouldStop = true;
     }
 
-    // Mate distance Prunning
-
-    int mateValueUpper = infinity - ply;
-
-    if (mateValueUpper < beta)
-    {
-        beta = mateValueUpper;
-        if (alpha >= mateValueUpper)
-        {
-            return mateValueUpper;
-        }
-    }
-
-    int mateValueLower = -infinity + ply;
-
-    if (mateValueLower > alpha)
-    {
-        alpha = mateValueLower;
-        if (beta <= mateValueLower)
-        {
-            return mateValueLower;
-        }
-    }
-
     //If depth is 0 we drop into qs to get a neutral position
     if (depth == 0)
     {
-        return qs(alpha, beta, board, ply);
+        return net.evaluate((int)board.sideToMove());
     }
 
-
-    const std::uint64_t zobristKey = board.zobrist();
-    int hashedScore = 0;
-    short hashedType = 0;
-    int hashedDepth = 0;
-    int staticEval = NO_VALUE;
-    Move hashedMove = Move::NULL_MOVE;
-
-    //Get some important search constants
-    const bool pvNode = (alpha != beta) - 1;
     const bool inCheck = board.inCheck();
 
-    //Get an potential hash entry
-    Hash* entry = transpositionTabel.getHash(zobristKey);
-
-    //Check if we this stored position is valid
-    const bool isNullptr = entry == nullptr ? true : false;
-
-    if (!isNullptr)
-    {
-        //If we have a transposition
-        //That means that the current board zobrist key 
-        //is the same as the hash entry zobrist key 
-        if (zobristKey == entry->key)
-        {
-            hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
-            hashedType = entry->type;
-            hashedDepth = entry->depth;
-            staticEval = entry->eval;
-            hashedMove = entry->move;
-        }
-
-        //Check if we can return a stored score
-        if (!pvNode && hashedDepth >= depth && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
-        {
-            if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
-            {
-                return hashedScore;
-            }
-        }
-    }
-
-    // Initial Iterative Deepening
-    if (!isNullptr)
-    {
-        if (zobristKey != entry->key && !inCheck && depth >= 4)
-        {
-            depth--;
-        }
-    }
-
-    if (!isNullptr)
-    {
-        int probCutBeta = beta + 390;
-        if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity)
-        {
-            return probCutBeta;
-        }
-    }
-
-    //If no evaluation was found in the transposition table
-    //we perform an static evaulation
-    if (staticEval == NO_VALUE)
-    {
-        staticEval = net.evaluate((int)board.sideToMove());
-    }
-
-    //Reverse futility pruning
-    if (!pvNode && !inCheck && depth <= 6 && staticEval - 70 * depth >= beta)
-    {
-        return staticEval;
-    }
-
-    //Idea by Laser
-    //If we can make a winning move and can confirm that when we do a lower depth search
-    //it causes a beta cuttoff we can make that beta cutoff
-    if (!pvNode && !inCheck && depth >= 6 && staticEval >= beta - 100 - 20 * depth && std::abs(beta) < infinity)
-    {
-        int probCutMargin = beta + 90;
-        int probCutCount = 0;
-
-        Movelist moveList;
-        movegen::legalmoves(moveList, board);
-
-        int scoreMoves[218] = {0};
-        //Sort the list
-        orderMoves(moveList, entry, board, scoreMoves);
-        for (int i = 0; i < moveList.size() && probCutCount < 3; i++)
-        {
-            probCutCount++;
-            Move move = sortByScore(moveList, scoreMoves, i);
-
-            //We don't want to prune the hashed move
-            if (move == hashedMove)
-            {
-                continue;
-            }
-
-            board.makeMove(move);
-
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
-
-            board.unmakeMove(move);
-            
-            if (score >= probCutMargin)
-            {
-                return score;
-            }
-        }
-
-    }
-
-    if (!pvNode && !inCheck)
-    {
-        if (depth >= 5 && staticEval >= beta)
-        {
-            board.makeNullMove();
-            int depthReduction = 3 + depth / 3;
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
-            board.unmakeNullMove();
-            if (score >= beta)
-            {
-                return score;
-            }
-        }
-    }
 
     short type = UPPER_BOUND;
 
@@ -214,36 +64,30 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     int scoreMoves[218] = {0};
     //Sort the list
-    orderMoves(moveList, entry, board, scoreMoves);
+    //orderMoves(moveList, entry, board, scoreMoves);
 
     int score = 0;
     int bestScore = -infinity;
     Move bestMoveInPVS = Move::NULL_MOVE;
     for (int i = 0; i < moveList.size(); i++)
     {
-        Move move = sortByScore(moveList, scoreMoves, i);
+        Move move = moveList[i];
         board.makeMove(move);
-
-        short checkExtension = 0;
-
-        if (board.inCheck() == true)
+        
+        if (i == 0)
         {
-            checkExtension = 1;
-        }
-
-        if (bSearchPv)
-        {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
-            if (score > alpha && score < beta)
+            score = -pvs(-alpha - 1, -alpha, depth - 1, ply + 1, board);
+            if (score > alpha && beta - alpha > 1)
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
             }
         }
         
+
         board.unmakeMove(move);
 
         if (score > bestScore)
@@ -252,8 +96,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             if (score > alpha)
             {
                 alpha = score;
-                bSearchPv = false;
-                type = EXACT;
                 bestMoveInPVS = move;
 
                 //If we are ate the root we set the bestMove
@@ -266,33 +108,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             //Beta cutoff
             if (score >= beta)
             {
-                if (!board.isCapture(move))
-                {
-                    countinuationButterfly[move.from().index()][move.to().index()] = move;
-                }
-                
-                break;
+                return beta;
             }
         }
     }
-
-    short finalType;
-    //Calculate the node type
-    if (bestScore >= beta)
-    {
-        finalType = LOWER_BOUND;
-    }
-    else if (pvNode && (type == EXACT))
-    {
-        finalType = EXACT;
-    }
-    else
-    {
-        finalType = UPPER_BOUND;
-    }
-    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
-
-    return bestScore;
+    return alpha;
 }
 
 int Search::qs(int alpha, int beta, Board& board, int ply)
@@ -302,114 +122,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     {
         return beta;
     }
-
-    nodes++;
-    const bool pvNode = (alpha != beta) - 1;
-    const std::uint64_t zobristKey = board.zobrist();
-
-    Hash* entry = transpositionTabel.getHash(zobristKey);
-    const bool isNullptr = entry == nullptr ? true : false;
-    const bool inCheck = board.inCheck();
-
-    int hashedScore = 0;
-    short hashedType = 0;
-    int standPat = NO_VALUE;
-
-    if (!isNullptr)
-    {
-        if (zobristKey == entry->key)
-        {
-            hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
-            hashedType = entry->type;
-            standPat = entry->eval;
-        }
-
-        if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
-        {
-            if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
-            {
-                return hashedScore;
-            }
-        }
-    }
-
-    if (!inCheck && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
-    {
-        standPat = hashedScore;
-    }
-
-    if (standPat == NO_VALUE)
-    {
-        standPat = net.evaluate((int)board.sideToMove());
-    }
-
-    if (standPat >= beta)
-    {
-        return standPat;
-    }
-
-    if (alpha < standPat)
-    {
-        alpha = standPat;
-    }
-
-    Movelist moveList;
-    movegen::legalmoves<movegen::MoveGenType::CAPTURE>(moveList, board);
-
-    int bestScore = standPat;
-    Move bestMoveInQs = Move::NULL_MOVE;
-
-    for (Move& move : moveList)
-    {
-        // Fultiy Prunning
-        if (!see(board, move, 1) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
-        {
-            continue;
-        }
-        
-        // Static Exchange Evaluation
-        if (!see(board, move, 0))
-        {
-            continue;
-        }
-        
-        board.makeMove(move);
-
-        int score = -qs(-beta, -alpha, board, ply);
-
-        board.unmakeMove(move);
-        //Our current Score is better then the previos bestScore so we update it 
-        if (score > bestScore)
-        {
-            bestScore = score;
-
-            //Score is greater than alpha so we update alpha to the score
-            if (score > alpha)
-            {
-                alpha = score;
-
-                bestMoveInQs = move;
-            }
-
-            //Beta cutoff
-            if (score >= beta)
-            {
-                break;
-            }
-        }
-    }
-
-    //Checks for checkmate
-    if (inCheck && bestScore == -infinity)
-    {
-        return -infinity + ply;
-    }
-
-    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
-
-    return bestScore;
+    return 0;
 }
 
 int Search::aspiration(int depth, int score, Board& board)
@@ -467,7 +180,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        score = pvs(-infinity, infinity, i, 0, board);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
