@@ -54,6 +54,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
+    if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
+    {
+        return 0;
+    }
+
     //If depth is 0 we drop into qs to get a neutral position
     if (depth == 0)
     {
@@ -195,11 +200,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     Movelist moveList;
     movegen::legalmoves(moveList, board);
-
-    if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
-    {
-        return 0;
-    }
 
     int scoreMoves[218] = {0};
     //Sort the list
@@ -460,15 +460,8 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
-        if (!shouldStop)
-        {
-            bestMoveThisIteration = rootBestMove;
-        }
-
-        if (bestMoveThisIteration == Move::NULL_MOVE)
-        {
-            bestMoveThisIteration = rootBestMove;
-        }
+        
+        bestMoveThisIteration = rootBestMove;
 
         if (bestMoveThisIteration != Move::NULL_MOVE)
         {
