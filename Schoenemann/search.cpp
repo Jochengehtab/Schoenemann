@@ -196,18 +196,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
-    if (moveList.size() == 0)
+    if (moveList.size() == 0 && inCheck)
     {
-        if (inCheck == true)
-        {
-            return -infinity + ply;
-        }
-        else
-        {
-            return 0;
-        }
+        return -infinity + ply;
     }
-    else if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
+    
+    if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
     {
         return 0;
     }
