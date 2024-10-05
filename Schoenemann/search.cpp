@@ -271,7 +271,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                     countinuationButterfly[move.from().index()][move.to().index()] = move;
                 }
                 
-                break;
+                return bestScore;
             }
         }
     }
@@ -396,7 +396,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
             //Beta cutoff
             if (score >= beta)
             {
-                break;
+                return bestScore;
             }
         }
     }
