@@ -54,11 +54,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
-    if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
-    {
-        return 0;
-    }
-
     //If depth is 0 we drop into qs to get a neutral position
     if (depth == 0)
     {
@@ -192,6 +187,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 return score;
             }
         }
+    }
+
+    if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
+    {
+        return 0;
     }
 
     short type = UPPER_BOUND;
@@ -468,8 +468,10 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
             hasFoundMove = true;
         }
 
-        std::cout << "info depth " << i << " score cp " << score << " nodes " << nodes << " nps " << static_cast<int>(seracher.nodes / timeCount * 1000) << " pv " << uci::moveToUci(rootBestMove) << std::endl;
-
+        if (bestMoveThisIteration != Move::NULL_MOVE)
+        {
+            std::cout << "info depth " << i << " score cp " << score << " nodes " << nodes << " nps " << static_cast<int>(seracher.nodes / timeCount * 1000) << " pv " << uci::moveToUci(rootBestMove) << std::endl;
+        }
 
         //std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
         if (i == 256 && hasFoundMove)
