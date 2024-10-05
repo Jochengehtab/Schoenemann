@@ -68,19 +68,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = moveList[i];
         board.makeMove(move);
-        
-        if (i == 0)
-        {
-            score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
-        }
-        else
-        {
-            score = -pvs(-alpha - 1, -alpha, depth - 1, ply + 1, board);
-            if (score > alpha && beta - alpha > 1)
-            {
-                score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
-            }
-        }
+
+        score = -pvs(-beta, -alpha, depth - 1, ply + 1, board);
 
         board.unmakeMove(move);
 
@@ -102,10 +91,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             //Beta cutoff
             if (score >= beta)
             {
-                return beta;
+                break;
             }
         }
     }
+    
     return bestScore;
 }
 
