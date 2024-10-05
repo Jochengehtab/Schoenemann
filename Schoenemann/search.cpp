@@ -219,6 +219,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     int score = 0;
     int bestScore = -infinity;
     Move bestMoveInPVS = Move::NULL_MOVE;
+    
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
