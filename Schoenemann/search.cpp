@@ -221,23 +221,28 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         Move move = sortByScore(moveList, scoreMoves, i);
         board.makeMove(move);
 
-        short checkExtension = 0;
+        short extensions = 0;
 
         if (board.inCheck() == true)
         {
-            checkExtension = 1;
+            extensions = 1;
+        }
+
+        if (moveList.size() == 1)
+        {
+            extensions = 1;
         }
 
         if (i == 0)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board);
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
-            if (score > alpha && beta - alpha > 1)
+            score = -pvs(-alpha - 1, -alpha, depth - 1 + extensions, ply + 1, board);
+            if (score > alpha && score < beta)
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board);
             }
         }
         board.unmakeMove(move);
