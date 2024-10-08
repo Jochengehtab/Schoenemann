@@ -331,7 +331,6 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
             hashedType = entry->type;
             standPat = entry->eval;
         }
-
         if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
         {
             if ((hashedType == EXACT) ||
