@@ -219,19 +219,28 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
-        board.makeMove(move);
 
         short extensions = 0;
 
-        if (board.inCheck() == true)
+        if (!isNullptr)
+        {
+            if (move == hashedMove)
+            {
+                int newBeta = std::max(-infinity, hashedScore - depth * 2);
+                int extensionScore = pvs(newBeta - 1, newBeta, (depth - 1) / 2, ply, board);
+
+                if (extensionScore < newBeta)
+                {
+                    extensions = 1;
+                }
+            }
+        } 
+        else if (board.inCheck() == true)
         {
             extensions = 1;
         }
 
-        if (moveList.size() == 1)
-        {
-            extensions = 1;
-        }
+        board.makeMove(move);
 
         if (i == 0)
         {
