@@ -15,7 +15,7 @@ using namespace chess;
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
+int Search::pvs(int alpha, int beta, int depth, int ply, Board& board, Move excluded)
 {
     //Increment nodes by one
     nodes++;
@@ -162,7 +162,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
             board.makeMove(move);
 
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board, Move::NULL_MOVE);
 
             board.unmakeMove(move);
             
@@ -180,7 +180,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         {
             board.makeNullMove();
             int depthReduction = 3 + depth / 3;
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
+            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, Move::NULL_MOVE);
             board.unmakeNullMove();
             if (score >= beta)
             {
@@ -220,19 +220,29 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
+        if (move == excluded)
+        {
+            continue;
+        }
+
         short extensions = 0;
 
         if (!isNullptr)
         {
-            if (move == hashedMove && ply < 2 * depth && depth >= 6 && hashedType & LOWER_BOUND && hashedDepth >= depth - 3)
+            if (move == hashedMove && ply < 2 * depth && depth >= 6 && hashedType & LOWER_BOUND && hashedDepth >= depth - 3 && hashedScore < infinity && move != excluded)
             {
                 int newBeta = hashedScore - depth;
-                int extensionScore = pvs(newBeta - 1, newBeta, (depth - 1) / 2, ply, board);
+                int extensionScore = pvs(newBeta - 1, newBeta, (depth - 1) / 2, ply, board, move);
 
                 if (extensionScore < newBeta)
                 {
                     extensions = 1;
                 }
+                else if (newBeta >= beta)
+                {
+                    return newBeta;
+                }
+                
             }
         } 
         else if (board.inCheck() == true)
@@ -244,14 +254,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         if (i == 0)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board, Move::NULL_MOVE);
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + extensions, ply + 1, board);
+            score = -pvs(-alpha - 1, -alpha, depth - 1 + extensions, ply + 1, board, Move::NULL_MOVE);
             if (score > alpha && score < beta)
             {
-                score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board, Move::NULL_MOVE);
             }
         }
         board.unmakeMove(move);
@@ -427,7 +437,7 @@ int Search::aspiration(int depth, int score, Board& board)
 
     while (true)
     {
-        score = pvs(alpha, beta, depth, 0, board);
+        score = pvs(alpha, beta, depth, 0, board, Move::NULL_MOVE);
         if (shouldStopSoft(start)) 
         {
             return score;
@@ -474,7 +484,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board, Move::NULL_MOVE);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;

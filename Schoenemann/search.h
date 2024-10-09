@@ -17,7 +17,7 @@ public:
 	long softLimit = 0;
 	Move countinuationButterfly[64][64];
 
-	int pvs(int alpha, int beta, int depth, int ply, Board& board);
+	int pvs(int alpha, int beta, int depth, int ply, Board& board, Move excluded);
 	int qs(int alpha, int beta, Board& board, int ply);
 	void iterativeDeepening(Board& board, bool isInfinite);
 	int aspiration(int maxDepth, int score, Board& board);
