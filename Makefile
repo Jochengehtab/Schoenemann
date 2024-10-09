@@ -1,5 +1,4 @@
-EXE := null
-CC ?= null
+EXE = null
 
  
 
