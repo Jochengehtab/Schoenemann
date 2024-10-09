@@ -224,7 +224,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         if (!isNullptr)
         {
-            if (move == hashedMove && ply < 2 && depth >= 6 && hashedType & LOWER_BOUND && hashedDepth >= depth - 3)
+            if (move == hashedMove && ply < 2 * depth && depth >= 6 && hashedType & LOWER_BOUND && hashedDepth >= depth - 3)
             {
                 int newBeta = hashedScore - depth;
                 int extensionScore = pvs(newBeta - 1, newBeta, (depth - 1) / 2, ply, board);
