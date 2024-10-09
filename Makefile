@@ -1,5 +1,7 @@
-EXE = null
+EXE ?= null
+CC ?= null
 
 all:
-	$(info i am here)
-	cd Schoenemann && g++ -Wall -O3 -std=c++20 schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp main.cpp moveorder.cpp see.cpp -o $(EXE).exe
+	cd Schoenemann && g++ -Wall -O3 -std=c++20 schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp main.cpp moveorder.cpp see.cpp -o ../src/$(EXE).exe
+t:
+	cd ../Schoenemann && g++ -Wall -O0 -std=c++20 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp -o $(EXE).exe
