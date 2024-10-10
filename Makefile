@@ -1,5 +1,13 @@
-EXE ?= null
+EXE := null
 CC ?= null
+
+# Append .exe to the binary name on Windows
+
+ifeq ($(OS),Windows_NT)
+
+    override EXE := $(EXE).exe
+
+endif
 
 all:
 	cd Schoenemann && g++ -Wall -O3 -std=c++20 schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp main.cpp moveorder.cpp see.cpp -o ../src/$(EXE).exe
