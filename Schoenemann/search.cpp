@@ -361,8 +361,12 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     int bestScore = standPat;
     Move bestMoveInQs = Move::NULL_MOVE;
 
-    for (Move& move : moveList)
+    int scoreMoves[218] = {0};
+    //Sort the list
+    orderMovesQS(moveList, entry, board, scoreMoves);
+    for (int i = 0; i < moveList.size(); i++)
     {
+        Move move = sortByScore(moveList, scoreMoves, i);
         // Fultiy Prunning
         if (!see(board, move, 1) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
         {

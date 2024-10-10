@@ -44,6 +44,31 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[])
 	
 }
 
+void orderMovesQS(Movelist& moveList, Hash* entry, Board& board, int scores[])
+{
+	const bool isNullptr = entry == nullptr ? true : false;
+
+	if (isNullptr)
+	{
+		return;
+	}
+
+	const std::uint64_t key = board.zobrist();
+
+	for (int i = 0; i < moveList.size(); i++)
+	{
+		Move move = moveList[i];
+		if (!isNullptr)
+		{
+			if (entry->key == key && move == entry->move)
+			{
+				scores[i] = hashMoveScore;
+				continue;
+			}
+		}
+	}
+}
+
 Move sortByScore(Movelist& moveList, int scores[], int i)
 {
 	for (int j = i + 1; j < moveList.size(); j++)
