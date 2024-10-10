@@ -216,7 +216,7 @@ int uciLoop(int argc, char* argv[]) {
 		{
 			seracher.shouldStop = true;
 		}
-		
+	
 
 	} while (token != "quit");
 
