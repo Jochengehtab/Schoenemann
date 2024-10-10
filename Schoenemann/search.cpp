@@ -242,7 +242,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board, Move excl
                 {
                     return newBeta;
                 }
-                
+            
             }
         } 
         else if (board.inCheck() == true)
