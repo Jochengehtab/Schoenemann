@@ -191,8 +191,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     short type = UPPER_BOUND;
 
-    bool bSearchPv = true;
-
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
@@ -231,7 +229,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             checkExtension = 1;
         }
 
-        if (bSearchPv)
+        if (i == 0)
         {
             score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
         }
@@ -252,7 +250,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             if (score > alpha)
             {
                 alpha = score;
-                bSearchPv = false;
                 type = EXACT;
                 bestMoveInPVS = move;
 
