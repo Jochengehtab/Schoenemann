@@ -236,7 +236,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         else
         {
             score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
-            if (score > alpha && score < beta)
+            if (score > alpha && beta - alpha > 1)
             {
                 score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
             }
