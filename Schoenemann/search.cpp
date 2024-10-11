@@ -241,9 +241,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
                 score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
             }
         }
-        
         board.unmakeMove(move);
-
         if (score > bestScore)
         {
             bestScore = score;
