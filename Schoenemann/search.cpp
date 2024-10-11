@@ -69,7 +69,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     Move hashedMove = Move::NULL_MOVE;
 
     //Get some important search constants
-    const bool pvNode = (alpha != beta) - 1;
+    const bool pvNode = beta > alpha + 1;
     const bool inCheck = board.inCheck();
 
     //Get an potential hash entry
@@ -304,7 +304,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     }
 
     nodes++;
-    const bool pvNode = (alpha != beta) - 1;
+    const bool pvNode = beta > alpha + 1;
     const std::uint64_t zobristKey = board.zobrist();
 
     Hash* entry = transpositionTabel.getHash(zobristKey);
