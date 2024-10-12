@@ -190,7 +190,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     short type = UPPER_BOUND;
-
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
