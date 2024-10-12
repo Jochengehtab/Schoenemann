@@ -135,60 +135,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
-    //Idea by Laser
-    //If we can make a winning move and can confirm that when we do a lower depth search
-    //it causes a beta cuttoff we can make that beta cutoff
-    if (!inCheck && depth >= 6 && staticEval >= beta - 100 - 20 * depth && std::abs(beta) < infinity)
-    {
-        int probCutMargin = beta + 90;
-        int probCutCount = 0;
-
-        Movelist moveList;
-        movegen::legalmoves(moveList, board);
-
-        int scoreMoves[218] = {0};
-        //Sort the list
-        orderMoves(moveList, entry, board, scoreMoves);
-        for (int i = 0; i < moveList.size() && probCutCount < 3; i++)
-        {
-            probCutCount++;
-            Move move = sortByScore(moveList, scoreMoves, i);
-
-            //We don't want to prune the hashed move
-            if (move == hashedMove)
-            {
-                continue;
-            }
-
-            board.makeMove(move);
-
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
-
-            board.unmakeMove(move);
-            
-            if (score >= probCutMargin)
-            {
-                return score;
-            }
-        }
-
-    }
-
-    if (!inCheck)
-    {
-        if (depth >= 5 && staticEval >= beta)
-        {
-            board.makeNullMove();
-            int depthReduction = 3 + depth / 3;
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
-            board.unmakeNullMove();
-            if (score >= beta)
-            {
-                return score;
-            }
-        }
-    }
-
     short type = UPPER_BOUND;
 
     Movelist moveList;
