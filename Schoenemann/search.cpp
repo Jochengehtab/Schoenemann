@@ -130,7 +130,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     //Reverse futility pruning
-    if (!pvNode && !inCheck && depth <= 6 && staticEval - 70 * depth >= beta)
+    if (!inCheck && depth <= 6 && staticEval - 70 * depth >= beta)
     {
         return staticEval;
     }
