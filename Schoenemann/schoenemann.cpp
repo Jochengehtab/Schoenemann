@@ -135,6 +135,7 @@ int uciLoop(int argc, char* argv[]) {
 			int number[4];
 			bool hasTime = false;
 			is >> token;
+			seracher.nodes = 0;
 			while (is.good())
 			{
 				if (token == "wtime")

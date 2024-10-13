@@ -25,10 +25,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return beta;
     }
 
-    if (shouldStopSoft(start) && !isNormalSearch)
+    if(nodes % 4096 == 0)
     {
-        shouldStop = true;
+        if (shouldStopSoft(start) && !isNormalSearch)
+        {
+            shouldStop = true;
+        }
     }
+    
 
     // Mate distance Prunning
 
@@ -291,10 +295,19 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
 int Search::qs(int alpha, int beta, Board& board, int ply)
 {
-    //Check for a timeout
-    if (shouldStopSoft(start) && !isNormalSearch) 
+
+    if (shouldStop)
     {
         return beta;
+    }
+
+    if(nodes % 4096 == 0)
+    {
+        //Check for a timeout
+        if (shouldStopSoft(start) && !isNormalSearch) 
+        {
+            return beta;
+        }
     }
 
     nodes++;
