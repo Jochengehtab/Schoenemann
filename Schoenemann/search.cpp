@@ -10,6 +10,7 @@
 #include "consts.h"
 #include "nnue.h"
 #include "see.h"
+#include "tune.h"
 
 using namespace chess;
 
@@ -111,16 +112,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     // Initial Iterative Deepening
     if (!isNullptr)
     {
-        if (zobristKey != entry->key && !inCheck && depth >= 4)
+        if (zobristKey != entry->key && !inCheck && depth >= iirDepthCondition.value)
         {
             depth--;
         }
-    }
 
-    if (!isNullptr)
-    {
-        int probCutBeta = beta + 390;
-        if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity)
+        int probCutBeta = beta + pcbAddition.value;
+        if (hashedDepth >= depth - pcbDepth.value && hashedScore >= probCutBeta && std::abs(beta) < infinity)
         {
             return probCutBeta;
         }
@@ -134,7 +132,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     //Reverse futility pruning
-    if (!inCheck && depth <= 6 && staticEval - 70 * depth >= beta)
+    if (!inCheck && depth <= rfpDepthCondition.value && staticEval - rfpMultiplier.value * depth >= beta)
     {
         return staticEval;
     }
@@ -180,10 +178,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (!pvNode && !inCheck)
     {
-        if (depth >= 5 && staticEval >= beta)
+        if (depth >= nmpDepthCondition.value && staticEval >= beta)
         {
             board.makeNullMove();
-            int depthReduction = 3 + depth / 3;
+            int depthReduction = nmpAdder.value + depth / nmpDivisor.value;
             int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
             board.unmakeNullMove();
             if (score >= beta)
