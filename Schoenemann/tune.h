@@ -1,6 +1,30 @@
 #pragma once
 
 #include <iostream>
+#include <cstdint>
+#include <cassert>
+#include <string_view>
+#include <array>
+#include <bit>
+#include <ranges>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <random>
+#include <chrono>
+#include <fstream>
+#include <thread>
+#include <memory>
+#include <cstring>
+#include <atomic>
+#include <span>
+#include <chrono>
+#include <iostream>
+#include <cmath>
+#include <cassert>
+
+// nicknaming st
 
 struct Tunable {
     explicit Tunable(std::string _name, double _value, int _divisor)
@@ -55,11 +79,11 @@ Tunable nmpDepthCondition("NMP_DepthCondition", 5, 1);
 //Tunable lmrBase("LMR_Base", 0.97, 100);
 //Tunable lmrMultiplier("LMR_Multiplier", 0.54, 100);
 
-Tunable mvvPawn("MVV_Pawn", 95, 1);
-Tunable mvvKnight("MVV_Knight", 462, 1);
-Tunable mvvBishop("MVV_Bishop", 498, 1);
-Tunable mvvRook("MVV_Rook", 647, 1);
-Tunable mvvQueen("MVV_Queen", 1057, 1);
+Tunable mvvPawn("MVV_Pawn", 100, 1);
+Tunable mvvKnight("MVV_Knight", 302, 1);
+Tunable mvvBishop("MVV_Bishop", 320, 1);
+Tunable mvvRook("MVV_Rook", 500, 1);
+Tunable mvvQueen("MVV_Queen", 900, 1);
 Tunable blank("blank", 0, 1);
 
 Tunable seePawn("SEE_Pawn", 117, 1);
