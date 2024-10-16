@@ -477,7 +477,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
             hasFoundMove = true;
         }
 
-        std::cout << "info depth " << i << " score cp " << score << " nodes " << nodes << " nps " << static_cast<int>(seracher.nodes / timeCount * 1000) << " pv " << uci::moveToUci(rootBestMove) << std::endl;
+        std::cout << "info depth " << i << " score cp " << score << " nodes " << nodes << " nps " << static_cast<int>(nodes / timeCount * 1000) << " pv " << uci::moveToUci(rootBestMove) << std::endl;
 
 
         //std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;

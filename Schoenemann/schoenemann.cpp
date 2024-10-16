@@ -9,7 +9,7 @@
 
 using namespace chess;
 
-Search seracher;
+Search* searcher;
 tt transpositionTabel(8);
 
 memorystream memoryStream(simple_167_bin, simple_167_bin_len);
@@ -17,8 +17,6 @@ memorystream memoryStream(simple_167_bin, simple_167_bin_len);
 // Define & load the network from the stream
 network net(memoryStream);
 
-int timeLeft = 0;
-int increment = 0;
 int newTranspositionTableSize = 8;
 
 int uciLoop(int argc, char* argv[]) {
@@ -135,7 +133,7 @@ int uciLoop(int argc, char* argv[]) {
 			int number[4];
 			bool hasTime = false;
 			is >> token;
-			seracher.nodes = 0;
+			searcher->nodes = 0;
 			while (is.good())
 			{
 				if (token == "wtime")
@@ -163,14 +161,14 @@ int uciLoop(int argc, char* argv[]) {
 				else if (token == "depth")
 				{
 					is >> token;
-					seracher.pvs(-32767, 32767, std::stoi(token), 0, board);
-					std::cout << "bestmove " << uci::moveToUci(seracher.rootBestMove) << std::endl;
+					searcher->pvs(-32767, 32767, std::stoi(token), 0, board);
+					std::cout << "bestmove " << uci::moveToUci(searcher->rootBestMove) << std::endl;
 				}
 				else if	(token == "movetime")
 				{
 					is >> token;
 					timeLeft = std::stoi(token);
-					seracher.iterativeDeepening(board, false);
+					searcher->iterativeDeepening(board, false);
 				}
 				if (!(is >> token)) break;
 			}
@@ -186,7 +184,7 @@ int uciLoop(int argc, char* argv[]) {
 					timeLeft = number[1];
 					increment = number[3];
 				}
-				seracher.iterativeDeepening(board, false);
+				searcher->iterativeDeepening(board, false);
 			}
 		}
 		else if (token == "d")
@@ -199,7 +197,7 @@ int uciLoop(int argc, char* argv[]) {
 		}
 		else if (token == "nodes")
 		{
-			std::cout << seracher.nodes << std::endl;
+			std::cout << searcher->nodes << std::endl;
 		}
 		else if (token == "ttest")
 		{
@@ -215,21 +213,11 @@ int uciLoop(int argc, char* argv[]) {
 		}
 		else if (token == "stop")
 		{
-			seracher.shouldStop = true;
+			return 0;
 		}
 		
 
 	} while (token != "quit");
 
 	return 0;
-}
-
-int getTime()
-{
-	return timeLeft;
-}
-
-int getIncrement()
-{
-	return increment;
 }

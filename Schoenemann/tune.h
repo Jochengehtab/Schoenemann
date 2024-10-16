@@ -30,12 +30,17 @@ extern std::array<std::array<uint8_t, 218>, 150> reductions;
 
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+int timeLeft = 0;
+int increment = 0;
+
 // Previously consts.h
 
 //Bench depth 
 const int benchDepth = 7;
 
 const int NO_VALUE = 50000;
+
+const int hashMoveScore = 2147483647, promotion = 1000000000, goodCapture = 1500000000, badCapture = -500000000;
 
 const std::string testStrings[] = {
 		STARTPOS,
@@ -56,7 +61,8 @@ const std::string testStrings[] = {
 };
 
 extern tt transpositionTabel;
-extern Search seracher;
+class Search;
+extern Search* searcher;
 
 /*
 void calculateReductions() {
