@@ -1,12 +1,11 @@
 #include <iostream>
-
-#include "tt.h"
-
-#include "chess.hpp"
-#include "consts.h"
-#include "tt.h"
 #include <array>
 #include <cassert>
+
+#include "chess.hpp"
+#include "tune.h"
+#include "see.h"
+#include "tune.h"
 
 using namespace chess;
 

@@ -1,18 +1,4 @@
-#include <chrono>
-#include <iostream>
-#include <cmath>
-#include <cassert>
-
 #include "search.h"
-#include "chess.hpp"
-#include "timeman.h"
-#include "moveorder.h"
-#include "consts.h"
-#include "nnue.h"
-#include "see.h"
-#include "tune.h"
-
-using namespace chess;
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
@@ -369,7 +355,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     for (Move& move : moveList)
     {
         // Fultiy Prunning
-        if (!see(board, move, 1) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
+        if (!see(board, move, 1) && standPat + SEE_values[board.at(move.to()).type()]->value <= alpha)
         {
             continue;
         }

@@ -1,5 +1,19 @@
 #pragma once
+
+#include <chrono>
+#include <iostream>
+#include <cmath>
+#include <cassert>
+
 #include "chess.hpp"
+#include "chess.hpp"
+#include "timeman.h"
+#include "moveorder.h"
+#include "tune.h"
+#include "nnue.h"
+#include "see.h"
+#include "tune.h"
+
 
 using namespace chess;
 

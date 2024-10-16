@@ -2,7 +2,7 @@
 #include <cstring>
 #include "schoenemann.h"
 #include "search.h"
-#include "consts.h"
+#include "tune.h"
 #include "helper.h"
 #include "nnue.h"
 #include "simple-167.h"

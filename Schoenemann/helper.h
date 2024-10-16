@@ -1,6 +1,6 @@
 #pragma once
 
-#include "consts.h"
+#include "tune.h"
 #include "chess.hpp"
 
 #include <chrono>

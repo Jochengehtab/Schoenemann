@@ -1,5 +1,5 @@
 #include "schoenemann.h"
-#include "consts.h"
+#include "tune.h"
 
 void getTimeForMove();
 
