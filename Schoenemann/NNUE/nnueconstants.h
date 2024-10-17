@@ -5,7 +5,7 @@
 constexpr std::uint16_t inputSize = 768;
 constexpr std::uint16_t hiddenSize = 512;
 constexpr std::uint16_t outputSize = 1;
-constexpr std::uint16_t stackSize = 512;
+constexpr std::uint16_t stackSize = 2;
 constexpr std::uint16_t scale = 400;
 
 constexpr std::uint16_t QA = 255;
