@@ -5,14 +5,14 @@
 #include "consts.h"
 #include "helper.h"
 #include "nnue.h"
-#include "simple-167.h"
+#include "quantised.h"
 
 using namespace chess;
 
 Search seracher;
 tt transpositionTabel(8);
 
-memorystream memoryStream(simple_167_bin, simple_167_bin_len);
+memorystream memoryStream(quantised_bin, quantised_bin_len);
 
 // Define & load the network from the stream
 network net(memoryStream);
