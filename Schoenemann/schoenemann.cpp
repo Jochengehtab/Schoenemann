@@ -7,16 +7,18 @@
 #include <mutex>
 #include <condition_variable>
 #include "schoenemann.h"
-
-// Network File
-#include "simple-167.h"
+#include "search.h"
+#include "consts.h"
+#include "helper.h"
+#include "nnue.h"
+#include "quantised.h"
 
 #define tuning
 
 Search seracher;
 tt transpositionTabel(8);
 
-memorystream memoryStream(simple_167_bin, simple_167_bin_len);
+memorystream memoryStream(quantised_bin, quantised_bin_len);
 
 // Define & load the network from the stream
 network net(memoryStream);
