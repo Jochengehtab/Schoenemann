@@ -4,10 +4,14 @@
 #include <cstdint>
 #include <cassert>
 #include <sstream>
+#include <immintrin.h>
 
 #include "accumulator.h"
 #include "utils.h"
 #include "stream.h"
+
+using Vec = __m128i;
+ constexpr int ALIGNMENT = std::max<int>(8, sizeof(Vec));
 
 class network
 {
@@ -40,10 +44,38 @@ public:
     {
         initAccumulator();
 
-        stream.readArray(featureWeight);
-        stream.readArray(featureBias);
-        stream.readArray(outputWeight);
-        stream.readArray(outputBias);
+        // open the nn file
+        FILE* nn = fopen("C:\\GitHub\\Schoenemann\\Schoenemann\\NNUE\\quantised.bin", "rb");
+
+        // if it's not invalid read the config values from it
+        if (nn) {
+            std::cout << "Reading network file" << std::endl;
+            // initialize an accumulator for every input of the second layer
+            size_t read = 0;
+            size_t fileSize = sizeof(network);
+            size_t objectsExpected = fileSize / sizeof(int16_t);
+
+            read += fread(&featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
+            read += fread(&featureBias, sizeof(int16_t), hiddenSize, nn);
+            read += fread(&outputWeight, sizeof(int16_t), hiddenSize * 2, nn);
+            read += fread(&outputBias, sizeof(int16_t), 1, nn);
+
+            if (std::abs((int64_t) read - (int64_t) objectsExpected) >= ALIGNMENT) {
+                std::cout << "Error loading the net, aborting ";
+                std::cout << "Expected " << objectsExpected << " shorts, got " << read << "\n";
+                exit(1);
+            }
+
+            // after reading the config we can close the file
+            fclose(nn);
+        }
+        else {
+            std::cout << "Using the default loading method" << std::endl;
+            stream.readArray(featureWeight);
+            stream.readArray(featureBias);
+            stream.readArray(outputWeight);
+            stream.readArray(outputBias);
+        }
     }
 
     inline void resetAccumulator()
