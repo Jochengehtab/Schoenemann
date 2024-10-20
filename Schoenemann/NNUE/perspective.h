@@ -20,7 +20,7 @@ private:
 
     std::array<std::int32_t, outputSize> finalOutput;
 
-    std::array<accumulator, stackSize> accumulators;
+    std::array<accumulator, 1> accumulators;
     std::uint16_t currentAccumulator = 0;
 
     void initAccumulator()
@@ -35,7 +35,7 @@ public:
         initAccumulator();
     }
 
-    // Read the in memory network which is sotred in a headerfile
+    // Read the in memory network which is stored in a headerfile
     explicit network(memorystream &stream)
     {
         initAccumulator();
