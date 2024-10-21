@@ -10,7 +10,7 @@ public:
 
     static inline std::int16_t crelu(int input)
     {
-        return std::max(0, std::min(255, input));
+        return std::max(0, std::min(255, input / 400));
     }
 
     static inline void addAll(
