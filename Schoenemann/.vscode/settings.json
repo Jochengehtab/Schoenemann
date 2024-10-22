@@ -85,6 +85,8 @@
         "condition_variable": "cpp",
         "mutex": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "cstdarg": "cpp",
+        "semaphore": "cpp"
     }
 }
