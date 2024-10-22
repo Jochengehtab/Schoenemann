@@ -7,13 +7,9 @@
 #include <mutex>
 #include <condition_variable>
 #include "schoenemann.h"
-#include "search.h"
-#include "consts.h"
-#include "helper.h"
-#include "nnue.h"
-#include "simple-167.h"
 
-using namespace chess;
+// Network File
+#include "simple-167.h"
 
 Search seracher;
 tt transpositionTabel(8);
@@ -23,9 +19,7 @@ memorystream memoryStream(simple_167_bin, simple_167_bin_len);
 // Define & load the network from the stream
 network net(memoryStream);
 
-int timeLeft = 0;
-int increment = 0;
-int newTranspositionTableSize = 8;
+int transpositionTableSize = 8;
 
 // Thread-safe queue for commands
 std::queue<std::string> commandQueue;
@@ -92,9 +86,9 @@ void processCommand(const std::string& cmd, Board& board)
                 if (token == "value") 
 				{
                     is >> token;
-                    newTranspositionTableSize = std::stoi(token);
+                    transpositionTableSize = std::stoi(token);
                     transpositionTabel.clear();
-                    transpositionTabel.setSize(newTranspositionTableSize);
+                    transpositionTabel.setSize(transpositionTableSize);
                 }
             }
         }
@@ -179,7 +173,7 @@ void processCommand(const std::string& cmd, Board& board)
             else if (token == "movetime") 
 			{
                 is >> token;
-                timeLeft = std::stoi(token);
+                seracher.timeLeft = std::stoi(token);
                 seracher.iterativeDeepening(board, false);
             }
             if (!(is >> token)) 
@@ -191,12 +185,12 @@ void processCommand(const std::string& cmd, Board& board)
 		{
             if (board.sideToMove() == Color::WHITE) 
 			{
-                timeLeft = number[0];
-                increment = number[2];
+                seracher.timeLeft = number[0];
+                seracher.increment = number[2];
             }
             else {
-                timeLeft = number[1];
-                increment = number[3];
+                seracher.timeLeft = number[1];
+                seracher.increment = number[3];
             }
             seracher.iterativeDeepening(board, false);
         }
@@ -278,14 +272,4 @@ int uciLoop(int argc, char* argv[])
 
     listener.join(); // Ensure the listener thread completes before exiting
     return 0;
-}
-
-int getTime() 
-{
-    return timeLeft;
-}
-
-int getIncrement() 
-{
-    return increment;
 }

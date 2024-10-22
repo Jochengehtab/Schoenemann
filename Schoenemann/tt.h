@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <cstring>
+
 #include "chess.hpp"
 
 using namespace chess;

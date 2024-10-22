@@ -1,5 +1,14 @@
 #pragma once
+
+#include <chrono>
+#include <iostream>
+
 #include "chess.hpp"
+#include "timeman.h"
+#include "moveorder.h"
+#include "consts.h"
+#include "nnue.h"
+#include "see.h"
 
 using namespace chess;
 
@@ -15,6 +24,8 @@ public:
 	int nodes = 0;
 	long hardLimit = 0;
 	long softLimit = 0;
+	int timeLeft = 0;
+	int increment = 0;
 	Move countinuationButterfly[64][64];
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);

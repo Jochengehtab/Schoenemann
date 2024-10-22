@@ -1,16 +1,7 @@
-#include "schoenemann.h"
+#pragma once
+
 #include "consts.h"
 
 void getTimeForMove();
-
-bool shouldStopSoft(auto s)
-{
-    std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
-    return elapsed.count() > seracher.hardLimit;
-}
-
-bool shouldStopID(auto s)
-{
-    std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
-    return elapsed.count() > seracher.softLimit;
-}
+bool shouldStopSoft(std::chrono::time_point<std::chrono::system_clock> s);
+bool shouldStopID(std::chrono::time_point<std::chrono::system_clock> s);
