@@ -9,10 +9,6 @@
 #include "accumulator.h"
 #include "utils.h"
 #include "stream.h"
-
-using Vec = __m128i;
- constexpr int ALIGNMENT = std::max<int>(8, sizeof(Vec));
-
 class network
 {
 private:
@@ -39,7 +35,7 @@ public:
         initAccumulator();
     }
 
-    // Read the in memory network which is stored in a headerfile
+    // Read the in memory network which is sotred in a headerfile
     explicit network(memorystream &stream)
     {
         initAccumulator();
@@ -60,7 +56,7 @@ public:
             read += fread(&outputWeight, sizeof(int16_t), hiddenSize * 2, nn);
             read += fread(&outputBias, sizeof(int16_t), 1, nn);
 
-            if (std::abs((int64_t) read - (int64_t) objectsExpected) >= ALIGNMENT) {
+            if (std::abs((int64_t) read - (int64_t) objectsExpected) >= 16) {
                 std::cout << "Error loading the net, aborting ";
                 std::cout << "Expected " << objectsExpected << " shorts, got " << read << "\n";
                 exit(1);
