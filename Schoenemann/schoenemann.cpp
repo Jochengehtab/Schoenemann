@@ -43,7 +43,6 @@ void commandListener()
 		{
 			seracher.shouldStop = true;
 		}
-		
 
         if (input == "quit") 
 		{
@@ -88,6 +87,17 @@ void processCommand(const std::string& cmd, Board& board)
 		{
             is >> token;
             #ifdef tuning
+                EngineParam* param = findParam(token);
+                if (param != nullptr)
+                {
+                    is >> token;
+                    if (token == "value") 
+				    {
+                        is >> token;
+                        param->value = std::stoi(token);
+                        
+                    }
+                }
                 
             #endif
             if (token == "Hash") 
