@@ -9,8 +9,27 @@
 #include "consts.h"
 #include "see.h"
 #include "nnue.h"
+#include "tune.h"
 
 using namespace chess;
+
+const DEFINE_PARAM_S(seePawn, 100, 10);
+const DEFINE_PARAM_S(seeKnight, 300, 30);
+const DEFINE_PARAM_S(seeBishop, 300, 30);
+const DEFINE_PARAM_S(seeRook, 500, 50);
+const DEFINE_PARAM_S(seeQueen, 900, 90);
+
+const int SEE_PIECE_VALUES[7] = {seePawn, seeKnight, seeBishop, seeRook, seeQueen, 0, 0};
+
+
+const DEFINE_PARAM_S(piecePawn, 100, 10);
+const DEFINE_PARAM_S(pieceKnigh, 302, 20);
+const DEFINE_PARAM_S(pieceBishp, 320, 20);
+const DEFINE_PARAM_S(pieceRook, 500, 50);
+const DEFINE_PARAM_S(pieceQuuen, 900, 90);
+
+
+const int PIECE_VALUES[7] = {piecePawn, pieceKnigh, pieceBishp, pieceRook, pieceQuuen, 15000, 0};
 
 class Search {
 public:

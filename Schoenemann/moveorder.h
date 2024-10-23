@@ -4,6 +4,8 @@
 
 #include "consts.h"
 #include "see.h"
+#include "tune.h"
+#include "search.h"
 
 using namespace chess;
 

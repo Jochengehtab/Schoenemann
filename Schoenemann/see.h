@@ -2,6 +2,7 @@
 
 #include "chess.hpp"
 #include "consts.h"
+#include "tune.h"
 
 using namespace chess;
 

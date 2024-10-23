@@ -1,5 +1,6 @@
 #include "see.h"
 
+
 int getPieceValue(const Board &board, Move &move)
 {
     auto moveType = move.typeOf();
@@ -28,6 +29,7 @@ int getPieceValue(const Board &board, Move &move)
 // SEE prunning by Starzix
 bool see(const Board &board, Move &move, int cutoff)
 {
+    std::cout << SEE_PIECE_VALUES[0] << std::endl;
     int score = getPieceValue(board, move) - cutoff;
     if (score < 0)
     {

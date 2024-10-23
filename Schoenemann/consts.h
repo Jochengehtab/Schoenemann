@@ -14,8 +14,6 @@ const int benchDepth = 7;
 const int NO_VALUE = 50000;
 
 const int hashMoveScore = 2'147'483'647, promotion = 1'000'000'000, goodCapture = 1'500'000'000, badCapture = -500'000'000;
-const int PIECE_VALUES[7] = {100, 302, 320, 500, 900, 15000, 0};
-const int SEE_PIECE_VALUES[7] = {100, 300, 300, 500, 900, 0, 0};
 
 const std::string testStrings[] = {
 		STARTPOS,

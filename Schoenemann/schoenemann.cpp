@@ -11,6 +11,8 @@
 // Network File
 #include "simple-167.h"
 
+#define tuning
+
 Search seracher;
 tt transpositionTabel(8);
 
@@ -60,6 +62,11 @@ void processCommand(const std::string& cmd, Board& board)
     if (token == "uci") 
 	{
         uciPrint();
+        
+        #ifdef tuning
+            std::cout << paramsToUci();
+        #endif
+        std::cout << "uciok" << std::endl;
     }
     else if (token == "isready") 
 	{
@@ -80,6 +87,9 @@ void processCommand(const std::string& cmd, Board& board)
         if (token == "name") 
 		{
             is >> token;
+            #ifdef tuning
+                
+            #endif
             if (token == "Hash") 
 			{
                 is >> token;
@@ -220,6 +230,14 @@ void processCommand(const std::string& cmd, Board& board)
     else if (token == "test") 
 	{
         testCommand();
+    }
+    else if (token == "spsa")
+    {
+        std::cout << paramsToSpsaInput() << std::endl;
+    }
+    else if (token == "params")
+    {
+        std::cout << paramsToUci() << std::endl;
     }
     else if (token == "stop") 
 	{

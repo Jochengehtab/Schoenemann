@@ -80,8 +80,7 @@ void testCommand()
 void uciPrint()
 {
 	std::cout << "id name Schoenemann" << std::endl
-		<< "option name Hash type spin default 64 min 1 max 4096" << std::endl
-		<< "uciok" << std::endl;
+		<< "option name Hash type spin default 64 min 1 max 4096" << std::endl;
 }
 
 void runBenchmark() {

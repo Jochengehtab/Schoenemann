@@ -2,6 +2,26 @@
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
+DEFINE_PARAM_S(probeCutBetaAddition, 390, 20);
+DEFINE_PARAM_S(probeCuteSubtractor, 2, 1);
+
+DEFINE_PARAM_S(iidDepth, 4, 1);
+
+DEFINE_PARAM_S(rfpDepth, 6, 1);
+DEFINE_PARAM_S(rfpEvalSubtractor, 70, 5);
+
+DEFINE_PARAM_S(winningDepth, 6, 1);
+DEFINE_PARAM_S(winningEvalSubtractor, 100, 1);
+DEFINE_PARAM_S(winningDepthMultiplyer, 20 , 2);
+DEFINE_PARAM_S(probeCutMarginAdder, 90, 10);
+DEFINE_PARAM_S(winningDepthDivisor, 4, 1);
+DEFINE_PARAM_S(winningDepthSubtractor, 4, 1);
+
+
+DEFINE_PARAM_S(nmpDepth, 5, 1);
+DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
+DEFINE_PARAM_S(nmpDepthDivisor, 3, 1);
+
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
     //Increment nodes by one
@@ -106,8 +126,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (!isNullptr)
     {
-        int probCutBeta = beta + 390;
-        if (hashedDepth >= depth - 2 && hashedScore >= probCutBeta && std::abs(beta) < infinity)
+        int probCutBeta = beta + probeCutBetaAddition;
+        if (hashedDepth >= depth - probeCuteSubtractor && hashedScore >= probCutBeta && std::abs(beta) < infinity)
         {
             return probCutBeta;
         }
@@ -121,7 +141,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     }
 
     //Reverse futility pruning
-    if (!inCheck && depth <= 6 && staticEval - 70 * depth >= beta)
+    if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * depth >= beta)
     {
         return staticEval;
     }
@@ -129,9 +149,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Idea by Laser
     //If we can make a winning move and can confirm that when we do a lower depth search
     //it causes a beta cuttoff we can make that beta cutoff
-    if (!pvNode && !inCheck && depth >= 6 && staticEval >= beta - 100 - 20 * depth && std::abs(beta) < infinity)
+    if (!pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplyer * depth && std::abs(beta) < infinity)
     {
-        int probCutMargin = beta + 90;
+        int probCutMargin = beta + probeCutMarginAdder;
         int probCutCount = 0;
 
         Movelist moveList;
@@ -153,7 +173,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
             board.makeMove(move);
 
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / 4 - 4, ply + 1, board);
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board);
 
             board.unmakeMove(move);
             
@@ -167,10 +187,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
     if (!pvNode && !inCheck)
     {
-        if (depth >= 5 && staticEval >= beta)
+        if (depth >= nmpDepth && staticEval >= beta)
         {
             board.makeNullMove();
-            int depthReduction = 3 + depth / 3;
+            int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
             int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
             board.unmakeNullMove();
             if (score >= beta)
