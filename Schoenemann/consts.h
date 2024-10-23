@@ -4,6 +4,7 @@
 
 #include "tt.h"
 #include "search.h"
+#include "NNUE/perspective.h"
 
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

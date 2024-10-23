@@ -2,9 +2,7 @@
 
 #include <iostream>
 
-#include "chess.hpp"
 #include "consts.h"
-#include "tt.h"
 #include "see.h"
 
 using namespace chess;

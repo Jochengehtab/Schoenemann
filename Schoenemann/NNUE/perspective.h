@@ -61,40 +61,13 @@ public:
     inline void updateAccumulator(
         const std::uint8_t piece,
         const std::uint8_t color,
-        const std::uint8_t from,
-        const std::uint8_t to)
-    {
-        const std::uint16_t pieceIndex = piece * whiteSquares;
-
-        // Get the squre index based on the colour
-        const std::uint16_t whiteIndexFrom = color * blackSqures + pieceIndex + from;
-        const std::uint16_t blackIndexFrom = (color ^ 1) * blackSqures + pieceIndex + (from ^ 56);
-        const std::uint16_t whiteIndexTo = color * blackSqures + pieceIndex + to;
-        const std::uint16_t blackIndexTo = (color ^ 1) * blackSqures + pieceIndex + (to ^ 56);
-
-        // Get the current accumulator
-        accumulator &accumulator = accumulators[currentAccumulator];
-
-        // update the accumulator
-        utilitys::subAddAll(accumulator.white,
-                            accumulator.black,
-                            featureWeight,
-                            whiteIndexFrom * hiddenSize,
-                            whiteIndexTo * hiddenSize,
-                            blackIndexFrom * hiddenSize,
-                            blackIndexTo * hiddenSize);
-    }
-
-    inline void updateAccumulator(
-        const std::uint8_t piece,
-        const std::uint8_t color,
         const std::uint8_t sq,
         const bool operation)
     {
         // Calculate the stride necessary to get to the correct piece:
         const std::uint16_t pieceIndex = piece * whiteSquares;
 
-        // Get the squre index based on the colour
+        // Get the squre index based on the color
         const std::uint16_t whiteIndex = color * blackSqures + pieceIndex + sq;
         const std::uint16_t blackIndex = (color ^ 1) * blackSqures + pieceIndex + (sq ^ 56);
 

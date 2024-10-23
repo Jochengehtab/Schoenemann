@@ -1,8 +1,6 @@
 EXE := null
 CC ?= null
 
- 
-
 # Append .exe to the binary name on Windows
 
 ifeq ($(OS),Windows_NT)
