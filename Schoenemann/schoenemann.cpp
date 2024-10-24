@@ -95,9 +95,9 @@ void processCommand(const std::string& cmd, Board& board)
 				    {
                         is >> token;
                         param->value = std::stoi(token);
-                        
                     }
                 }
+
                 
             #endif
             if (token == "Hash") 
