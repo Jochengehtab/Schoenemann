@@ -118,7 +118,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     // Initial Iterative Deepening
     if (!isNullptr)
     {
-        if (zobristKey != entry->key && !inCheck && depth >= 4)
+        if (zobristKey != entry->key && !inCheck && depth >= iidDepth)
         {
             depth--;
         }

@@ -34,4 +34,15 @@ public:
 	int qs(int alpha, int beta, Board& board, int ply);
 	void iterativeDeepening(Board& board, bool isInfinite);
 	int aspiration(int maxDepth, int score, Board& board);
+		bool shouldStopSoft(auto s)
+	{
+    	std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
+    	return elapsed.count() > hardLimit;
+	}
+
+	bool shouldStopID(auto s)
+	{
+	    std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
+   		return elapsed.count() > softLimit;
+	}
 };
