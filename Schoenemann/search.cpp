@@ -146,6 +146,30 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return staticEval;
     }
 
+    //Razoring
+    if (!pvNode && !board.inCheck() && depth <= 2)
+    {
+        const int ralpha = alpha - 342 - depth * 74;
+
+        if (staticEval < ralpha)
+        {
+            int qscore;
+            if (depth == 1 && ralpha < alpha)
+            {
+                qscore = qs(alpha, beta, board, ply);
+                return qscore;
+            }
+
+            qscore = qs(ralpha, ralpha + 1, board, ply);
+
+            if (qscore <= ralpha)
+            {
+                return qscore;
+            }
+
+        }
+    }
+
     //Idea by Laser
     //If we can make a winning move and can confirm that when we do a lower depth search
     //it causes a beta cuttoff we can make that beta cutoff
