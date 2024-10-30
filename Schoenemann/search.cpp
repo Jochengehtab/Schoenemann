@@ -2,31 +2,31 @@
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-DEFINE_PARAM_S(probeCutBetaAddition, 389, 20);
+DEFINE_PARAM_S(probeCutBetaAddition, 390, 20);
 DEFINE_PARAM_S(probeCuteSubtractor, 2, 1);
 
 DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
-DEFINE_PARAM_S(rfpEvalSubtractor, 71, 5);
+DEFINE_PARAM_S(rfpEvalSubtractor, 69, 5);
 
 DEFINE_PARAM_S(winningDepth, 5, 1);
-DEFINE_PARAM_S(winningEvalSubtractor, 101, 1);
-DEFINE_PARAM_S(winningDepthMultiplyer, 20 , 2);
+DEFINE_PARAM_S(winningEvalSubtractor, 102, 1);
+DEFINE_PARAM_S(winningDepthMultiplyer, 19 , 2);
 
-DEFINE_PARAM_S(probeCutMarginAdder, 70, 10);
+DEFINE_PARAM_S(probeCutMarginAdder, 66, 10);
 
 DEFINE_PARAM_S(winningDepthDivisor, 4, 1);
 DEFINE_PARAM_S(winningDepthSubtractor, 3, 1);
 
 
-DEFINE_PARAM_S(nmpDepth, 4, 1);
+DEFINE_PARAM_S(nmpDepth, 3, 1);
 DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
 DEFINE_PARAM_S(nmpDepthDivisor, 3, 1);
 
 DEFINE_PARAM_S(razorDepth, 1, 1);
 DEFINE_PARAM_S(razorAlpha, 341, 1);
-DEFINE_PARAM_S(razorDepthMultiplyer, 74, 1);
+DEFINE_PARAM_S(razorDepthMultiplyer, 73, 1);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
