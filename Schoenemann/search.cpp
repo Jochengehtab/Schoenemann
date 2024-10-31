@@ -2,31 +2,45 @@
 
 std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-DEFINE_PARAM_S(probeCutBetaAddition, 390, 20);
+DEFINE_PARAM_S(probeCutBetaAddition, 390, 25);
 DEFINE_PARAM_S(probeCuteSubtractor, 2, 1);
 
 DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
-DEFINE_PARAM_S(rfpEvalSubtractor, 69, 5);
+DEFINE_PARAM_S(rfpEvalSubtractor, 69, 6);
 
 DEFINE_PARAM_S(winningDepth, 5, 1);
-DEFINE_PARAM_S(winningEvalSubtractor, 102, 1);
-DEFINE_PARAM_S(winningDepthMultiplyer, 19 , 2);
+DEFINE_PARAM_S(winningEvalSubtractor, 102, 20);
+DEFINE_PARAM_S(winningDepthMultiplyer, 19 , 4);
 
 DEFINE_PARAM_S(probeCutMarginAdder, 66, 10);
 
 DEFINE_PARAM_S(winningDepthDivisor, 4, 1);
 DEFINE_PARAM_S(winningDepthSubtractor, 3, 1);
-
+DEFINE_PARAM_B(winningCount, 3, 1, 6);
 
 DEFINE_PARAM_S(nmpDepth, 3, 1);
 DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
 DEFINE_PARAM_S(nmpDepthDivisor, 3, 1);
 
 DEFINE_PARAM_S(razorDepth, 1, 1);
-DEFINE_PARAM_S(razorAlpha, 341, 1);
-DEFINE_PARAM_S(razorDepthMultiplyer, 73, 1);
+DEFINE_PARAM_S(razorAlpha, 341, 30);
+DEFINE_PARAM_S(razorDepthMultiplyer, 73, 9);
+
+DEFINE_PARAM_B(lmrDepth, 1, 1, 7);
+
+DEFINE_PARAM_B(pvsSSEDepth, 1, 1, 6);
+DEFINE_PARAM_S(pvsSSECaptureCutoff, -97, 10);
+DEFINE_PARAM_S(pvsSSENonCaptureCutoff, -35, 10);
+
+DEFINE_PARAM_S(aspDelta, 25, 6);
+DEFINE_PARAM_S(aspDivisor, 2, 1);
+DEFINE_PARAM_S(aspMultiplier, 150, 15);
+DEFINE_PARAM_S(aspEntryDepth, 6, 2);
+
+DEFINE_PARAM_S(lmrBase, 77, 9);
+DEFINE_PARAM_S(lmrDivisor, 236, 15);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
@@ -48,7 +62,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     
 
     // Mate distance Prunning
-
     int mateValueUpper = infinity - ply;
 
     if (mateValueUpper < beta)
@@ -190,7 +203,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         int scoreMoves[218] = {0};
         //Sort the list
         orderMoves(moveList, entry, board, scoreMoves);
-        for (int i = 0; i < moveList.size() && probCutCount < 3; i++)
+        for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
             probCutCount++;
             Move move = sortByScore(moveList, scoreMoves, i);
@@ -262,7 +275,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
-        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= 1 && !see(board, move,  (board.isCapture(move) ? -97 : -35)))
+        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (board.isCapture(move) ? pvsSSECaptureCutoff : pvsSSENonCaptureCutoff)))
         {
             continue;
         }
@@ -285,7 +298,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         else
         {
             int lmr = 0;
-            if (depth > 1)
+            if (depth > lmrDepth)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
@@ -475,9 +488,10 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
 int Search::aspiration(int depth, int score, Board& board)
 {
-    int delta = 25;
+    int delta = aspDelta;
     int alpha = std::max(-infinity, score - delta);
     int beta = std::min(infinity, score + delta);
+    double finalASPMultiplier = aspMultiplier / 100.0;
 
     while (true)
     {
@@ -493,7 +507,7 @@ int Search::aspiration(int depth, int score, Board& board)
         }
         else if (score <= alpha)
         {
-            beta = (alpha + beta) / 2;
+            beta = (alpha + beta) / aspDivisor;
             alpha = std::max(alpha - delta, -infinity);
         }
         else
@@ -501,7 +515,7 @@ int Search::aspiration(int depth, int score, Board& board)
             break;
         }
 
-        delta *= 1.5;
+        delta *= finalASPMultiplier;
     }
 
     return score;
@@ -528,7 +542,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        score = i >= aspEntryDepth ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
@@ -577,9 +591,11 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 }
 
 void Search::initLMR() {
+    double lmrBaseFinal = lmrBase / 100.0;
+    double lmrDivisorFinal = lmrDivisor / 100.0;
     for(int depth = 0; depth < 150; depth++) {
         for(int move = 0; move < 218; move++) {
-            reductions[depth][move] = uint8_t(std::clamp(0.77 /*tunnable*/ + std::log(depth) * std::log(move) / 2.36 /*tunnable*/, -32678.0, 32678.0));
+            reductions[depth][move] = uint8_t(std::clamp(lmrBaseFinal + std::log(depth) * std::log(move) / lmrDivisorFinal, -32678.0, 32678.0));
         }
     }
 }

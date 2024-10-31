@@ -12,13 +12,12 @@ std::string paramsToUci();
 
 std::string paramsToSpsaInput();
 
-struct EngineParam {
-  std::string name;
-  int value;
-  int min, max;
+struct EngineParam 
+{
+  std::string name;int value;int min, max;
 
   EngineParam(std::string _name, int _value, int _min, int _max) :
-    name(_name), value(_value), min(_min), max(_max)
+      name(_name), value(_value), min(_min), max(_max)
   {
     if (_max < _min) {
       std::cout << "[Warning] Parameter " << _name << " has invalid bounds" << std::endl;
@@ -37,7 +36,7 @@ struct EngineParam {
   }
 
   inline operator int() const {
-    return value;
+     return value;
   }
 };
 
