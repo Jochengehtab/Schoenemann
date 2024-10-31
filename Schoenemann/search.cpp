@@ -515,7 +515,7 @@ int Search::aspiration(int depth, int score, Board& board)
             break;
         }
 
-        delta *= finalASPMultiplier;
+        delta *= 1.5;
     }
 
     return score;
