@@ -595,7 +595,7 @@ void Search::initLMR() {
     double lmrDivisorFinal = lmrDivisor / 100.0;
     for(int depth = 0; depth < 150; depth++) {
         for(int move = 0; move < 218; move++) {
-            reductions[depth][move] = uint8_t(std::clamp(lmrBaseFinal + std::log(depth) * std::log(move) / lmrDivisorFinal, -32678.0, 32678.0));
+            reductions[depth][move] = uint8_t(std::clamp(0.77 + std::log(depth) * std::log(move) / 2.36, -32678.0, 32678.0));
         }
     }
 }
