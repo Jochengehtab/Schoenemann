@@ -31,8 +31,8 @@ DEFINE_PARAM_S(razorDepthMultiplyer, 73, 9);
 DEFINE_PARAM_B(lmrDepth, 1, 1, 7);
 
 DEFINE_PARAM_B(pvsSSEDepth, 1, 1, 6);
-DEFINE_PARAM_S(pvsSSECaptureCutoff, -97, 10);
-DEFINE_PARAM_S(pvsSSENonCaptureCutoff, -35, 10);
+DEFINE_PARAM_S(pvsSSECaptureCutoff, 97, 10);
+DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 
 DEFINE_PARAM_S(aspDelta, 25, 6);
 DEFINE_PARAM_S(aspDivisor, 2, 1);
@@ -275,7 +275,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
-        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (board.isCapture(move) ? pvsSSECaptureCutoff : pvsSSENonCaptureCutoff)))
+        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (board.isCapture(move) ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
         {
             continue;
         }
