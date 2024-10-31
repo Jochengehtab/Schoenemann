@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <random>
 
 #include "tt.h"
 #include "search.h"

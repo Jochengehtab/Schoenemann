@@ -257,10 +257,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     int score = 0;
     int bestScore = -infinity;
     Move bestMoveInPVS = Move::NULL_MOVE;
+    int moveCounter = 0;
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
+
         board.makeMove(move);
+
+        moveCounter++;
 
         short checkExtension = 0;
 
@@ -275,7 +279,39 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
         else
         {
-            score = -pvs(-alpha - 1, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            /*
+            // Late Move Reductions (LMR)
+            int lmr = 0;
+            if(depth > lmrDepth.value) {
+                lmr = reductions[depth][legalMoves];
+                lmr -= isPV;
+                if(isQuiet) {
+                    lmr -= moveValues[i] / int(hmrDivisor.value);
+                } else {
+                    lmr -= noisyHistoryTable[1 - board.getColorToMove()][getType(movedPiece)][moveEndSquare][moveVictim] / int(cmrDivisor.value);
+                }
+                lmr += isCutNode * 2;
+                lmr -= improving;
+                lmr -= !isQuietOrBadCapture;
+                lmr -= corrhistUncertain;
+
+                lmr = std::clamp(lmr, 0, depth - 1);
+            }
+            // this is more PVS stuff, searching with a reduced margin
+            score = -negamax(board, depth - lmr - 1, -alpha - 1, -alpha, ply + 1, true, true);
+            */
+
+            int lmr = 0;
+
+            if (depth > 1)
+            {
+                lmr -= reductions[depth][moveCounter];
+                lmr -= pvNode;
+                lmr = std::clamp(lmr, 0, depth - 1);
+                
+            }
+
+            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board);
             if (score > alpha && beta - alpha > 1)
             {
                 score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
@@ -557,4 +593,12 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
     }
     shouldStop = false;
     isNormalSearch = true;
+}
+
+void Search::initLMR() {
+    for(int depth = 0; depth < 150; depth++) {
+        for(int move = 0; move < 218; move++) {
+            reductions[depth][move] = uint8_t(std::clamp(0.97 /*tunnable*/ + std::log(depth) * std::log(move) * 0.54 /*tunnable*/, -32678.0, 32678.0));
+        }
+    }
 }

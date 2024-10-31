@@ -29,10 +29,12 @@ public:
 	int timeLeft = 0;
 	int increment = 0;
 	Move countinuationButterfly[64][64];
+	std::array<std::array<uint8_t, 218>, 150> reductions;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board);
 	int qs(int alpha, int beta, Board& board, int ply);
 	void iterativeDeepening(Board& board, bool isInfinite);
+	void initLMR();
 	int aspiration(int maxDepth, int score, Board& board);
 		bool shouldStopSoft(auto s)
 	{
