@@ -542,7 +542,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= aspEntryDepth ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
