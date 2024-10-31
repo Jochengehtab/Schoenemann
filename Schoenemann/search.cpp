@@ -262,6 +262,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
+        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= 1 && !see(board, move,  (board.isCapture(move) ? -97 : -35)))
+        {
+            continue;
+        }
+
         board.makeMove(move);
 
         moveCounter++;
