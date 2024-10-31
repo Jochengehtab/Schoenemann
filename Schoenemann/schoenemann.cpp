@@ -97,6 +97,11 @@ void processCommand(const std::string& cmd, Board& board)
 				    {
                         is >> token;
                         param->value = std::stoi(token);
+                        if (param->name == "lmrBase" || param->name == "lmrDivisor")
+                        {
+                            seracher.initLMR();
+                        }
+                        
                     }
                 }
 
