@@ -35,7 +35,7 @@ DEFINE_PARAM_S(pvsSSECaptureCutoff, 97, 10);
 DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 
 DEFINE_PARAM_S(aspDelta, 25, 6);
-DEFINE_PARAM_B(aspDivisor, 2, 1, 8);
+DEFINE_PARAM_S(aspDivisor, 2, 1);
 DEFINE_PARAM_B(aspMultiplier, 150, 1, 450);
 DEFINE_PARAM_S(aspEntryDepth, 6, 2);
 
@@ -515,7 +515,7 @@ int Search::aspiration(int depth, int score, Board& board)
             break;
         }
 
-        delta *= 1.5;
+        delta *= finalASPMultiplier;
     }
 
     return score;
@@ -595,7 +595,7 @@ void Search::initLMR() {
     double lmrDivisorFinal = lmrDivisor / 100.0;
     for(int depth = 0; depth < 150; depth++) {
         for(int move = 0; move < 218; move++) {
-            reductions[depth][move] = uint8_t(std::clamp(0.77 + std::log(depth) * std::log(move) / 2.36, -32678.0, 32678.0));
+            reductions[depth][move] = uint8_t(std::clamp(lmrBaseFinal + std::log(depth) * std::log(move) / lmrDivisorFinal, -32678.0, 32678.0));
         }
     }
 }
