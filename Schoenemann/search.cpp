@@ -35,7 +35,7 @@ DEFINE_PARAM_S(pvsSSECaptureCutoff, 97, 10);
 DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 
 DEFINE_PARAM_S(aspDelta, 25, 6);
-DEFINE_PARAM_S(aspDivisor, 2, 1);
+DEFINE_PARAM_B(aspDivisor, 2, 2, 8);
 DEFINE_PARAM_B(aspMultiplier, 150, 1, 450);
 DEFINE_PARAM_B(aspEntryDepth, 6, 6, 12);
 
@@ -507,7 +507,7 @@ int Search::aspiration(int depth, int score, Board& board)
         }
         else if (score <= alpha)
         {
-            beta = (alpha + beta) / 2;
+            beta = (alpha + beta) / aspDivisor;
             alpha = std::max(alpha - delta, -infinity);
         }
         else
