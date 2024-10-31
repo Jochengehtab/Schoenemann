@@ -273,7 +273,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             checkExtension = 1;
         }
 
-        if (moveCounter == 0)
+        if (moveCounter == 1)
         {
             score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
         }
