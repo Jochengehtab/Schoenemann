@@ -35,7 +35,7 @@ DEFINE_PARAM_S(pvsSSECaptureCutoff, 97, 10);
 DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 
 DEFINE_PARAM_S(aspDelta, 25, 6);
-DEFINE_PARAM_S(aspDivisor, 2, 1);
+DEFINE_PARAM_B(aspDivisor, 2, 1, 8);
 DEFINE_PARAM_B(aspMultiplier, 150, 1, 450);
 DEFINE_PARAM_S(aspEntryDepth, 6, 2);
 
@@ -542,7 +542,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= 6 ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        score = i >= aspEntryDepth ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
