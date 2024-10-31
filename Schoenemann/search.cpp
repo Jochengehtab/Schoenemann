@@ -36,11 +36,11 @@ DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 
 DEFINE_PARAM_S(aspDelta, 25, 6);
 DEFINE_PARAM_S(aspDivisor, 2, 1);
-DEFINE_PARAM_S(aspMultiplier, 150, 15);
+DEFINE_PARAM_B(aspMultiplier, 150, 1, 450);
 DEFINE_PARAM_S(aspEntryDepth, 6, 2);
 
-DEFINE_PARAM_S(lmrBase, 77, 9);
-DEFINE_PARAM_S(lmrDivisor, 236, 15);
+DEFINE_PARAM_B(lmrBase, 77, 1, 300);
+DEFINE_PARAM_B(lmrDivisor, 236, 1, 700);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
