@@ -24,7 +24,7 @@ DEFINE_PARAM_S(nmpDepth, 3, 1);
 DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
 DEFINE_PARAM_S(nmpDepthDivisor, 3, 1);
 
-DEFINE_PARAM_S(razorDepth, 1, 1);
+DEFINE_PARAM_B(razorDepth, 1, 1, 10);
 DEFINE_PARAM_S(razorAlpha, 341, 30);
 DEFINE_PARAM_S(razorDepthMultiplyer, 73, 9);
 
