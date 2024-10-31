@@ -273,42 +273,18 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             checkExtension = 1;
         }
 
-        if (i == 0)
+        if (moveCounter == 0)
         {
             score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
         }
         else
         {
-            /*
-            // Late Move Reductions (LMR)
             int lmr = 0;
-            if(depth > lmrDepth.value) {
-                lmr = reductions[depth][legalMoves];
-                lmr -= isPV;
-                if(isQuiet) {
-                    lmr -= moveValues[i] / int(hmrDivisor.value);
-                } else {
-                    lmr -= noisyHistoryTable[1 - board.getColorToMove()][getType(movedPiece)][moveEndSquare][moveVictim] / int(cmrDivisor.value);
-                }
-                lmr += isCutNode * 2;
-                lmr -= improving;
-                lmr -= !isQuietOrBadCapture;
-                lmr -= corrhistUncertain;
-
-                lmr = std::clamp(lmr, 0, depth - 1);
-            }
-            // this is more PVS stuff, searching with a reduced margin
-            score = -negamax(board, depth - lmr - 1, -alpha - 1, -alpha, ply + 1, true, true);
-            */
-
-            int lmr = 0;
-
             if (depth > 1)
             {
                 lmr -= reductions[depth][moveCounter];
                 lmr -= pvNode;
                 lmr = std::clamp(lmr, 0, depth - 1);
-                
             }
 
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board);
