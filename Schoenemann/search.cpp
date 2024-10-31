@@ -35,12 +35,11 @@ DEFINE_PARAM_S(pvsSSECaptureCutoff, 97, 10);
 DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 
 DEFINE_PARAM_S(aspDelta, 25, 6);
-DEFINE_PARAM_B(aspDivisor, 2, 2, 8);
-DEFINE_PARAM_B(aspMultiplier, 150, 1, 450);
-DEFINE_PARAM_B(aspEntryDepth, 6, 6, 12);
+DEFINE_PARAM_S(aspMultiplier, 150, 15);
+DEFINE_PARAM_B(aspEntryDepth, 6, 6 , 12);
 
-DEFINE_PARAM_B(lmrBase, 77, 1, 300);
-DEFINE_PARAM_B(lmrDivisor, 236, 1, 700);
+DEFINE_PARAM_S(lmrBase, 77, 7);
+DEFINE_PARAM_S(lmrDivisor, 236, 20);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
@@ -507,7 +506,7 @@ int Search::aspiration(int depth, int score, Board& board)
         }
         else if (score <= alpha)
         {
-            beta = (alpha + beta) / aspDivisor;
+            beta = (alpha + beta) / 2 /*When tuned everything crashes :(*/;
             alpha = std::max(alpha - delta, -infinity);
         }
         else
