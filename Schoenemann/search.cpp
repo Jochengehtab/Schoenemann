@@ -20,7 +20,7 @@ DEFINE_PARAM_S(winningDepthDivisor, 4, 1);
 DEFINE_PARAM_S(winningDepthSubtractor, 3, 1);
 DEFINE_PARAM_B(winningCount, 3, 1, 6);
 
-DEFINE_PARAM_S(nmpDepth, 3, 1);
+DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
 DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
 DEFINE_PARAM_S(nmpDepthDivisor, 3, 1);
 
@@ -37,7 +37,7 @@ DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 35, 10);
 DEFINE_PARAM_S(aspDelta, 25, 6);
 DEFINE_PARAM_S(aspDivisor, 2, 1);
 DEFINE_PARAM_B(aspMultiplier, 150, 1, 450);
-DEFINE_PARAM_S(aspEntryDepth, 6, 2);
+DEFINE_PARAM_B(aspEntryDepth, 6, 6, 12);
 
 DEFINE_PARAM_B(lmrBase, 77, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 236, 1, 700);
