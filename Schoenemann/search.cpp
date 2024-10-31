@@ -288,7 +288,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             }
 
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board);
-            if (score > alpha && beta - alpha > 1)
+            if (score > alpha && (score < beta || lmr > 0))
             {
                 score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
             }
@@ -574,7 +574,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 void Search::initLMR() {
     for(int depth = 0; depth < 150; depth++) {
         for(int move = 0; move < 218; move++) {
-            reductions[depth][move] = uint8_t(std::clamp(0.97 /*tunnable*/ + std::log(depth) * std::log(move) * 0.54 /*tunnable*/, -32678.0, 32678.0));
+            reductions[depth][move] = uint8_t(std::clamp(0.77 /*tunnable*/ + std::log(depth) * std::log(move) / 2.36 /*tunnable*/, -32678.0, 32678.0));
         }
     }
 }
