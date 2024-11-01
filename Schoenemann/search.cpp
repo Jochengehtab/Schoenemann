@@ -507,7 +507,7 @@ int Search::aspiration(int depth, int score, Board& board)
         }
         else if (score <= alpha)
         {
-            beta = (alpha + beta) / aspDivisor;
+            beta = (alpha + beta) / 2;
             alpha = std::max(alpha - delta, -infinity);
         }
         else
