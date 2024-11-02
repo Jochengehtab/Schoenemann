@@ -166,7 +166,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Reverse futility pruning
     if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * depth >= beta)
     {
-        return staticEval;
+        return (staticEval + beta) / 2;
     }
 
     //Razoring
