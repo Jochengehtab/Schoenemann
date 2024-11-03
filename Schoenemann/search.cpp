@@ -445,9 +445,9 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     for (Move& move : moveList)
     {
 
-        if (moveCount >= 3 && standPat < alpha - 800 && move.to().back_rank(move.to(), !board.sideToMove()))
+        if (moveCount >= 3 && standPat < alpha - 800)
         {
-            continue;
+            break;
         }
 
         // Fultiy Prunning
