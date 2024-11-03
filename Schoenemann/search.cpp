@@ -429,12 +429,13 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     {
         return standPat;
     }
-
-    int delta = 800;
     
-    if (standPat < alpha - delta)
+    if (board.hasNonPawnMaterial(board.sideToMove()))
     {
-        return alpha;
+        if (standPat < alpha - 800)
+        {
+            return alpha;
+        }
     }
     
 
