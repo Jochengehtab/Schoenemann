@@ -430,15 +430,6 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         return standPat;
     }
     
-    if (board.hasNonPawnMaterial(board.sideToMove()))
-    {
-        if (standPat < alpha - 800)
-        {
-            return alpha;
-        }
-    }
-    
-
     if (alpha < standPat)
     {
         alpha = standPat;
@@ -463,6 +454,16 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         {
             continue;
         }
+
+        if (move.to().back_rank(move.to(), board.sideToMove()) && board.at(move.to()).type() == PieceType::PAWN)
+        {
+            // Check if we can raise alphs
+            if (bestScore < alpha - 200) 
+            {
+                continue;
+            }
+        }
+        
         
         board.makeMove(move);
 
