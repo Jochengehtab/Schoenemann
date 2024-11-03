@@ -440,6 +440,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
     int bestScore = standPat;
     Move bestMoveInQs = Move::NULL_MOVE;
+    int moveCount = 0;
 
     for (Move& move : moveList)
     {
@@ -455,12 +456,14 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
             continue;
         }
 
-        if (standPat < alpha - 2350 && move.to().back_rank(move.to(), !board.sideToMove()))
+        if (moveCount >= 2 && standPat < alpha - 2350 && move.to().back_rank(move.to(), !board.sideToMove()))
         {
-            continue;
+            return standPat;
         }
         
         board.makeMove(move);
+
+        moveCount++;
 
         int score = -qs(-beta, -alpha, board, ply);
 
