@@ -42,6 +42,10 @@ DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 
+DEFINE_PARAM_S(rfpDivisor, 2, 1);
+DEFINE_PARAM_S(iirRduction, 1, 1);
+DEFINE_PARAM_S(fpCutoff, 1, 1);
+
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
     //Increment nodes by one
@@ -143,7 +147,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         if (zobristKey != entry->key && !inCheck && depth >= iidDepth)
         {
-            depth--;
+            depth -= iirRduction;
         }
     }
 
@@ -166,7 +170,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Reverse futility pruning
     if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * depth >= beta)
     {
-        return (staticEval + beta) / 2;
+        return (staticEval + beta) / rfpDivisor;
     }
 
     //Razoring
@@ -275,7 +279,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
-        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (board.isCapture(move) ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
+        bool isQuiet = !board.isCapture(move);
+
+        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
         {
             continue;
         }
@@ -331,7 +337,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
             //Beta cutoff
             if (score >= beta)
             {
-                if (!board.isCapture(move))
+                if (isQuiet)
                 {
                     countinuationButterfly[move.from().index()][move.to().index()] = move;
                 }
@@ -438,7 +444,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     for (Move& move : moveList)
     {
         // Fultiy Prunning
-        if (!see(board, move, 1) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
+        if (!see(board, move, fpCutoff) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
         {
             continue;
         }
