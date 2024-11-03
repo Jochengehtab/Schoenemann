@@ -444,6 +444,12 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
     for (Move& move : moveList)
     {
+
+        if (moveCount >= 2 && standPat < alpha - 2500 && move.to().back_rank(move.to(), !board.sideToMove()))
+        {
+            continue;
+        }
+
         // Fultiy Prunning
         if (!see(board, move, fpCutoff) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
         {
@@ -456,11 +462,6 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
             continue;
         }
 
-        if (moveCount >= 2 && standPat < alpha - 2350 && move.to().back_rank(move.to(), !board.sideToMove()))
-        {
-            return standPat;
-        }
-        
         board.makeMove(move);
 
         moveCount++;
