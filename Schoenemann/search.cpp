@@ -445,7 +445,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     for (Move& move : moveList)
     {
 
-        if (moveCount >= 2 && standPat < alpha - 1600 && move.to().back_rank(move.to(), !board.sideToMove()))
+        if (moveCount >= 2 && standPat < alpha - 700 && move.to().back_rank(move.to(), !board.sideToMove()))
         {
             continue;
         }
