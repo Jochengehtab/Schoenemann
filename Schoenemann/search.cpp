@@ -457,9 +457,9 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
         if (move.to().back_rank(move.to(), board.sideToMove()))
         {
-            if (standPat < alpha - 1400) 
+            if (standPat < alpha - 1500) 
             {
-                continue;
+                return standPat;
             }
         }
         
