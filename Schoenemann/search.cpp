@@ -430,6 +430,14 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         return standPat;
     }
 
+    int delta = 800;
+    
+    if (standPat < alpha - delta)
+    {
+        return alpha;
+    }
+    
+
     if (alpha < standPat)
     {
         alpha = standPat;
