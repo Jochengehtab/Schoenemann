@@ -282,7 +282,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         bool isQuiet = !board.isCapture(move);
 
         // Idea
-        if (!pvNode && bestScore > -infinity && move != hashedMove && moveCounter >= 9 && staticEval < alpha - 600)
+        if (!pvNode && bestScore > -infinity && moveCounter >= 9 && staticEval < alpha - 550)
         {
             continue;
         }
