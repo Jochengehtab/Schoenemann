@@ -457,7 +457,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
         if (move.to().back_rank(move.to(), !board.sideToMove()))
         {
-            if (bestScore < alpha - 200) 
+            if (bestScore < alpha - 800) 
             {
                 continue;
             }
