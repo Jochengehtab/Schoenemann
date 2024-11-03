@@ -281,6 +281,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 
         bool isQuiet = !board.isCapture(move);
 
+        // Idea
+        if (!pvNode && bestScore > -infinity && moveCounter >= 6 && staticEval < alpha - 700)
+        {
+            continue;
+        }
+
         if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
         {
             continue;
@@ -440,15 +446,9 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
 
     int bestScore = standPat;
     Move bestMoveInQs = Move::NULL_MOVE;
-    int moveCount = 0;
 
     for (Move& move : moveList)
     {
-        // Idea
-        if (moveCount >= 3 && standPat < alpha - 700 && move.to().back_rank(move.to(), !board.sideToMove()))
-        {
-            continue;
-        }
 
         // Fultiy Prunning
         if (!see(board, move, fpCutoff) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
@@ -463,8 +463,6 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         }
 
         board.makeMove(move);
-
-        moveCount++;
 
         int score = -qs(-beta, -alpha, board, ply);
 
