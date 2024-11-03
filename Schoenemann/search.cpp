@@ -455,15 +455,10 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
             continue;
         }
 
-        if (move.to().back_rank(move.to(), board.sideToMove()) && board.at(move.to()).type() == PieceType::PAWN)
+        if (move.to().back_rank(move.to(), !board.sideToMove()))
         {
-            // Check if we can raise alphs
-            if (bestScore < alpha - 200) 
-            {
-                continue;
-            }
+            continue;
         }
-        
         
         board.makeMove(move);
 
