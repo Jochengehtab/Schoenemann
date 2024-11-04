@@ -46,6 +46,9 @@ DEFINE_PARAM_S(rfpDivisor, 2, 1);
 DEFINE_PARAM_S(iirRduction, 1, 1);
 DEFINE_PARAM_S(fpCutoff, 1, 1);
 
+DEFINE_PARAM_S(ownIdeaCounter, 9, 2);
+DEFINE_PARAM_S(ownIdeaAlpha, 550, 60);
+
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
 {
     //Increment nodes by one
@@ -282,7 +285,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         bool isQuiet = !board.isCapture(move);
 
         // Idea
-        if (!pvNode && bestScore > -infinity && moveCounter >= 9 && staticEval < alpha - 550)
+        if (!pvNode && bestScore > -infinity && moveCounter >= ownIdeaCounter && staticEval < alpha - ownIdeaAlpha)
         {
             continue;
         }

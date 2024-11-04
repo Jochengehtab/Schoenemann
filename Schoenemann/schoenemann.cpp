@@ -13,7 +13,7 @@
 #include "nnue.h"
 #include "quantised.h"
 
-// #define tuning
+#define tuning
 
 Search seracher;
 tt transpositionTabel(8);
