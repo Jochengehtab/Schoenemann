@@ -42,8 +42,7 @@ DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 
-DEFINE_PARAM_S(iirRduction, 1, 1);
-DEFINE_PARAM_S(fpCutoff, 1, 1);
+DEFINE_PARAM_B(iirRduction, 1, 1, 11);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 {
@@ -441,7 +440,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
+        if (!pvNode  && ply > 0 && zobristKey == entry->key)
         {
             if ((hashedType == EXACT) ||
                 (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
@@ -450,11 +449,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 return hashedScore;
             }
         }
-    }
-
-    if (!inCheck && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
-    {
-        standPat = hashedScore;
     }
 
     if (standPat == NO_VALUE)
@@ -481,7 +475,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     for (Move &move : moveList)
     {
         // Fultiy Prunning
-        if (!see(board, move, fpCutoff) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
+        if (!see(board, move, 1) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
         {
             continue;
         }
