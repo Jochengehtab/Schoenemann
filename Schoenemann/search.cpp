@@ -44,7 +44,7 @@ DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 
 //DEFINE_PARAM_S(rfpDivisor, 2, 1);
 DEFINE_PARAM_S(iirRduction, 1, 1);
-DEFINE_PARAM_S(fpCutoff, 1, 1);
+//DEFINE_PARAM_S(fpCutoff, 1, 1);
 
 DEFINE_PARAM_S(ownIdeaCounter, 9, 2);
 DEFINE_PARAM_S(ownIdeaAlpha, 550, 60);
@@ -454,7 +454,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
     {
 
         // Fultiy Prunning
-        if (!see(board, move, fpCutoff) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
+        if (!see(board, move, 1) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
         {
             continue;
         }
