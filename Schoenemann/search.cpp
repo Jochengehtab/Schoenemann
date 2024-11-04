@@ -440,7 +440,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode  && ply > 0 && zobristKey == entry->key)
+        if (!pvNode && zobristKey == entry->key)
         {
             if ((hashedType == EXACT) ||
                 (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
@@ -448,6 +448,10 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             {
                 return hashedScore;
             }
+        }
+        if (!inCheck && zobristKey == entry->key && !pvNode)
+        {
+            standPat = hashedScore;
         }
     }
 
