@@ -43,10 +43,10 @@ DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 
 //DEFINE_PARAM_S(rfpDivisor, 2, 1);
-DEFINE_PARAM_S(iirRduction, 1, 1);
+DEFINE_PARAM_B(iirRduction, 1, 1, 10);
 //DEFINE_PARAM_S(fpCutoff, 1, 1);
 
-DEFINE_PARAM_S(ownIdeaCounter, 9, 2);
+DEFINE_PARAM_B(ownIdeaCounter, 9, 2, 18);
 DEFINE_PARAM_S(ownIdeaAlpha, 550, 60);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
