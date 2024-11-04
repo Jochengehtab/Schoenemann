@@ -449,7 +449,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 return hashedScore;
             }
         }
-        if (!inCheck && zobristKey == entry->key)
+        else
         {
             standPat = hashedScore;
         }
