@@ -42,7 +42,6 @@ DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 
-DEFINE_PARAM_S(rfpDivisor, 2, 1);
 DEFINE_PARAM_S(iirRduction, 1, 1);
 DEFINE_PARAM_S(fpCutoff, 1, 1);
 
@@ -131,7 +130,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
 
         //Check if we can return a stored score
-        if (!pvNode && hashedDepth >= depth && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
+        if (!pvNode && hashedDepth >= depth && ply > 0 && zobristKey == entry->key)
         {
             if ((hashedType == EXACT) ||
                 (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
@@ -170,7 +169,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
     //Reverse futility pruning
     if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * depth >= beta)
     {
-        return (staticEval + beta) / rfpDivisor;
+        return (staticEval + beta) / 2;
     }
 
     //Razoring
@@ -251,7 +250,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
     }
 
-    short type = UPPER_BOUND;
+    short type = LOWER_BOUND;
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
