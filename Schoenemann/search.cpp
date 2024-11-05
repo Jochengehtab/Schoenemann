@@ -359,6 +359,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             // Beta cutoff
             if (score >= beta)
             {
+                type = UPPER_BOUND;
                 if (isQuiet)
                 {
                     stack[ply].killerMove = move;
@@ -370,21 +371,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         }
     }
 
-    short finalType;
-    // Calculate the node type
-    if (bestScore >= beta)
-    {
-        finalType = LOWER_BOUND;
-    }
-    else if (pvNode && (type == EXACT))
-    {
-        finalType = EXACT;
-    }
-    else
-    {
-        finalType = UPPER_BOUND;
-    }
-    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
+    transpositionTabel.storeEvaluation(zobristKey, depth, type, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
 
     return bestScore;
 }
@@ -440,7 +427,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode && zobristKey == entry->key)
+        if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
         {
             if ((hashedType == EXACT) ||
                 (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
@@ -449,10 +436,11 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 return hashedScore;
             }
         }
-        else
-        {
-            standPat = hashedScore;
-        }
+    }
+
+    if (!inCheck && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
+    {
+        standPat = hashedScore;
     }
 
     if (standPat == NO_VALUE)
