@@ -260,7 +260,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         }
     }
 
-    short type = LOWER_BOUND;
+    short type = UPPER_BOUND;
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
@@ -359,7 +359,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             // Beta cutoff
             if (score >= beta)
             {
-                type = UPPER_BOUND;
+                type = LOWER_BOUND;
                 if (isQuiet)
                 {
                     stack[ply].killerMove = move;
