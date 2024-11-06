@@ -11,6 +11,6 @@ ifeq ($(OS),Windows_NT)
 endif
 
 all:
-	cd ../Schoenemann && clang++ -Wall -std=c++20 -O3 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp -o $(EXE)
+	cd ../Schoenemann && clang++ -Wall -std=c++20 -O3 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o $(EXE)
 test:
-	cd ../Schoenemann && clang++ -Wall -std=c++20 -fsanitize=address -g3 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tunc.cpp tuneconsts.cpp -o $(EXE)
+	cd ../Schoenemann && clang++ -Wall -std=c++20 -fsanitize=address -g3 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tunc.cpp tuneconsts.cpp datagen.cpp -o $(EXE)

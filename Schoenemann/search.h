@@ -20,8 +20,11 @@ public:
 	Move rootBestMove = Move::NULL_MOVE;
 	bool shouldStop = false;
 	bool isNormalSearch = true;
+	bool hasNodeLimit = false;
+	int nodeLimit = 0;
 	int timeForMove = 0;
 	int index = 0;
+	int scoreData = 0;
 
 	int nodes = 0;
 	long hardLimit = 0;

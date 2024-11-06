@@ -11,6 +11,7 @@
 #include "consts.h"
 #include "helper.h"
 #include "nnue.h"
+#include "datagen.h"
 #include "quantised.h"
 
 // #define tuning
@@ -197,6 +198,13 @@ void processCommand(const std::string& cmd, Board& board)
                 seracher.pvs(-32767, 32767, std::stoi(token), 0, board);
                 std::cout << "bestmove " << uci::moveToUci(seracher.rootBestMove) << std::endl;
             }
+            else if (token == "nodes")
+            {
+                is >> token;
+                seracher.hasNodeLimit = true;
+                seracher.nodeLimit = std::stoi(token);
+                seracher.iterativeDeepening(board, true);
+            }
             else if (token == "movetime") 
 			{
                 is >> token;
@@ -227,6 +235,11 @@ void processCommand(const std::string& cmd, Board& board)
     else if (token == "d") 
 	{
         std::cout << board << std::endl;
+    }
+    else if (token == "datagen")
+    {
+        is >> token;
+        generate(std::stoi(token));
     }
     else if (token == "bench") 
 	{

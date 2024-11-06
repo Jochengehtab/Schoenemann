@@ -61,7 +61,17 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         {
             shouldStop = true;
         }
+
+        if (hasNodeLimit)
+        {
+            if (nodes >= nodeLimit)
+            {
+                shouldStop = true;
+            }
+        }
+        
     }
+    
     
     if(board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
     {
@@ -380,6 +390,14 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         {
             return beta;
         }
+
+        if (hasNodeLimit)
+        {
+            if (nodes >= nodeLimit)
+            {
+                shouldStop = true;
+            }
+        }
     }
 
     nodes++;
@@ -535,7 +553,6 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
     Move bestMoveThisIteration = Move::NULL_MOVE;
     isNormalSearch = false;
     bool hasFoundMove = false;
-    int score = 0;
 
     if (isInfinite)
     {
@@ -547,7 +564,7 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        score = i >= aspEntryDepth ? aspiration(i, score, board) : pvs(-infinity, infinity, i, 0, board);
+        scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board);
         std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
         // Add one the avoid division by zero
         int timeCount = elapsed.count() + 1;
@@ -566,26 +583,38 @@ void Search::iterativeDeepening(Board& board, bool isInfinite)
             hasFoundMove = true;
         }
 
-        std::cout << "info depth " << i << " score cp " << score << " nodes " << nodes << " nps " << static_cast<int>(seracher.nodes / timeCount * 1000) << " pv " << uci::moveToUci(rootBestMove) << std::endl;
-
+        if (!hasNodeLimit)
+        {
+            std::cout << "info depth " << i << " score cp " << scoreData << " nodes " << nodes << " nps " << static_cast<int>(seracher.nodes / timeCount * 1000) << " pv " << uci::moveToUci(rootBestMove) << std::endl;
+        }
+        
 
         //std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
         if (i == 256 && hasFoundMove)
         {
-            std::cout << "bestmove " << uci::moveToUci(rootBestMove) << std::endl;
+            if (!hasNodeLimit)
+            {
+                std::cout << "bestmove " << uci::moveToUci(rootBestMove) << std::endl;
+            }
             break;
         }
 
         if (shouldStopID(start) && hasFoundMove && !isInfinite)
         {
-            std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
+            if (!hasNodeLimit)
+            {
+                std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
+            }
             shouldStop = true;
             break;
         }
 
         if (shouldStop && hasFoundMove)
         {
-            std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
+            if (!hasNodeLimit)
+            {
+                std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
+            }
             shouldStop = true;
             break;
         }
