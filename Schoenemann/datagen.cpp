@@ -38,9 +38,17 @@ void generate(int amount)
         std::string outputLine[400];
         std::string resultString = "none";
         int moveCount = 0;
+        bool hasExitedEarly = false;
 
         for (int i = 0; i < 400; i++)
         {
+
+            if (i >= 398)
+            {
+                hasExitedEarly = true;
+                break;
+            }
+
             seracher.iterativeDeepening(board, true);
 
             Move bestMove = seracher.rootBestMove;
@@ -96,7 +104,7 @@ void generate(int amount)
             board.makeMove(bestMove);
         }
 
-        if (resultString == "none")
+        if (resultString == "none" || hasExitedEarly)
         {
             continue;
         }
