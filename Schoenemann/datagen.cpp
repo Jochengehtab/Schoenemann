@@ -35,12 +35,12 @@ void generate(int amount)
             board.makeMove(moveList[dis(gen)]);
         }
 
-        std::string outputLine[400];
+        std::string outputLine[500];
         std::string resultString = "none";
         int moveCount = 0;
         bool hasExitedEarly = false;
 
-        for (int i = 0; i < 400; i++)
+        for (int i = 0; i < 500; i++)
         {
 
             if (i >= 398)
@@ -60,7 +60,7 @@ void generate(int amount)
                 {
                     resultString = "0.5";
                 }
-                else if (result.second == GameResult::WIN && board.sideToMove() == Color::WHITE)
+                else if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK)
                 {
                     resultString = "1.0";
                 }
@@ -77,19 +77,6 @@ void generate(int amount)
                 board.makeMove(bestMove);
                 continue;
             }
-
-            if (board.sideToMove() == Color::WHITE && seracher.scoreData >= 15000)
-            {
-                board.makeMove(bestMove);
-                continue;
-            }
-
-            if (board.sideToMove() == Color::BLACK && seracher.scoreData <= 15000)
-            {
-                board.makeMove(bestMove);
-                continue;
-            }
-
             if (board.sideToMove() == Color::WHITE)
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(seracher.scoreData) + " | ";
