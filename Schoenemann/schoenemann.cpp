@@ -238,8 +238,7 @@ void processCommand(const std::string& cmd, Board& board)
     }
     else if (token == "datagen")
     {
-        is >> token;
-        generate(std::stoi(token));
+        generate();
     }
     else if (token == "bench") 
 	{

@@ -1,6 +1,6 @@
 #include "datagen.h"
 
-void generate(int amount) 
+void generate() 
 {
     Board board;
 
@@ -20,10 +20,12 @@ void generate(int amount)
 
     std::ios::sync_with_stdio(false);
     transpositionTabel.setSize(16);
+    std::uint64_t counter = 0;
 
     // Accumulate output in the file directly
-    for (int j = 0; j < amount; j++)
+    while (true)
     {
+        counter++;
         board.setFen(STARTPOS);
 
         for (int i = 0; i < 8; i++)
@@ -77,6 +79,19 @@ void generate(int amount)
                 board.makeMove(bestMove);
                 continue;
             }
+
+            if (board.sideToMove() == Color::WHITE && seracher.scoreData >= 15000)
+            {
+                board.makeMove(bestMove);
+                continue;
+            }
+
+            if (board.sideToMove() == Color::BLACK && seracher.scoreData <= 15000)
+            {
+                board.makeMove(bestMove);
+                continue;
+            }
+
             if (board.sideToMove() == Color::WHITE)
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(seracher.scoreData) + " | ";
@@ -106,7 +121,7 @@ void generate(int amount)
             outputFile << outputLine[i] + resultString + "\n";
         }
 
-        if (amount % 25 == 0)
+        if (counter % 100 == 0)
         {
             std::cout << "Generated: " << positions << std::endl; 
         }
