@@ -298,6 +298,12 @@ int uciLoop(int argc, char* argv[])
 		return 0;
     }
 
+    if (argc > 1 && strcmp(argv[1], "datagen") == 0) 
+	{
+        generate();
+		return 0;
+    }
+
 	// Start the listener thread
     std::thread listener(commandListener);
 
