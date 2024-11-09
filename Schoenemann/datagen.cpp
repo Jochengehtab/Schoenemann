@@ -32,29 +32,28 @@ void generate()
         {
             Movelist moveList;
             movegen::legalmoves(moveList, board);
+            
+            if (moveList.size() == 0)
+            {
+                break;
+            }
+            
             std::uniform_int_distribution<> dis(0, moveList.size() - 1);
 
             board.makeMove(moveList[dis(gen)]);
         }
 
-        std::string outputLine[500];
+        if (board.fullMoveNumber() < 5) 
+        {
+            continue;
+        }
+
+        std::string outputLine[502];
         std::string resultString = "none";
         int moveCount = 0;
-        bool hasExitedEarly = false;
 
         for (int i = 0; i < 500; i++)
         {
-
-            if (i >= 398)
-            {
-                hasExitedEarly = true;
-                break;
-            }
-
-            seracher.iterativeDeepening(board, true);
-
-            Move bestMove = seracher.rootBestMove;
-
             std::pair<GameResultReason, GameResult> result = board.isGameOver();
             if (result.second != GameResult::NONE)
             {
@@ -62,7 +61,8 @@ void generate()
                 {
                     resultString = "0.5";
                 }
-                else if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK)
+                
+                if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK)
                 {
                     resultString = "1.0";
                 }
@@ -74,19 +74,14 @@ void generate()
                 break;
             }
 
-            if (board.inCheck() || board.isCapture(bestMove))
-            {
-                board.makeMove(bestMove);
-                continue;
-            }
+            seracher.iterativeDeepening(board, true);
 
-            if (board.sideToMove() == Color::WHITE && seracher.scoreData >= 15000)
-            {
-                board.makeMove(bestMove);
-                continue;
-            }
+            Move bestMove = seracher.rootBestMove;
 
-            if (board.sideToMove() == Color::BLACK && seracher.scoreData <= 15000)
+            if (board.inCheck() || 
+                board.isCapture(bestMove) || 
+                (board.sideToMove() == Color::WHITE && seracher.scoreData >= 15000) || 
+                (board.sideToMove() == Color::BLACK && seracher.scoreData <= 15000))
             {
                 board.makeMove(bestMove);
                 continue;
@@ -96,7 +91,7 @@ void generate()
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(seracher.scoreData) + " | ";
             }
-            else if (board.sideToMove() == Color::BLACK)
+            else
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(-seracher.scoreData) + " | ";
             }
@@ -106,7 +101,7 @@ void generate()
             board.makeMove(bestMove);
         }
 
-        if (resultString == "none" || hasExitedEarly)
+        if (resultString == "none")
         {
             continue;
         }
