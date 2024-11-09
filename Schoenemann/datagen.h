@@ -10,4 +10,4 @@
 
 using namespace chess;
 
-void generate(int amount);
+void generate();
