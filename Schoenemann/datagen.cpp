@@ -1,6 +1,6 @@
 #include "datagen.h"
 
-void generate(int amount) 
+void generate() 
 {
     Board board;
 
@@ -20,10 +20,12 @@ void generate(int amount)
 
     std::ios::sync_with_stdio(false);
     transpositionTabel.setSize(16);
+    std::uint64_t counter = 0;
 
     // Accumulate output in the file directly
-    for (int j = 0; j < amount; j++)
+    while (true)
     {
+        counter++;
         board.setFen(STARTPOS);
 
         for (int i = 0; i < 8; i++)
@@ -35,12 +37,12 @@ void generate(int amount)
             board.makeMove(moveList[dis(gen)]);
         }
 
-        std::string outputLine[400];
+        std::string outputLine[500];
         std::string resultString = "none";
         int moveCount = 0;
         bool hasExitedEarly = false;
 
-        for (int i = 0; i < 400; i++)
+        for (int i = 0; i < 500; i++)
         {
 
             if (i >= 398)
@@ -60,7 +62,7 @@ void generate(int amount)
                 {
                     resultString = "0.5";
                 }
-                else if (result.second == GameResult::WIN && board.sideToMove() == Color::WHITE)
+                else if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK)
                 {
                     resultString = "1.0";
                 }
@@ -119,7 +121,7 @@ void generate(int amount)
             outputFile << outputLine[i] + resultString + "\n";
         }
 
-        if (amount % 25 == 0)
+        if (counter % 100 == 0)
         {
             std::cout << "Generated: " << positions << std::endl; 
         }
