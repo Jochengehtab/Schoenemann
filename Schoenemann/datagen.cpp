@@ -91,9 +91,13 @@ void generate()
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(seracher.scoreData) + " | ";
             }
-            else
+            else if (board.sideToMove() == Color::WHITE)
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(-seracher.scoreData) + " | ";
+            }
+            else 
+            {
+                break;
             }
 
             moveCount++;
