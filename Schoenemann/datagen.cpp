@@ -18,7 +18,6 @@ void generate()
         return;
     }
 
-    std::ios::sync_with_stdio(false);
     transpositionTabel.setSize(16);
     std::uint64_t counter = 0;
 
@@ -101,7 +100,6 @@ void generate()
             }
 
             moveCount++;
-            positions++;
             board.makeMove(bestMove);
         }
 
@@ -111,13 +109,14 @@ void generate()
         }
 
         for (int i = 0; i < std::min(moveCount, 400); i++)
-        {
+        {   
             if (outputLine[i].empty())
             {
                 continue;
             }
             
             outputFile << outputLine[i] + resultString + "\n";
+            positions++;
         }
 
         if (counter % 100 == 0)
