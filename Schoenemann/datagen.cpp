@@ -32,7 +32,8 @@ void generate()
             Movelist moveList;
             movegen::legalmoves(moveList, board);
             
-            if (moveList.size() == 0)
+            std::pair<GameResultReason, GameResult> result = board.isGameOver();
+            if (result.second != GameResult::NONE)
             {
                 break;
             }
