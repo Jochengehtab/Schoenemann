@@ -18,6 +18,7 @@ void generate()
         return;
     }
 
+    std::ios::sync_with_stdio(false);
     transpositionTabel.setSize(16);
     std::uint64_t counter = 0;
 
@@ -27,6 +28,8 @@ void generate()
         counter++;
         board.setFen(STARTPOS);
 
+        bool exitEarly = false;
+
         for (int i = 0; i < 8; i++)
         {
             Movelist moveList;
@@ -35,6 +38,13 @@ void generate()
             std::pair<GameResultReason, GameResult> result = board.isGameOver();
             if (result.second != GameResult::NONE)
             {
+                exitEarly = true;
+                break;
+            }
+
+            if (moveList.size() == 0) 
+            {
+                exitEarly = true;
                 break;
             }
             
@@ -43,16 +53,17 @@ void generate()
             board.makeMove(moveList[dis(gen)]);
         }
 
-        if (board.fullMoveNumber() < 5) 
+        if (exitEarly) 
         {
             continue;
         }
 
-        std::string outputLine[502];
+        std::string outputLine[1002];
         std::string resultString = "none";
         int moveCount = 0;
+        Move previousMove = Move::NULL_MOVE;
 
-        for (int i = 0; i < 500; i++)
+        for (int i = 0; i < 1000; i++)
         {
             std::pair<GameResultReason, GameResult> result = board.isGameOver();
             if (result.second != GameResult::NONE)
@@ -74,9 +85,22 @@ void generate()
                 break;
             }
 
+            Movelist moveList;
+            movegen::legalmoves(moveList, board);
+
+            if (moveList.size() == 0) 
+            {
+                break;
+            }
+
             seracher.iterativeDeepening(board, true);
 
             Move bestMove = seracher.rootBestMove;
+
+            if (bestMove == previousMove)
+            {
+                break;
+            }
 
             if (board.inCheck() || 
                 board.isCapture(bestMove) || 
@@ -95,13 +119,10 @@ void generate()
             {
                 outputLine[i] = board.getFen() + " | " + std::to_string(-seracher.scoreData) + " | ";
             }
-            else 
-            {
-                break;
-            }
 
             moveCount++;
             board.makeMove(bestMove);
+            previousMove = bestMove;
         }
 
         if (resultString == "none")
@@ -109,7 +130,7 @@ void generate()
             continue;
         }
 
-        for (int i = 0; i < std::min(moveCount, 400); i++)
+        for (int i = 0; i < std::min(moveCount, 1000); i++)
         {   
             if (outputLine[i].empty())
             {
@@ -124,6 +145,8 @@ void generate()
         {
             std::cout << "Generated: " << positions << std::endl; 
         }
+
+        seracher.nodes = 0;
     }
 
     transpositionTabel.clear();
