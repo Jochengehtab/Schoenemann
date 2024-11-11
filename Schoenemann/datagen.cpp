@@ -3,7 +3,6 @@
 void generate() 
 {
     Board board;
-
     seracher.hasNodeLimit = true;
     seracher.nodeLimit = 8000;
     int positions = 0;
@@ -62,6 +61,7 @@ void generate()
         std::string resultString = "none";
         int moveCount = 0;
         Move previousMove = Move::NULL_MOVE;
+        bool isIllegal = false;
 
         for (int i = 0; i < 1000; i++)
         {
@@ -97,10 +97,18 @@ void generate()
 
             Move bestMove = seracher.rootBestMove;
 
+            if (board.at(bestMove.from()) == Piece::NONE || board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
+            {
+                isIllegal = true;
+                break;
+            }
+            
+
             if (bestMove == previousMove)
             {
                 break;
             }
+            
 
             if (board.inCheck() || 
                 board.isCapture(bestMove) || 
@@ -125,7 +133,7 @@ void generate()
             previousMove = bestMove;
         }
 
-        if (resultString == "none")
+        if (resultString == "none" || isIllegal)
         {
             continue;
         }
