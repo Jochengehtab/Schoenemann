@@ -2,6 +2,7 @@
 #include "consts.h"
 #include "chess.hpp"
 #include <random>
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <sstream>

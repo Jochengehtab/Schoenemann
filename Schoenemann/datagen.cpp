@@ -4,7 +4,7 @@ void generate()
 {
     Board board;
     seracher.hasNodeLimit = true;
-    seracher.nodeLimit = 8000;
+    seracher.nodeLimit = 5000;
     int positions = 0;
 
     std::random_device rd;  
@@ -21,7 +21,8 @@ void generate()
     transpositionTabel.setSize(16);
     std::uint64_t counter = 0;
 
-    // Accumulate output in the file directly
+    auto startTime = std::chrono::steady_clock::now();
+
     while (true)
     {
         counter++;
@@ -57,13 +58,12 @@ void generate()
             continue;
         }
 
-        std::string outputLine[1002];
+        std::string outputLine[501];
         std::string resultString = "none";
         int moveCount = 0;
-        Move previousMove = Move::NULL_MOVE;
         bool isIllegal = false;
 
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 500; i++)
         {
             std::pair<GameResultReason, GameResult> result = board.isGameOver();
             if (result.second != GameResult::NONE)
@@ -88,27 +88,15 @@ void generate()
             Movelist moveList;
             movegen::legalmoves(moveList, board);
 
-            if (moveList.size() == 0) 
-            {
-                break;
-            }
-
             seracher.iterativeDeepening(board, true);
 
             Move bestMove = seracher.rootBestMove;
 
-            if (board.at(bestMove.from()) == Piece::NONE || board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
+            if (board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
             {
                 isIllegal = true;
                 break;
             }
-            
-
-            if (bestMove == previousMove)
-            {
-                break;
-            }
-            
 
             if (board.inCheck() || 
                 board.isCapture(bestMove) || 
@@ -130,7 +118,6 @@ void generate()
 
             moveCount++;
             board.makeMove(bestMove);
-            previousMove = bestMove;
         }
 
         if (resultString == "none" || isIllegal)
@@ -138,7 +125,7 @@ void generate()
             continue;
         }
 
-        for (int i = 0; i < std::min(moveCount, 1000); i++)
+        for (int i = 0; i < std::min(moveCount, 500); i++)
         {   
             if (outputLine[i].empty())
             {
@@ -151,7 +138,10 @@ void generate()
 
         if (counter % 100 == 0)
         {
-            std::cout << "Generated: " << positions << std::endl; 
+            auto currentTime = std::chrono::steady_clock::now();
+            auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
+            double positionsPerSecond = static_cast<double>(positions) / elapsedTime;
+            std::cout << "Generated: " << positions << " positions | " << "PPS: " <<(int) positionsPerSecond << std::endl;
         }
 
         seracher.nodes = 0;
