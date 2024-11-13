@@ -1,8 +1,7 @@
 #include "datagen.h"
 
-void generate() 
+void generate(Board& board) 
 {
-    Board board;
     seracher.hasNodeLimit = true;
     seracher.nodeLimit = 5000;
     int positions = 0;
