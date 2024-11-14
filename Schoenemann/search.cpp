@@ -55,7 +55,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         return beta;
     }
 
-    if(nodes % 4096 == 0)
+    if(nodes % 2048 == 0)
     {
         if (shouldStopSoft(start) && !isNormalSearch)
         {
@@ -383,7 +383,7 @@ int Search::qs(int alpha, int beta, Board& board, int ply)
         return beta;
     }
 
-    if(nodes % 4096 == 0)
+    if(nodes % 2048 == 0)
     {
         //Check for a timeout
         if (shouldStopSoft(start) && !isNormalSearch) 
