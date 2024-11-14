@@ -142,8 +142,6 @@ void generate(Board& board)
             double positionsPerSecond = static_cast<double>(positions) / elapsedTime;
             std::cout << "Generated: " << positions << " positions | " << "PPS: " <<(int) positionsPerSecond << std::endl;
         }
-
-        seracher.nodes = 0;
     }
 
     transpositionTabel.clear();
