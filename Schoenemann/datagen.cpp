@@ -11,7 +11,7 @@ void generate(Board& board)
     std::mt19937 gen(rd());
 
     // Open the outputfile
-    std::ofstream outputFile("outputt.txt", std::ios::app);
+    std::ofstream outputFile("output.txt", std::ios::app);
 
     // Check if the file is open
     if (!outputFile.is_open())
@@ -24,7 +24,7 @@ void generate(Board& board)
     std::ios::sync_with_stdio(false);
 
     // Set TT-Size
-    transpositionTabel.setSize(16);
+    transpositionTabel.setSize(4);
 
     // Needed for logging
     std::uint64_t counter = 0;
@@ -110,7 +110,7 @@ void generate(Board& board)
             movegen::legalmoves(moveList, board);
 
             // Search for 5000 nodes
-            seracher.iterativeDeepening(board, false);
+            seracher.iterativeDeepening(board, true);
 
             // Get the best move
             Move bestMove = seracher.rootBestMove;
