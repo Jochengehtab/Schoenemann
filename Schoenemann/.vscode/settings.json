@@ -88,5 +88,6 @@
         "thread": "cpp",
         "cstdarg": "cpp",
         "semaphore": "cpp"
-    }
+    },
+    "workbench.editorLargeFileConfirmation": 4096
 }
