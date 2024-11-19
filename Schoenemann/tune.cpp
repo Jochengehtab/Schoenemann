@@ -3,6 +3,9 @@
 #include <sstream>
 #include <vector>
 
+// Tuner taken from Obsidian
+// Thx gabe
+
 std::vector<EngineParam *> tuningParams;
 
 void registerParam(EngineParam *param){
