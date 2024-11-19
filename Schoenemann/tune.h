@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+// Tuner taken from Obsidian
+// Thx gabe
+
 struct EngineParam;
 
 void registerParam(EngineParam* param);
