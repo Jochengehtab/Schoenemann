@@ -20,9 +20,6 @@ void generate(Board& board)
         return;
     }
 
-    // Disable synchronisation
-    std::ios::sync_with_stdio(false);
-
     // Set TT-Size
     transpositionTabel.setSize(4);
 
