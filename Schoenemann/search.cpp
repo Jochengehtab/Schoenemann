@@ -296,7 +296,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board& board)
         }
 
         board.makeMove(move);
-
         moveCounter++;
 
         short checkExtension = 0;
