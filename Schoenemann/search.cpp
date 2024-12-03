@@ -493,7 +493,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
 
         board.makeMove(move);
 
-        int score = -qs(-beta, -alpha, board, ply);
+        int score = -qs(-beta, -alpha, board, ply + 1);
 
         board.unmakeMove(move);
         // Our current Score is better then the previos bestScore so we update it
@@ -610,12 +610,13 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         if (!hasNodeLimit)
         {
+            std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
             std::cout
                 << "info depth "
                 << i << " score cp "
                 << scoreData << " nodes "
                 << nodes << " nps "
-                << static_cast<int>(searcher.nodes / ((std::chrono::high_resolution_clock::now() - start).count() + 1) * 1000) << " pv "
+                << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
                 << getPVLine()
                 << std::endl;
         }
