@@ -16,7 +16,7 @@
 
 // #define tuning
 
-Search seracher;
+Search searcher;
 tt transpositionTabel(8);
 
 memorystream memoryStream(quantised_bin, quantised_bin_len);
@@ -44,12 +44,12 @@ void commandListener()
         queueCondVar.notify_one();
 		if (input == "stop")
 		{
-			seracher.shouldStop = true;
+			searcher.shouldStop = true;
 		}
 
         if (input == "quit") 
 		{
-			seracher.shouldStop = true;
+			searcher.shouldStop = true;
             break;
         }
     }
@@ -159,15 +159,15 @@ void processCommand(const std::string& cmd, Board& board)
 	{
         int number[4];
         bool hasTime = false;
-        seracher.shouldStop = false;
-        memset(seracher.countinuationButterfly, 0, sizeof(seracher.countinuationButterfly));
+        searcher.shouldStop = false;
+        memset(searcher.countinuationButterfly, 0, sizeof(searcher.countinuationButterfly));
 
         listenerActive = true; // Activate listener to capture stop/quit during search
 
         is >> token;
         if (!is.good()) 
 		{
-            seracher.iterativeDeepening(board, true);
+            searcher.iterativeDeepening(board, true);
         }
         while (is.good()) {
             if (token == "wtime") 
@@ -195,21 +195,22 @@ void processCommand(const std::string& cmd, Board& board)
             else if (token == "depth") 
 			{
                 is >> token;
-                seracher.pvs(-32767, 32767, std::stoi(token), 0, board);
-                std::cout << "bestmove " << uci::moveToUci(seracher.rootBestMove) << std::endl;
+                searcher.reset();
+                searcher.pvs(-32767, 32767, std::stoi(token), 0, board);
+                std::cout << "bestmove " << uci::moveToUci(searcher.rootBestMove) << std::endl;
             }
             else if (token == "nodes")
             {
                 is >> token;
-                seracher.hasNodeLimit = true;
-                seracher.nodeLimit = std::stoi(token);
-                seracher.iterativeDeepening(board, true);
+                searcher.hasNodeLimit = true;
+                searcher.nodeLimit = std::stoi(token);
+                searcher.iterativeDeepening(board, true);
             }
             else if (token == "movetime") 
 			{
                 is >> token;
-                seracher.timeLeft = std::stoi(token);
-                seracher.iterativeDeepening(board, false);
+                searcher.timeLeft = std::stoi(token);
+                searcher.iterativeDeepening(board, false);
             }
             if (!(is >> token)) 
 			{
@@ -220,14 +221,14 @@ void processCommand(const std::string& cmd, Board& board)
 		{
             if (board.sideToMove() == Color::WHITE) 
 			{
-                seracher.timeLeft = number[0];
-                seracher.increment = number[2];
+                searcher.timeLeft = number[0];
+                searcher.increment = number[2];
             }
             else {
-                seracher.timeLeft = number[1];
-                seracher.increment = number[3];
+                searcher.timeLeft = number[1];
+                searcher.increment = number[3];
             }
-            seracher.iterativeDeepening(board, false);
+            searcher.iterativeDeepening(board, false);
         }
 
         listenerActive = false; // Deactivate listener after search is complete
@@ -246,7 +247,7 @@ void processCommand(const std::string& cmd, Board& board)
     }
     else if (token == "nodes") 
 	{
-        std::cout << seracher.nodes << std::endl;
+        std::cout << searcher.nodes << std::endl;
     }
     else if (token == "ttest") 
 	{
@@ -270,7 +271,7 @@ void processCommand(const std::string& cmd, Board& board)
     }
     else if (token == "stop") 
 	{
-        seracher.shouldStop = true;
+        searcher.shouldStop = true;
     }
 }
 
@@ -289,7 +290,7 @@ int uciLoop(int argc, char* argv[])
     // Disable FRC (Fisher-Random-Chess)
     board.set960(false);
 
-    seracher.initLMR();
+    searcher.initLMR();
 
     transpositionTabel.setSize(8);
     if (argc > 1 && strcmp(argv[1], "bench") == 0) 
@@ -319,7 +320,7 @@ int uciLoop(int argc, char* argv[])
 
         if (cmd == "quit") 
 		{
-            seracher.shouldStop = true;
+            searcher.shouldStop = true;
             break;
         }
         processCommand(cmd, board);

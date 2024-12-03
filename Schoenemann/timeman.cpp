@@ -2,17 +2,17 @@
 
 void getTimeForMove()
 {
-	if (seracher.timeLeft < 0)
+	if (searcher.timeLeft < 0)
 	{
-		seracher.timeLeft = 1000;
+		searcher.timeLeft = 1000;
 	}
 
-	seracher.timeLeft -= seracher.timeLeft / 2;
-	seracher.hardLimit = seracher.softLimit = seracher.timeLeft;
+	searcher.timeLeft -= searcher.timeLeft / 2;
+	searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
 
-	int baseTime = (int) (seracher.timeLeft * 0.054 + seracher.increment * 0.85);
-	int maxTime = (int) (seracher.timeLeft * 0.76);
+	int baseTime = (int) (searcher.timeLeft * 0.054 + searcher.increment * 0.85);
+	int maxTime = (int) (searcher.timeLeft * 0.76);
 
-	seracher.hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
-	seracher.softLimit = std::min(maxTime, (int) (baseTime * 0.76));
+	searcher.hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
+	searcher.softLimit = std::min(maxTime, (int) (baseTime * 0.76));
 }

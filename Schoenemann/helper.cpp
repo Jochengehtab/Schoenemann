@@ -92,12 +92,15 @@ void runBenchmark() {
 	auto start = std::chrono::high_resolution_clock::now();
 
 	//Reseting the nodes
-	seracher.nodes = 0;
+	searcher.nodes = 0;
+
+	// Reset everything
+	searcher.reset();
 
 	//Looping over all bench positions
 	for (const auto& test : testStrings) {
 		benchBoard.setFen(test);
-		seracher.pvs(-infinity, infinity, benchDepth, 0, benchBoard);
+		searcher.pvs(-infinity, infinity, benchDepth, 0, benchBoard);
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
@@ -107,8 +110,8 @@ void runBenchmark() {
 	int timeInMs = static_cast<int>(timeElapsed.count());
 
 	//calculates the Nodes per Second
-	int NPS = static_cast<int>(seracher.nodes / timeElapsed.count() * 1000);
+	int NPS = static_cast<int>(searcher.nodes / timeElapsed.count() * 1000);
 
 	//Prints out the final bench 
-	std::cout << "Time  : " << timeInMs << " ms\nNodes : " << seracher.nodes << "\nNPS   : " << NPS << std::endl;
+	std::cout << "Time  : " << timeInMs << " ms\nNodes : " << searcher.nodes << "\nNPS   : " << NPS << std::endl;
 }
