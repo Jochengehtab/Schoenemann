@@ -36,4 +36,4 @@ const std::string testStrings[] = {
 
 extern tt transpositionTabel;
 class Search;
-extern Search seracher;
+extern Search searcher;

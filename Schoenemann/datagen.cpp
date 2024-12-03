@@ -3,8 +3,8 @@
 void generate(Board& board) 
 {
     // Set up the nodes limit
-    seracher.hasNodeLimit = true;
-    seracher.nodeLimit = 5000;
+    searcher.hasNodeLimit = true;
+    searcher.nodeLimit = 5000;
 
     // Initialize stuff for randomnes
     std::random_device rd; 
@@ -107,10 +107,10 @@ void generate(Board& board)
             movegen::legalmoves(moveList, board);
 
             // Search for 5000 nodes
-            seracher.iterativeDeepening(board, true);
+            searcher.iterativeDeepening(board, true);
 
             // Get the best move
-            Move bestMove = seracher.rootBestMove;
+            Move bestMove = searcher.rootBestMove;
 
             // Chck if the move is illegal the we wanna make
             if (board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
@@ -122,8 +122,8 @@ void generate(Board& board)
             // We skip check moves, captures and if the score is to high for any side
             if (board.inCheck() || 
                 board.isCapture(bestMove) || 
-                (board.sideToMove() == Color::WHITE && seracher.scoreData >= 15000) || 
-                (board.sideToMove() == Color::BLACK && seracher.scoreData <= 15000))
+                (board.sideToMove() == Color::WHITE && searcher.scoreData >= 15000) || 
+                (board.sideToMove() == Color::BLACK && searcher.scoreData <= 15000))
             {
                 board.makeMove(bestMove);
                 continue;
@@ -132,11 +132,11 @@ void generate(Board& board)
             // We create the output string based on whites perspective
             if (board.sideToMove() == Color::WHITE)
             {
-                outputLine[i] = board.getFen() + " | " + std::to_string(seracher.scoreData) + " | ";
+                outputLine[i] = board.getFen() + " | " + std::to_string(searcher.scoreData) + " | ";
             }
             else if (board.sideToMove() == Color::WHITE)
             {
-                outputLine[i] = board.getFen() + " | " + std::to_string(-seracher.scoreData) + " | ";
+                outputLine[i] = board.getFen() + " | " + std::to_string(-searcher.scoreData) + " | ";
             }
 
             // Count up the position
@@ -181,5 +181,5 @@ void generate(Board& board)
     // Reset everything
     transpositionTabel.clear();
     outputFile.close();
-    seracher.hasNodeLimit = false;
+    searcher.hasNodeLimit = false;
 }
