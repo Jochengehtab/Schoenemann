@@ -221,7 +221,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
         int scoreMoves[218] = {0};
         // Sort the list
-        orderMoves(moveList, entry, board, scoreMoves);
+        orderMoves(moveList, entry, board, scoreMoves, stack[ply].killerMove);
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
             probCutCount++;
@@ -279,7 +279,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
     int scoreMoves[218] = {0};
     // Sort the list
-    orderMoves(moveList, entry, board, scoreMoves);
+    orderMoves(moveList, entry, board, scoreMoves, stack[ply].killerMove);
 
     int score = 0;
     int bestScore = -infinity;
@@ -362,6 +362,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 if (isQuiet)
                 {
+                    stack[ply].killerMove = move;
                     countinuationButterfly[move.from().index()][move.to().index()] = move;
                 }
 

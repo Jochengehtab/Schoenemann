@@ -9,5 +9,5 @@
 
 using namespace chess;
 
-void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[]);
+void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer);
 Move sortByScore(Movelist& moveList, int scores[], int i);

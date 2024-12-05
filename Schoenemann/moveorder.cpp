@@ -1,6 +1,6 @@
 #include "moveorder.h"
 
-void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[])
+void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer)
 {
 	const bool isNullptr = entry == nullptr ? true : false;
 	const std::uint64_t key = board.zobrist();
@@ -27,6 +27,10 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[])
 			captureScore += 100 * PIECE_VALUES[captured] - PIECE_VALUES[capturing];
 
 			scores[i] = captureScore;
+		}
+		else if (move == killer) 
+		{
+			scores[i] = killerScore;
 		}
 		else if (move.typeOf() == Move::PROMOTION)
 		{

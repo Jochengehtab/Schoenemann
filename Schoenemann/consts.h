@@ -14,7 +14,7 @@ const int benchDepth = 7;
 
 const int NO_VALUE = 50000;
 
-const int hashMoveScore = 2'147'483'647, promotion = 1'000'000'000, goodCapture = 1'500'000'000, badCapture = -500'000'000;
+const int hashMoveScore = 500000, killerScore = 300000, promotion = 200000, goodCapture = 400000, badCapture = -500000;
 
 const std::string testStrings[] = {
 		STARTPOS,
