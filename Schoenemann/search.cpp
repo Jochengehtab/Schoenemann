@@ -435,13 +435,12 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             {
                 return hashedScore;
             }
-
-            if (!inCheck)
-            {
-                standPat = hashedScore;
-            }
-
         }
+    }
+
+    if (!inCheck)
+    {
+        standPat = hashedScore;
     }
 
     if (standPat == NO_VALUE)
