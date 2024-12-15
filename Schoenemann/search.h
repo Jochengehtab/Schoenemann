@@ -20,6 +20,7 @@ struct SearchStack {
 	int pvLength;
 	Move killerMove;
 	bool inCheck;
+	bool isCutNode;
 };
 
 class Search {

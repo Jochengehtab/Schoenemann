@@ -277,6 +277,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         {
             board.makeNullMove();
             int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
+            stack[ply].isCutNode = !stack[ply].isCutNode;
             int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
             board.unmakeNullMove();
             if (score >= beta)
@@ -344,13 +345,16 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
+                lmr += stack[ply].isCutNode * 2;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board);
+            stack[ply].isCutNode = true;
             if (score > alpha && (score < beta || lmr > 0))
             {
                 score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                stack[ply].isCutNode = false;
             }
         }
 
