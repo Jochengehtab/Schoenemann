@@ -363,7 +363,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
                 if (isQuiet)
                 {
                     stack[ply].killerMove = move;
-                    countinuationButterfly[move.from().index()][move.to().index()] = move;
+                    int bonus = std::min(25 + 200 * depth, 2500);
+                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] += 
+                    (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / 30000);
                 }
 
                 break;
