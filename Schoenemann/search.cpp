@@ -365,7 +365,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
                     stack[ply].killerMove = move;
                     countinuationButterfly[move.from().index()][move.to().index()] = move;
                 }
-
                 break;
             }
         }
