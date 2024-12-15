@@ -338,6 +338,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
+                lmr -= improving;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
