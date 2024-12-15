@@ -205,7 +205,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
     }
 
     // Reverse futility pruning
-    if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * depth >= beta)
+    if (!inCheck && depth <= rfpDepth - improving && staticEval - rfpEvalSubtractor * depth >= beta)
     {
         return (staticEval + beta) / 2;
     }
@@ -343,7 +343,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
-                lmr -= improving;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
