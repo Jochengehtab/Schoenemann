@@ -118,6 +118,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
     // Get some important search constants
     const bool pvNode = beta > alpha + 1;
     const bool inCheck = board.inCheck();
+    stack[ply].inCheck = inCheck;
 
     // Get an potential hash entry
     Hash *entry = transpositionTabel.getHash(zobristKey);
@@ -178,6 +179,25 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
+
+    bool improving = false;
+
+    if (inCheck)
+    {
+        improving = false;
+    }
+    else if (ply > 1 && !stack[ply - 2].inCheck)
+    {
+        improving = staticEval > stack[ply - 2].staticEval;
+    }
+    else if (ply > 3 && !stack[ply - 4].inCheck)
+    {
+        improving = staticEval > stack[ply - 4].staticEval;
+    }
+    else
+    {
+        improving = true;
+    }
 
     // Reverse futility pruning
     if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * depth >= beta)
@@ -318,6 +338,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
+                lmr -= improving;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
