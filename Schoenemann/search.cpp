@@ -427,7 +427,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
+        if (!pvNode)
         {
             if ((hashedType == EXACT) ||
                 (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
@@ -435,12 +435,13 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             {
                 return hashedScore;
             }
-        }
-    }
 
-    if (!inCheck && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, standPat))
-    {
-        standPat = hashedScore;
+            if (!inCheck)
+            {
+                standPat = hashedScore;
+            }
+
+        }
     }
 
     if (standPat == NO_VALUE)
