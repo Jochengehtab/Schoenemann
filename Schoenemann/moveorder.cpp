@@ -36,9 +36,9 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		{
 			scores[i] = promotion;
 		}
-		else if(searcher.countinuationButterfly[move.from().index()][move.to().index()] == move)
+		else 
 		{
-			scores[i] += 50000;
+			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()];
 		}
 	}
 	

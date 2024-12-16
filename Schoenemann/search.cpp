@@ -45,6 +45,11 @@ DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 DEFINE_PARAM_S(iirRduction, 1, 1);
 DEFINE_PARAM_S(fpCutoff, 1, 1);
 
+DEFINE_PARAM_S(quietHistoryGravityBase, 25, 5);
+DEFINE_PARAM_S(quietHistoryDepthMuliplyper, 200, 25);
+DEFINE_PARAM_S(quietHistoryBonusCap, 2000, 200);
+DEFINE_PARAM_S(quietHistoryDivisor, 30000, 750);
+
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 {
     if (shouldStop)
@@ -363,7 +368,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
                 if (isQuiet)
                 {
                     stack[ply].killerMove = move;
-                    countinuationButterfly[move.from().index()][move.to().index()] = move;
+                    int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
+                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] += 
+                    (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
                 }
 
                 break;

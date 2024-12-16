@@ -39,8 +39,7 @@ public:
 	long softLimit = 0;
 	int timeLeft = 0;
 	int increment = 0;
-
-	Move countinuationButterfly[64][64];
+	int quietHistory[2][7][64];
 	std::array<std::array<uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
