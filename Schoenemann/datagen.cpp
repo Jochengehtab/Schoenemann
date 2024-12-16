@@ -39,7 +39,7 @@ void generate(Board& board)
         bool exitEarly = false;
 
         // Play random moves
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 10; i++)
         {
             // Generate all legal moves
             Movelist moveList;
@@ -101,10 +101,6 @@ void generate(Board& board)
                 
                 break;
             }
-
-            // Generate legal moves
-            Movelist moveList;
-            movegen::legalmoves(moveList, board);
 
             // Search for 5000 nodes
             searcher.iterativeDeepening(board, true);
@@ -168,8 +164,8 @@ void generate(Board& board)
             positions++;
         }
 
-        // Every 100 iterations we wanna print stats
-        if (counter % 100 == 0)
+        // Every 1000 iterations we wanna print stats
+        if (counter % 1000 == 0)
         {
             auto currentTime = std::chrono::steady_clock::now();
             auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
