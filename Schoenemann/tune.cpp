@@ -8,7 +8,8 @@
 
 std::vector<EngineParam *> tuningParams;
 
-void registerParam(EngineParam *param){
+void registerParam(EngineParam *param)
+{
   tuningParams.push_back(param);
 }
 

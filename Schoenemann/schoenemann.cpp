@@ -13,8 +13,7 @@
 #include "nnue.h"
 #include "datagen.h"
 #include "quantised.h"
-
-// #define tuning
+#include "tune.h"
 
 Search searcher;
 tt transpositionTabel(8);
@@ -65,7 +64,7 @@ void processCommand(const std::string& cmd, Board& board)
 	{
         uciPrint();
         
-        #ifdef tuning
+        #ifdef DO_TUNING
             std::cout << paramsToUci();
         #endif
         std::cout << "uciok" << std::endl;
@@ -89,7 +88,7 @@ void processCommand(const std::string& cmd, Board& board)
         if (token == "name") 
 		{
             is >> token;
-            #ifdef tuning
+            #ifdef DO_TUNING
                 EngineParam* param = findParam(token);
                 if (param != nullptr)
                 {
@@ -100,7 +99,7 @@ void processCommand(const std::string& cmd, Board& board)
                         param->value = std::stoi(token);
                         if (param->name == "lmrBase" || param->name == "lmrDivisor")
                         {
-                            seracher.initLMR();
+                            searcher.initLMR();
                         }
                         
                     }
