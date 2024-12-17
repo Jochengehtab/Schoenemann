@@ -50,7 +50,7 @@ DEFINE_PARAM_S(quietHistoryDepthMuliplyper, 200, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 2000, 200);
 DEFINE_PARAM_S(quietHistoryDivisor, 30000, 750);
 
-int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
+int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
     if (shouldStop)
     {
@@ -247,7 +247,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         int scoreMoves[218] = {0};
         // Sort the list
         orderMoves(moveList, entry, board, scoreMoves, stack[ply].killerMove);
-        
+
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
             probCutCount++;
@@ -261,7 +261,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
             board.makeMove(move);
 
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board);
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board, false);
 
             board.unmakeMove(move);
 
@@ -278,8 +278,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         {
             board.makeNullMove();
             int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
-            stack[ply].isCutNode = !stack[ply].isCutNode;
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
+            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, !isCutNode);
             board.unmakeNullMove();
             if (score >= beta)
             {
@@ -337,7 +336,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
         if (moveCounter == 1)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board, false);
         }
         else
         {
@@ -346,16 +345,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
-                lmr += stack[ply].isCutNode * 2;
+                lmr += isCutNode * 2;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
-            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board);
-            stack[ply].isCutNode = true;
+            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board, true);
             if (score > alpha && (score < beta || lmr > 0))
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
-                stack[ply].isCutNode = false;
+                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board, false);
+                isCutNode = false;
             }
         }
 
@@ -579,7 +577,7 @@ int Search::aspiration(int depth, int score, Board &board)
 
     while (true)
     {
-        score = pvs(alpha, beta, depth, 0, board);
+        score = pvs(alpha, beta, depth, 0, board, false);
         if (shouldStopSoft(start))
         {
             return score;
@@ -625,7 +623,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board);
+        scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         if (!shouldStop)
         {

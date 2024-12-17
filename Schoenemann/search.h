@@ -20,7 +20,6 @@ struct SearchStack {
 	int pvLength;
 	Move killerMove;
 	bool inCheck;
-	bool isCutNode;
 };
 
 class Search {
@@ -45,7 +44,7 @@ public:
 	std::array<std::array<uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
-	int pvs(int alpha, int beta, int depth, int ply, Board& board);
+	int pvs(int alpha, int beta, int depth, int ply, Board& board, bool isCutNode);
 	int qs(int alpha, int beta, Board& board, int ply);
 	void iterativeDeepening(Board& board, bool isInfinite);
 	void initLMR();

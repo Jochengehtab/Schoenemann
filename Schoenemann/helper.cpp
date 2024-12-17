@@ -100,7 +100,7 @@ void runBenchmark() {
 	//Looping over all bench positions
 	for (const auto& test : testStrings) {
 		benchBoard.setFen(test);
-		searcher.pvs(-infinity, infinity, benchDepth, 0, benchBoard);
+		searcher.pvs(-infinity, infinity, benchDepth, 0, benchBoard, false);
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
