@@ -50,7 +50,7 @@ DEFINE_PARAM_S(quietHistoryDepthMuliplyper, 200, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 2000, 200);
 DEFINE_PARAM_S(quietHistoryDivisor, 30000, 750);
 
-int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
+int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
     if (shouldStop)
     {
@@ -76,7 +76,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
     // Increment nodes by one
     nodes++;
 
-    // Set the pvLenght to zero
+    // Set the pvLength to zero
     stack[ply].pvLength = 0;
 
     if (board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
@@ -84,7 +84,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         return 0;
     }
 
-    // Mate distance Prunning
+    // Mate distance Pruning
     int mateValueUpper = infinity - ply;
 
     if (mateValueUpper < beta)
@@ -149,8 +149,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         if (!pvNode && hashedDepth >= depth && ply > 0 && zobristKey == entry->key)
         {
             if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
+                    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                    (hashedType == LOWER_BOUND && hashedScore >= beta))
             {
                 return hashedScore;
             }
@@ -176,7 +176,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
     }
 
     // If no evaluation was found in the transposition table
-    // we perform an static evaulation
+    // we perform a static evaluation
     if (staticEval == NO_VALUE)
     {
         staticEval = net.evaluate((int)board.sideToMove());
@@ -235,7 +235,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
     // Idea by Laser
     // If we can make a winning move and can confirm that when we do a lower depth search
-    // it causes a beta cuttoff we can make that beta cutoff
+    // it causes a beta cutoff we can make that beta cutoff
     if (!pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplyer * depth && std::abs(beta) < infinity)
     {
         int probCutMargin = beta + probeCutMarginAdder;
@@ -247,6 +247,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         int scoreMoves[218] = {0};
         // Sort the list
         orderMoves(moveList, entry, board, scoreMoves, stack[ply].killerMove);
+
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
             probCutCount++;
@@ -260,7 +261,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
             board.makeMove(move);
 
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board);
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board, false);
 
             board.unmakeMove(move);
 
@@ -277,7 +278,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
         {
             board.makeNullMove();
             int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board);
+            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, !isCutNode);
             board.unmakeNullMove();
             if (score >= beta)
             {
@@ -335,7 +336,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
 
         if (moveCounter == 1)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board, false);
         }
         else
         {
@@ -344,13 +345,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
+                lmr += isCutNode * 2;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
-            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board);
+            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board, true);
             if (score > alpha && (score < beta || lmr > 0))
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board);
+                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board, false);
+                isCutNode = false;
             }
         }
 
@@ -390,8 +393,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board)
                 {
                     stack[ply].killerMove = move;
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
-                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] += 
-                    (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] +=
+                            (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
                 }
 
                 break;
@@ -446,7 +449,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     // Increment nodes by one
     nodes++;
 
-    // Set the pvLenght to zero
+    // Set the pvLength to zero
     stack[ply].pvLength = 0;
 
     const bool pvNode = beta > alpha + 1;
@@ -472,8 +475,8 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
         {
             if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
+                    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                    (hashedType == LOWER_BOUND && hashedScore >= beta))
             {
                 return hashedScore;
             }
@@ -525,7 +528,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         int score = -qs(-beta, -alpha, board, ply + 1);
 
         board.unmakeMove(move);
-        // Our current Score is better then the previos bestScore so we update it
+        // Our current Score is better than the previous bestScore so we update it
         if (score > bestScore)
         {
             bestScore = score;
@@ -574,7 +577,7 @@ int Search::aspiration(int depth, int score, Board &board)
 
     while (true)
     {
-        score = pvs(alpha, beta, depth, 0, board);
+        score = pvs(alpha, beta, depth, 0, board, false);
         if (shouldStopSoft(start))
         {
             return score;
@@ -620,7 +623,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board);
+        scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         if (!shouldStop)
         {
@@ -641,11 +644,11 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         {
             std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
             std::cout
-                << "info depth "
-                << i << " score cp "
-                << scoreData << " nodes "
-                << nodes << " nps "
-                << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
+                    << "info depth "
+                    << i << " score cp "
+                    << scoreData << " nodes "
+                    << nodes << " nps "
+                    << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
                 << getPVLine()
                 << std::endl;
         }

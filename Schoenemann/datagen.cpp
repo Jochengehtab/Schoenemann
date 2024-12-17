@@ -1,16 +1,16 @@
 #include "datagen.h"
 
-void generate(Board& board) 
+void generate(Board& board)
 {
     // Set up the nodes limit
     searcher.hasNodeLimit = true;
     searcher.nodeLimit = 5000;
 
-    // Initialize stuff for randomnes
-    std::random_device rd; 
+    // Initialize stuff for random moves
+    std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Open the outputfile
+    // Open the outfile
     std::ofstream outputFile("output.txt", std::ios::app);
 
     // Check if the file is open
@@ -33,7 +33,7 @@ void generate(Board& board)
     {
         counter++;
 
-        // Reset the bboard
+        // Reset the board
         board.setFen(STARTPOS);
 
         bool exitEarly = false;
@@ -44,7 +44,7 @@ void generate(Board& board)
             // Generate all legal moves
             Movelist moveList;
             movegen::legalmoves(moveList, board);
-            
+
             // Check if the game ended already
             std::pair<GameResultReason, GameResult> result = board.isGameOver();
             if (result.second != GameResult::NONE)
@@ -53,12 +53,12 @@ void generate(Board& board)
                 break;
             }
 
-            if (moveList.size() == 0) 
+            if (moveList.size() == 0)
             {
                 exitEarly = true;
                 break;
             }
-            
+
             // Pick a random move
             std::uniform_int_distribution<> dis(0, moveList.size() - 1);
 
@@ -67,12 +67,12 @@ void generate(Board& board)
         }
 
         // If we got an early exit we continue
-        if (exitEarly) 
+        if (exitEarly)
         {
             continue;
         }
 
-        // Initialize values that are usefull later
+        // Initialize values that are usefully later
         std::string outputLine[501];
         std::string resultString = "none";
         int moveCount = 0;
@@ -88,8 +88,8 @@ void generate(Board& board)
                 {
                     resultString = "0.5";
                 }
-                
-                // We check if it is a win or a lose for whtie
+
+                // We check if it is a win or a loose for white
                 if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK)
                 {
                     resultString = "1.0";
@@ -98,7 +98,7 @@ void generate(Board& board)
                 {
                     resultString = "0.0";
                 }
-                
+
                 break;
             }
 
@@ -108,7 +108,7 @@ void generate(Board& board)
             // Get the best move
             Move bestMove = searcher.rootBestMove;
 
-            // Chck if the move is illegal the we wanna make
+            // Check if the move is illegal the want to make
             if (board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
             {
                 isIllegal = true;
@@ -116,10 +116,11 @@ void generate(Board& board)
             }
 
             // We skip check moves, captures and if the score is to high for any side
-            if (board.inCheck() || 
-                board.isCapture(bestMove) || 
-                (board.sideToMove() == Color::WHITE && searcher.scoreData >= 15000) || 
-                (board.sideToMove() == Color::BLACK && searcher.scoreData <= 15000))
+            if (bestMove.typeOf() == Move::PROMOTION ||
+                    board.inCheck() ||
+                    board.isCapture(bestMove) ||
+                    (board.sideToMove() == Color::WHITE && searcher.scoreData >= 10000) ||
+                    (board.sideToMove() == Color::BLACK && searcher.scoreData <= 10000))
             {
                 board.makeMove(bestMove);
                 continue;
@@ -142,7 +143,7 @@ void generate(Board& board)
             board.makeMove(bestMove);
         }
 
-        // If something has interruped our FEN-Gen we continue
+        // If something has interrupted our FEN-Gen we continue
         if (resultString == "none" || isIllegal)
         {
             continue;
@@ -150,13 +151,13 @@ void generate(Board& board)
 
         // Write the output to the file
         for (int i = 0; i < std::min(moveCount, 500); i++)
-        {   
-            // If empty we don't wanna write to the output file
+        {
+            // If empty we don't want to write to the output file
             if (outputLine[i].empty())
             {
                 continue;
             }
-            
+
             // Write to the file
             outputFile << outputLine[i] + resultString + "\n";
 
@@ -164,7 +165,7 @@ void generate(Board& board)
             positions++;
         }
 
-        // Every 1000 iterations we wanna print stats
+        // Every 1000 iterations we want to print stats
         if (counter % 1000 == 0)
         {
             auto currentTime = std::chrono::steady_clock::now();
@@ -173,7 +174,7 @@ void generate(Board& board)
             std::cout << "Generated: " << positions << " positions | " << "PPS: " <<(int) positionsPerSecond << std::endl;
         }
     }
-    
+
     // Reset everything
     transpositionTabel.clear();
     outputFile.close();
