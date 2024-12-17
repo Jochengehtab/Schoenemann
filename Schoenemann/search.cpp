@@ -76,7 +76,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Increment nodes by one
     nodes++;
 
-    // Set the pvLenght to zero
+    // Set the pvLength to zero
     stack[ply].pvLength = 0;
 
     if (board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
@@ -84,7 +84,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         return 0;
     }
 
-    // Mate distance Prunning
+    // Mate distance Pruning
     int mateValueUpper = infinity - ply;
 
     if (mateValueUpper < beta)
@@ -149,8 +149,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (!pvNode && hashedDepth >= depth && ply > 0 && zobristKey == entry->key)
         {
             if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
+                    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                    (hashedType == LOWER_BOUND && hashedScore >= beta))
             {
                 return hashedScore;
             }
@@ -176,7 +176,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // If no evaluation was found in the transposition table
-    // we perform an static evaulation
+    // we perform a static evaluation
     if (staticEval == NO_VALUE)
     {
         staticEval = net.evaluate((int)board.sideToMove());
@@ -235,7 +235,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     // Idea by Laser
     // If we can make a winning move and can confirm that when we do a lower depth search
-    // it causes a beta cuttoff we can make that beta cutoff
+    // it causes a beta cutoff we can make that beta cutoff
     if (!pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplyer * depth && std::abs(beta) < infinity)
     {
         int probCutMargin = beta + probeCutMarginAdder;
@@ -393,8 +393,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 {
                     stack[ply].killerMove = move;
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
-                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] += 
-                    (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] +=
+                            (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
                 }
 
                 break;
@@ -449,7 +449,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     // Increment nodes by one
     nodes++;
 
-    // Set the pvLenght to zero
+    // Set the pvLength to zero
     stack[ply].pvLength = 0;
 
     const bool pvNode = beta > alpha + 1;
@@ -475,8 +475,8 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
         {
             if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
+                    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                    (hashedType == LOWER_BOUND && hashedScore >= beta))
             {
                 return hashedScore;
             }
@@ -528,7 +528,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         int score = -qs(-beta, -alpha, board, ply + 1);
 
         board.unmakeMove(move);
-        // Our current Score is better then the previos bestScore so we update it
+        // Our current Score is better than the previous bestScore so we update it
         if (score > bestScore)
         {
             bestScore = score;
@@ -644,11 +644,11 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         {
             std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
             std::cout
-                << "info depth "
-                << i << " score cp "
-                << scoreData << " nodes "
-                << nodes << " nps "
-                << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
+                    << "info depth "
+                    << i << " score cp "
+                    << scoreData << " nodes "
+                    << nodes << " nps "
+                    << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
                 << getPVLine()
                 << std::endl;
         }
