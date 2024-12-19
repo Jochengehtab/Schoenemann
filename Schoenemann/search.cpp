@@ -407,9 +407,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     int quietMalus = std::min(30 + 200 * depth, 2000);
 
                     // History malus
-                    for (int i = 0; i < movesMadeCounter - 1; i++)
+                    for (int i = 0; i < movesMadeCounter; i++)
                     {
                         Move madeMove = movesMade[i];
+                        if (madeMove == bestMoveInPVS) 
+                        {
+                            continue;
+                        }
                         quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] += (-(quietMalus * movesMadeCounter) - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
                     }
                     
