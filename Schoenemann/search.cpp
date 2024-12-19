@@ -311,7 +311,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     int bestScore = -infinity;
     Move bestMoveInPVS = Move::NULL_MOVE;
     int moveCounter = 0;
-
+    std::array<Move, 218> movesMade;
+    int movesMadeCounter = 0;
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
@@ -325,6 +326,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         board.makeMove(move);
 
+
+        if (!isQuiet) 
+        {
+            movesMade[movesMadeCounter] = move;
+            movesMadeCounter++;
+        }
+        
         moveCounter++;
 
         short checkExtension = 0;
@@ -395,6 +403,16 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
                     quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] +=
                             (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+
+                    int quietMalus = std::min(30 + 200 * depth, 2000);
+
+                    // History malus
+                    for (int i = 0; i < movesMadeCounter - 1; i++)
+                    {
+                        Move madeMove = movesMade[i];
+                        quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] += (-quietMalus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+                    }
+                    
                 }
 
                 break;
