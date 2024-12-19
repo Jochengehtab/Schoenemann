@@ -410,7 +410,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     for (int i = 0; i < movesMadeCounter - 1; i++)
                     {
                         Move madeMove = movesMade[i];
-                        quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] += (-quietMalus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+                        quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] += (-(quietMalus * movesMadeCounter) - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
                     }
                     
                 }
