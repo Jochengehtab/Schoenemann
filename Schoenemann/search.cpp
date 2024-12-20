@@ -416,7 +416,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         }
 
                         // Important not to use the value madeMove here!
-                        quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] += (-(quietMalus * movesMadeCounter) - quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+                        quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] += (-(quietMalus * movesMadeCounter) - quietHistory[board.sideToMove()][board.at(madeMove.from()).type()][madeMove.to().index()] * /*Annother typo*/std::abs(-(quietMalus * movesMadeCounter)) / quietHistoryDivisor);
                     }
                     
                 }
