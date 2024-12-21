@@ -16,10 +16,10 @@ using namespace chess;
 
 struct SearchStack {
 	int staticEval;
-	std::array<Move, 150> pvLine;
 	int pvLength;
-	Move killerMove;
 	bool inCheck;
+	std::array<Move, 150> pvLine;
+	Move killerMove;
 };
 
 class Search {
@@ -46,10 +46,12 @@ public:
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board, bool isCutNode);
 	int qs(int alpha, int beta, Board& board, int ply);
+	int aspiration(int maxDepth, int score, Board& board);
+
 	void iterativeDeepening(Board& board, bool isInfinite);
 	void initLMR();
 	void reset();
-	int aspiration(int maxDepth, int score, Board& board);
+	void updateQuietHistory(Board& board, Move move, int bonus);
 
 	std::string getPVLine();
 

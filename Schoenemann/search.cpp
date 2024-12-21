@@ -311,7 +311,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     int bestScore = -infinity;
     Move bestMoveInPVS = Move::NULL_MOVE;
     int moveCounter = 0;
-
+    std::array<Move, 218> movesMade;
+    int movesMadeCounter = 0;
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
@@ -325,6 +326,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         board.makeMove(move);
 
+
+        if (isQuiet) 
+        {
+            movesMade[movesMadeCounter] = move;
+            movesMadeCounter++;
+        }
+        
         moveCounter++;
 
         short checkExtension = 0;
@@ -393,8 +401,22 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 {
                     stack[ply].killerMove = move;
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
-                    quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] +=
-                            (bonus - quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+                    updateQuietHistory(board, move, bonus);
+
+                    int quietMalus = std::min(30 + 200 * depth, 2000);
+
+                    // History malus
+                    for (int i = 0; i < movesMadeCounter; i++)
+                    {
+                        Move madeMove = movesMade[i];
+                        if (madeMove == bestMoveInPVS) 
+                        {
+                            continue;
+                        }
+
+                        updateQuietHistory(board, madeMove, -(quietMalus * movesMadeCounter));
+                    }
+                    
                 }
 
                 break;
@@ -713,4 +735,17 @@ std::string Search::getPVLine()
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
     return pvLine;
+}
+
+void Search::updateQuietHistory(Board& board, Move move, int bonus)
+{
+    quietHistory
+    [board.sideToMove()]
+    [board.at(move.from()).type()]
+    [move.to().index()] 
+    +=
+    (bonus - quietHistory
+            [board.sideToMove()]
+            [board.at(move.from()).type()]
+            [move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
 }
