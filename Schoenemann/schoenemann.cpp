@@ -159,7 +159,6 @@ void processCommand(const std::string& cmd, Board& board)
         int number[4];
         bool hasTime = false;
         searcher.shouldStop = false;
-        memset(searcher.quietHistory, 0, sizeof(searcher.quietHistory));
 
         listenerActive = true; // Activate listener to capture stop/quit during search
 
