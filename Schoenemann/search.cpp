@@ -327,7 +327,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         board.makeMove(move);
 
 
-        if (!isQuiet) 
+        if (isQuiet) 
         {
             movesMade[movesMadeCounter] = move;
             movesMadeCounter++;
