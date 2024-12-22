@@ -19,7 +19,7 @@ struct SearchStack {
 	int pvLength;
 	bool inCheck;
 	std::array<Move, 150> pvLine;
-	int* continuationHistory;
+	int16_t* continuationHistory;
 	Move killerMove;
 	Piece previousMovedPiece;
 };
@@ -42,8 +42,8 @@ public:
 	long softLimit = 0;
 	int timeLeft = 0;
 	int increment = 0;
-	int quietHistory[2][7][64];
-	int continuationHistoryArray[2][7][64][896];
+	int quietHistory[2][6][64];
+	int16_t continuationHistoryArray[2][6][64][764];
 	std::array<std::array<uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
