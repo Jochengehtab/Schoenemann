@@ -325,7 +325,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
-        stack[ply].previousMovedPiece = board.at(move.from());
+        stack[ply].previousMovedPiece = board.at(move.from()).type();
         stack[ply].previousMove = move;
 
         board.makeMove(move);
@@ -757,7 +757,7 @@ void Search::updateQuietHistory(Board& board, Move move, int bonus)
 void Search::updateContinuationHistory(Piece piece, Move move, int bonus, int ply)
 {
     int scaledBonus = std::abs(bonus);
-    if (stack[ply - 1].previousMovedPiece >= 0 && stack[ply - 1].previousMovedPiece < 6)
+    if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {
         continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
         stack[ply - 1].continuationHistoryBonus = continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()];
