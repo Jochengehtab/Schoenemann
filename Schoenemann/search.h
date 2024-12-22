@@ -54,7 +54,6 @@ public:
 
 	void iterativeDeepening(Board& board, bool isInfinite);
 	void initLMR();
-	void reset();
 	void updateQuietHistory(Board& board, Move move, int bonus);
 	void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply);
 

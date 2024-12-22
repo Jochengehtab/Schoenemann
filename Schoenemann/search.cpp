@@ -637,7 +637,6 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     Move bestMoveThisIteration = Move::NULL_MOVE;
     isNormalSearch = false;
     bool hasFoundMove = false;
-    reset();
 
     if (isInfinite)
     {
@@ -725,14 +724,6 @@ void Search::initLMR()
         }
     }
 }
-
-void Search::reset()
-{
-    for (auto& s : stack) {
-        memset(s.continuationHistory.data(), 0, sizeof(s.continuationHistory));
-    }
-}
-
 std::string Search::getPVLine()
 {
     std::string pvLine;
