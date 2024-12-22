@@ -19,8 +19,7 @@ struct SearchStack {
 	int pvLength;
 	bool inCheck;
 	std::array<Move, 150> pvLine;
-	
-	int continuationHistoryBonus;
+	std::array<std::array<std::array<std::array<int, 64>, 6>, 64>, 6> continuationHistory;
 	Move killerMove;
 	PieceType previousMovedPiece;
 	Move previousMove;
@@ -45,7 +44,7 @@ public:
 	int timeLeft = 0;
 	int increment = 0;
 	int quietHistory[2][6][64];
-	int continuationHistory[6][64][6][64];
+	
 	std::array<std::array<uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
@@ -57,7 +56,7 @@ public:
 	void initLMR();
 	void reset();
 	void updateQuietHistory(Board& board, Move move, int bonus);
-	void updateContinuationHistory(Piece piece, Move move, int bonus, int ply);
+	void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply);
 
 	std::string getPVLine();
 

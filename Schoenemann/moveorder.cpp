@@ -38,7 +38,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		}
 		else 
 		{
-			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + searcher.stack[ply - 1].continuationHistoryBonus;
+			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + searcher.stack[ply].continuationHistory[searcher.stack[ply - 1].previousMovedPiece][searcher.stack[ply - 1].previousMove.to().index()][board.at(move.to()).type()][move.to().index()];
 		}
 	}
 	
