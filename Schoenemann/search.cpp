@@ -405,7 +405,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     stack[ply].killerMove = move;
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
                     updateQuietHistory(board, move, bonus);
-                    updateContinuationHistory(board.at(move.to()), move, bonus, ply);
+                    updateContinuationHistory(board.at(move.to()).type(), move, bonus, ply);
 
                     int quietMalus = std::min(30 + 200 * depth, 2000);
 
@@ -728,7 +728,9 @@ void Search::initLMR()
 
 void Search::reset()
 {
-    stack = {};
+    for (auto& s : stack) {
+        memset(s.continuationHistory.data(), 0, sizeof(s.continuationHistory));
+    }
 }
 
 std::string Search::getPVLine()
@@ -754,12 +756,11 @@ void Search::updateQuietHistory(Board& board, Move move, int bonus)
             [move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
 }
 
-void Search::updateContinuationHistory(Piece piece, Move move, int bonus, int ply)
+void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply)
 {
-    int scaledBonus = std::abs(bonus);
+    int scaledBonus = (bonus - stack[ply - 1].continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()]);
     if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {
-        continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
-        stack[ply - 1].continuationHistoryBonus = continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()];
+        stack[ply - 1].continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
 }
