@@ -193,7 +193,6 @@ void processCommand(const std::string& cmd, Board& board)
             else if (token == "depth") 
 			{
                 is >> token;
-                searcher.reset();
                 searcher.pvs(-32767, 32767, std::stoi(token), 0, board, false);
                 std::cout << "bestmove " << uci::moveToUci(searcher.rootBestMove) << std::endl;
             }
