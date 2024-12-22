@@ -259,6 +259,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 continue;
             }
 
+            stack[ply].continuationHistory = continuationHistoryArray[board.sideToMove()][stack[ply].previousMovedPiece][move.to().index()];
+
             board.makeMove(move);
 
             int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board, false);
@@ -278,7 +280,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         {
             board.makeNullMove();
             int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
+
             stack[ply].continuationHistory = continuationHistoryArray[board.sideToMove()][0][0];
+
             int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, !isCutNode);
             board.unmakeNullMove();
             if (score >= beta)
@@ -760,7 +764,7 @@ int Search::getContinuationHistory(Color color, Piece piece, Move move, int ply)
     int score = 0;
     int pieceTo = 2 * 64 * piece + 2 * move.to().index() + color;
 
-    if (piece != Piece::NONE)
+    if (stack[ply - 1].previousMovedPiece != Piece::NONE)
     {
         score += 2 * stack[ply - 1].continuationHistory[pieceTo];
     }
