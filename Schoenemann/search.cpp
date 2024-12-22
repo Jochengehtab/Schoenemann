@@ -259,9 +259,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 continue;
             }
 
-            stack[ply].previousMovedPiece = board.at(move.from());
-            stack[ply].continuationHistory = continuationHistoryArray[board.sideToMove()][stack[ply].previousMovedPiece][move.to().index()];
-
             board.makeMove(move);
 
             int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board, false);
@@ -281,9 +278,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         {
             board.makeNullMove();
             int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
-
-            stack[ply].previousMovedPiece = Piece::NONE;
-            stack[ply].continuationHistory = continuationHistoryArray[board.sideToMove()][0][0];
 
             int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, !isCutNode);
             board.unmakeNullMove();
@@ -332,7 +326,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
 
         stack[ply].previousMovedPiece = board.at(move.from());
-        stack[ply].continuationHistory = continuationHistoryArray[board.sideToMove()][stack[ply].previousMovedPiece][move.to().index()];
+        stack[ply].previousMove = move;
 
         board.makeMove(move);
 
@@ -411,7 +405,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     stack[ply].killerMove = move;
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
                     updateQuietHistory(board, move, bonus);
-                    updateContinuationHistory(board.sideToMove(), stack[ply].previousMovedPiece, move, bonus, ply);
+                    updateContinuationHistory(board.at(move.to()), move, bonus, ply);
 
                     int quietMalus = std::min(30 + 200 * depth, 2000);
 
@@ -556,7 +550,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         }
 
         stack[ply].previousMovedPiece = board.at(move.from());
-        stack[ply].continuationHistory = continuationHistoryArray[board.sideToMove()][stack[ply].previousMovedPiece][move.to().index()];
+        stack[ply].previousMove = move;
 
         board.makeMove(move);
 
@@ -763,25 +757,12 @@ void Search::updateQuietHistory(Board& board, Move move, int bonus)
             [move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
 }
 
-int Search::getContinuationHistory(Color color, Piece piece, Move move, int ply)
+void Search::updateContinuationHistory(Piece piece, Move move, int bonus, int ply)
 {
-    int score = 0;
-    int pieceTo = 2 * 64 * piece + 2 * move.to().index() + color;
+    int scaledBonus = std::abs(bonus) / 30000;
 
     if (stack[ply - 1].previousMovedPiece != Piece::NONE)
     {
-        score += 2 * stack[ply - 1].continuationHistory[pieceTo];
-    }
-    return score;
-}
-
-void Search::updateContinuationHistory(Color color, Piece piece, Move move, int bonus, int ply)
-{
-    int scaledBonus = bonus - getContinuationHistory(color, piece, move, ply) * std::abs(bonus) / 30000;
-    int pieceTo = 2 * 64 * piece + 2 * move.to().index() + color;
-
-    if (stack[ply - 1].previousMovedPiece != Piece::NONE)
-    {
-        stack[ply - 1].continuationHistory[pieceTo] += scaledBonus;
+        stack[ply - 1].continuationHistoryBonus = continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
 }
