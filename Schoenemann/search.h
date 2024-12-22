@@ -44,8 +44,8 @@ public:
 	long softLimit = 0;
 	int timeLeft = 0;
 	int increment = 0;
-	int quietHistory[2][6][64];
-	int continuationHistory[6][64][6][64];
+	int quietHistory[2][7][64];
+	int continuationHistory[7][65][7][65];
 	std::array<std::array<uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 

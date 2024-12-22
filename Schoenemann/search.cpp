@@ -549,9 +549,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             continue;
         }
 
-        stack[ply].previousMovedPiece = board.at(move.from());
-        stack[ply].previousMove = move;
-
         board.makeMove(move);
 
         int score = -qs(-beta, -alpha, board, ply + 1);
@@ -759,9 +756,10 @@ void Search::updateQuietHistory(Board& board, Move move, int bonus)
 
 void Search::updateContinuationHistory(Piece piece, Move move, int bonus, int ply)
 {
-    int scaledBonus = std::abs(bonus) / 30000;
-    if (stack[ply - 1].previousMovedPiece != Piece::NONE)
+    int scaledBonus = std::abs(bonus);
+    if (stack[ply - 1].previousMovedPiece >= 0 && stack[ply - 1].previousMovedPiece < 6)
     {
-        stack[ply - 1].continuationHistoryBonus = continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
+        continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
+        stack[ply - 1].continuationHistoryBonus = continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()];
     }
 }
