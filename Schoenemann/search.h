@@ -19,9 +19,11 @@ struct SearchStack {
 	int pvLength;
 	bool inCheck;
 	std::array<Move, 150> pvLine;
-	int16_t* continuationHistory;
+	
+	int continuationHistoryBonus;
 	Move killerMove;
 	Piece previousMovedPiece;
+	Move previousMove;
 };
 
 class Search {
@@ -43,20 +45,19 @@ public:
 	int timeLeft = 0;
 	int increment = 0;
 	int quietHistory[2][6][64];
-	int16_t continuationHistoryArray[2][6][64][764];
+	int continuationHistory[6][64][6][64];
 	std::array<std::array<uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board, bool isCutNode);
 	int qs(int alpha, int beta, Board& board, int ply);
 	int aspiration(int maxDepth, int score, Board& board);
-	int getContinuationHistory(Color color, Piece piece, Move move, int ply);
 
 	void iterativeDeepening(Board& board, bool isInfinite);
 	void initLMR();
 	void reset();
 	void updateQuietHistory(Board& board, Move move, int bonus);
-	void updateContinuationHistory(Color color, Piece piece, Move move, int bonus, int ply);
+	void updateContinuationHistory(Piece piece, Move move, int bonus, int ply);
 
 	std::string getPVLine();
 

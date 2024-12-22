@@ -39,7 +39,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		else 
 		{
 			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + 2 *
-			searcher.getContinuationHistory(board.sideToMove(), board.at(move.from()), move, ply);
+			searcher.stack[ply].continuationHistoryBonus;
 		}
 	}
 	
