@@ -1,6 +1,6 @@
 #include "moveorder.h"
 
-void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer)
+void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer, int ply)
 {
 	const bool isNullptr = entry == nullptr ? true : false;
 	const std::uint64_t key = board.zobrist();
@@ -38,7 +38,8 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		}
 		else 
 		{
-			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()];
+			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + 2 *
+			searcher.getContinuationHistory(board.sideToMove(), board.at(move.from()), move, ply);
 		}
 	}
 	
