@@ -325,7 +325,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
-        stack[ply].previousMovedPiece = board.at(move.from()).type();
+        stack[ply].previousMovedPiece = board.at(move.to()).type();
         stack[ply].previousMove = move;
 
         board.makeMove(move);
