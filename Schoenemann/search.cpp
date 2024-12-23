@@ -749,7 +749,7 @@ void Search::updateQuietHistory(Board& board, Move move, int bonus)
 
 void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply)
 {
-    int scaledBonus = (bonus - stack[ply - 1].continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()]);
+    int scaledBonus = (bonus - stack[ply - 1].continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] * std::abs(bonus) / 30000);
     if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {
         stack[ply - 1].continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
