@@ -325,7 +325,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
-        stack[ply].previousMovedPiece = board.at(move.to()).type();
+        stack[ply].previousMovedPiece = board.at(move.from()).type();
         stack[ply].previousMove = move;
 
         board.makeMove(move);
@@ -405,7 +405,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     stack[ply].killerMove = move;
                     int bonus = std::min(quietHistoryGravityBase + quietHistoryDepthMuliplyper * depth, quietHistoryBonusCap);
                     updateQuietHistory(board, move, bonus);
-                    updateContinuationHistory(board.at(move.to()).type(), move, bonus, ply);
+                    updateContinuationHistory(board.at(move.from()).type(), move, bonus, ply);
 
                     int quietMalus = std::min(30 + 200 * depth, 2000);
 
