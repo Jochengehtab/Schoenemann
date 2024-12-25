@@ -41,7 +41,7 @@ public:
 	int timeLeft = 0;
 	int increment = 0;
 	int quietHistory[2][7][64];
-	std::array<std::array<uint8_t, 218>, 150> reductions;
+	std::array<std::array<std::uint16_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board, bool isCutNode);

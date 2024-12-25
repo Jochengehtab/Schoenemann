@@ -717,7 +717,7 @@ void Search::initLMR()
     {
         for (int move = 0; move < 218; move++)
         {
-            reductions[depth][move] = uint8_t(std::clamp(lmrBaseFinal + std::log(depth) * std::log(move) / lmrDivisorFinal, -32678.0, 32678.0));
+            reductions[depth][move] = std::uint16_t(std::clamp(lmrBaseFinal + std::log(depth) * std::log(move) / lmrDivisorFinal, -32678.0, 32678.0));
         }
     }
 }
