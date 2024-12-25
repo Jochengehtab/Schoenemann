@@ -20,6 +20,7 @@ struct SearchStack {
 	bool inCheck;
 	std::array<Move, 150> pvLine;
 	Move killerMove;
+	PieceType previousCapture;
 };
 
 class Search {
