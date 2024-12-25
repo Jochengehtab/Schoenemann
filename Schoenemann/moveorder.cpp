@@ -38,15 +38,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		}
 		else 
 		{
-
-			int continuationHistoryBounus = 0;
-
-			if (searcher.stack[ply - 1].previousMovedPiece != PieceType::NONE)
-			{
-				continuationHistoryBounus += (2 * searcher.continuationHistory[searcher.stack[ply - 1].previousMovedPiece][searcher.stack[ply - 1].previousMove.to().index()][board.at(move.from()).type()][move.to().index()]);
-			}
-
-			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + continuationHistoryBounus;
+			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + (searcher.continuationHistory[searcher.stack[ply - 1].previousMovedPiece][searcher.stack[ply - 1].previousMove.to().index()][board.at(move.from()).type()][move.to().index()]);
 		}
 	}
 	
