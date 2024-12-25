@@ -45,7 +45,7 @@ public:
 	int quietHistory[2][6][64];
 	
 	std::array<std::array<std::array<std::array<int, 64>, 6>, 64>, 6> continuationHistory;
-	std::array<std::array<uint8_t, 218>, 150> reductions;
+	std::array<std::array<std::uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board& board, bool isCutNode);
