@@ -43,8 +43,8 @@ public:
 	int timeLeft = 0;
 	int increment = 0;
 	int quietHistory[2][6][64];
-	
-	std::array<std::array<std::array<std::array<int, 64>, 6>, 64>, 6> continuationHistory;
+
+	std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
 	std::array<std::array<std::uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
 
