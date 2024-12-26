@@ -324,6 +324,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
+        if (!pvNode && board.at(move.to()).type() < stack[ply + 1].previousCapture) 
+        {
+            staticEval += PIECE_VALUES[board.at(move.to()).type()];
+        }
+
         board.makeMove(move);
 
 
@@ -336,10 +341,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (!isQuiet)
         {
             stack[ply].previousCapture = board.at(move.to()).type();
-            if (board.at(move.to()).type() < stack[ply - 1].previousCapture) 
-            {
-                staticEval += PIECE_VALUES[board.at(move.to()).type()];
-            }
         }
         
         
