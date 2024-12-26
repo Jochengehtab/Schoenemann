@@ -328,9 +328,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         short checkExtension = 0;
 
-        if (!pvNode && staticEval + stack[ply + 1].previousCapture >= beta && depth >= 6 && improving) 
+        if (stack[ply + 1].previousCapture != PieceType::NONE)
         {
-            checkExtension--;
+            if (!pvNode && staticEval + stack[ply + 1].previousCapture >= beta && depth >= 6 && improving) 
+            {
+                checkExtension--;
+            }
         }
 
         board.makeMove(move);
