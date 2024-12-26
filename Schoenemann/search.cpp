@@ -330,7 +330,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         if (stack[ply + 1].previousCapture != PieceType::NONE)
         {
-            if (!pvNode && staticEval + stack[ply + 1].previousCapture >= beta && depth >= 7 && improving) 
+            if (!pvNode && staticEval + PIECE_VALUES[stack[ply + 1].previousCapture] >= beta && depth >= 6 && improving) 
             {
                 checkExtension++;
             }
