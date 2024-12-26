@@ -324,7 +324,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
-        if (!pvNode && beta >= stack[ply - 1].previousCapture + staticEval) 
+        if (!pvNode && stack[ply + 1].previousCapture + staticEval >= beta && depth >= 7) 
         {
             staticEval += board.at(move.to()).type();
         }
