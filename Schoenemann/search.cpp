@@ -192,7 +192,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // we perform a static evaluation
     if (staticEval == NO_VALUE)
     {
-        staticEval = net.evaluate((int)board.sideToMove());
+        staticEval = scaleOutput(net.evaluate((int)board.sideToMove()), board);
     }
 
     // Update the static Eval on the stack
@@ -544,7 +544,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
 
     if (standPat == NO_VALUE)
     {
-        standPat = net.evaluate((int)board.sideToMove());
+        standPat = scaleOutput(net.evaluate((int)board.sideToMove()), board);
     }
 
     if (standPat >= beta)
@@ -756,6 +756,13 @@ void Search::initLMR()
         }
     }
 }
+
+int Search::scaleOutput(int rawEval, Board& board) 
+{
+    int gamePhase =  3 * board.pieces(PieceType::KNIGHT).count() + 3 * board.pieces(PieceType::BISHOP).count() + 5 * board.pieces(PieceType::ROOK).count() + 12 * board.pieces(PieceType::QUEEN).count();
+    return rawEval * (200 + gamePhase) / 256;
+}
+
 std::string Search::getPVLine()
 {
     std::string pvLine;

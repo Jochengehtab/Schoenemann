@@ -252,7 +252,7 @@ void processCommand(const std::string& cmd, Board& board)
     }
     else if (token == "eval") 
 	{
-        std::cout << "The evaluation is: " << net.evaluate((int)board.sideToMove()) << " cp" << std::endl;
+        std::cout << "The evaluation is: " << searcher.scaleOutput(net.evaluate((int)board.sideToMove()), board) << " cp" << std::endl;
     }
     else if (token == "test") 
 	{
