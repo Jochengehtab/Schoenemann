@@ -430,7 +430,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         }
 
                         updateQuietHistory(board, madeMove, -(quietMalus * movesMadeCounter));
-                        updateContinuationHistory(board.at(move.from()).type(), madeMove, -(quietMalus * movesMadeCounter), ply);
+                        updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -(quietMalus * movesMadeCounter), ply);
                     }
                     
                 }
