@@ -28,19 +28,21 @@ DEFINE_PARAM_B(razorDepth, 1, 1, 10);
 DEFINE_PARAM_S(razorAlpha, 318, 30);
 DEFINE_PARAM_S(razorDepthMultiplyer, 63, 9);
 
-DEFINE_PARAM_B(lmrDepth, 1, 1, 7);
-
+// PVS - SEE
 DEFINE_PARAM_B(pvsSSEDepth, 2, 1, 6);
 DEFINE_PARAM_S(pvsSSECaptureCutoff, 95, 10);
 DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 42, 10);
 
+// Aspiration Window
 DEFINE_PARAM_S(aspDelta, 27, 6);
 // DEFINE_PARAM_B(aspDivisor, 2, 2, 8); When tuned this triggers crashes for some reason :(
 DEFINE_PARAM_B(aspMultiplier, 121, 1, 450);
 DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 
+// Late Move Reductions
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
+DEFINE_PARAM_B(lmrDepth, 1, 1, 7);
 
 DEFINE_PARAM_S(iirRduction, 1, 1);
 DEFINE_PARAM_S(fpCutoff, 1, 1);
@@ -62,6 +64,14 @@ DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplyer, 200, 25);
 DEFINE_PARAM_S(continuationHistoryGravityBase, 25, 5);
 DEFINE_PARAM_S(continuationHistoryDepthMuliplyper, 200, 25);
 DEFINE_PARAM_S(continuationHistoryBonusCap, 2000, 200);
+
+// Material Scaling
+DEFINE_PARAM_S(materialScaleKnight, 3, 1);
+DEFINE_PARAM_S(materialScaleBishop, 3, 1);
+DEFINE_PARAM_S(materialScaleRook, 5, 1);
+DEFINE_PARAM_S(materialScaleQueen, 12, 3);
+DEFINE_PARAM_S(materialScaleGamePhaseAdder, 200, 25);
+DEFINE_PARAM_S(materialScaleGamePhaseDivisor, 256, 30);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
@@ -758,8 +768,8 @@ void Search::initLMR()
 
 int Search::scaleOutput(int rawEval, Board& board) 
 {
-    int gamePhase =  3 * board.pieces(PieceType::KNIGHT).count() + 3 * board.pieces(PieceType::BISHOP).count() + 5 * board.pieces(PieceType::ROOK).count() + 12 * board.pieces(PieceType::QUEEN).count();
-    return rawEval * (200 + gamePhase) / 256;
+    int gamePhase =  materialScaleKnight * board.pieces(PieceType::KNIGHT).count() + materialScaleBishop * board.pieces(PieceType::BISHOP).count() + materialScaleRook * board.pieces(PieceType::ROOK).count() + materialScaleQueen * board.pieces(PieceType::QUEEN).count();
+    return rawEval * (materialScaleGamePhaseAdder + gamePhase) / materialScaleGamePhaseDivisor;
 }
 
 std::string Search::getPVLine()
