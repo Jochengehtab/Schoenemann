@@ -51,6 +51,7 @@ public:
 	int pvs(int alpha, int beta, int depth, int ply, Board& board, bool isCutNode);
 	int qs(int alpha, int beta, Board& board, int ply);
 	int aspiration(int maxDepth, int score, Board& board);
+	int scaleOutput(int rawEval, Board& board);
 
 	void iterativeDeepening(Board& board, bool isInfinite);
 	void initLMR();
