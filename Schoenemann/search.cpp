@@ -477,7 +477,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
 int Search::qs(int alpha, int beta, Board &board, int ply)
 {
-
     if (shouldStop)
     {
         return beta;
