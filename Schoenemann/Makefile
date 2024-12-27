@@ -13,4 +13,5 @@ endif
 all:
 	cd ../Schoenemann && clang++ -Wall -std=c++20 -O3 -march=native schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o $(EXE)
 test:
-	cd ../Schoenemann && clang++ -Wall -std=c++20 -fsanitize=address -g3 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o $(EXE)
+# Possible santizier: address, undefined, leak, thread, memory
+	cd ../Schoenemann && clang++ -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -fsanitize=address -g3 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o $(EXE)

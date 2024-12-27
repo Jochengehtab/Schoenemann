@@ -94,9 +94,6 @@ void runBenchmark() {
 	//Reseting the nodes
 	searcher.nodes = 0;
 
-	// Reset everything
-	searcher.reset();
-
 	//Looping over all bench positions
 	for (const auto& test : testStrings) {
 		benchBoard.setFen(test);
