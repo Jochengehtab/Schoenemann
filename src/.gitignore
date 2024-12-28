@@ -1,3 +1,7 @@
 *.exe
 *.txt
-*.bat
+*.py
+null.exp
+null.lib
+null.pdb
+null
