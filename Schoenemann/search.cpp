@@ -648,8 +648,9 @@ int Search::aspiration(int depth, int score, Board &board)
     while (true)
     {
         score = pvs(alpha, beta, depth, 0, board, false);
-        if (shouldStopSoft(start))
+        if (shouldStopID(start))
         {
+            shouldStop = true;
             return score;
         }
 
