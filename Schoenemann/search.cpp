@@ -80,7 +80,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         return beta;
     }
 
-    if (nodes % 1024 == 0)
+    if (nodes % 128 == 0)
     {
         if (shouldStopSoft(start) && !isNormalSearch)
         {
@@ -493,7 +493,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         return beta;
     }
 
-    if (nodes % 1024 == 0)
+    if (nodes % 128 == 0)
     {
         // Check for a timeout
         if (shouldStopSoft(start) && !isNormalSearch)
@@ -695,7 +695,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         bestMoveThisIteration = rootBestMove;
-        
+
         if (!hasNodeLimit)
         {
             std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
