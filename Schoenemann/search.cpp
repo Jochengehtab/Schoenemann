@@ -1,6 +1,6 @@
 #include "search.h"
 
-std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+std::chrono::time_point start = std::chrono::steady_clock::now();
 
 DEFINE_PARAM_S(probeCutBetaAddition, 403, 25);
 DEFINE_PARAM_S(probeCuteSubtractor, 3, 1);
@@ -79,6 +79,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         return beta;
     }
+
+    if (nodes % 128 == 0)
+    {
         if (shouldStopSoft(start) && !isNormalSearch)
         {
             shouldStop = true;
@@ -93,6 +96,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 return beta;
             }
         }
+    }
 
     // Increment nodes by one
     nodes++;
@@ -488,6 +492,9 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     {
         return beta;
     }
+
+    if (nodes % 128 == 0)
+    {
         // Check for a timeout
         if (shouldStopSoft(start) && !isNormalSearch)
         {
@@ -503,7 +510,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 return beta;
             }
         }
-    
+    }
 
     // Increment nodes by one
     nodes++;
@@ -669,7 +676,7 @@ int Search::aspiration(int depth, int score, Board &board)
 
 void Search::iterativeDeepening(Board &board, bool isInfinite)
 {
-    start = std::chrono::high_resolution_clock::now();
+    start = std::chrono::steady_clock::now();
     getTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
@@ -691,7 +698,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         if (!hasNodeLimit)
         {
-            std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - start;
+            std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
             std::cout
                     << "info depth "
                     << i << " score cp "
@@ -704,7 +711,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
 
-        if (shouldStopID(start) && !isInfinite || i == 256)
+        if ((shouldStopID(start) && !isInfinite) || i == 256)
         {
             if (!hasNodeLimit)
             {

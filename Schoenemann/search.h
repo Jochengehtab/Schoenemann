@@ -62,13 +62,13 @@ public:
 
 	bool shouldStopSoft(auto s)
 	{
-    	std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
+    	std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - s;
     	return elapsed.count() > hardLimit;
 	}
 
 	bool shouldStopID(auto s)
 	{
-	    std::chrono::duration<double, std::milli> elapsed = std::chrono::high_resolution_clock::now() - s;
+	    std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - s;
    		return elapsed.count() > softLimit;
 	}
 };

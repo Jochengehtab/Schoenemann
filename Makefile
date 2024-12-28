@@ -10,6 +10,6 @@ ifeq ($(OS),Windows_NT)
 endif
 
 all:
-	cd Schoenemann && clang++ -Wall -O3 -march=native -std=c++20 -funroll-loops -flto -DIS_64BIT -DNDEBUG schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp main.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o ../src/$(EXE)
-t:
+	cd Schoenemann && clang++ -Wall -std=c++20 -march=native -O3 -funroll-loops -DNDEBUG schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp main.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o ../src/$(EXE)
+test:
 	cd ../Schoenemann && clang++ -Wall -O0 -std=c++20 schoenemann.cpp search.cpp main.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o $(EXE)
