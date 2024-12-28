@@ -16,13 +16,13 @@ DEFINE_PARAM_S(winningDepthMultiplyer, 16, 4);
 
 DEFINE_PARAM_S(probeCutMarginAdder, 59, 10);
 
-DEFINE_PARAM_S(winningDepthDivisor, 5, 1);
+DEFINE_PARAM_B(winningDepthDivisor, 5, 1, 20);
 DEFINE_PARAM_S(winningDepthSubtractor, 4, 1);
 DEFINE_PARAM_B(winningCount, 3, 1, 6);
 
 DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
 DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
-DEFINE_PARAM_S(nmpDepthDivisor, 3, 1);
+DEFINE_PARAM_B(nmpDepthDivisor, 3, 1, 10);
 
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
 DEFINE_PARAM_S(razorAlpha, 318, 30);
@@ -51,13 +51,13 @@ DEFINE_PARAM_S(fpCutoff, 1, 1);
 DEFINE_PARAM_S(quietHistoryGravityBase, 25, 5);
 DEFINE_PARAM_S(quietHistoryDepthMuliplyper, 200, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 2000, 200);
-DEFINE_PARAM_S(quietHistoryDivisor, 30000, 750);
+DEFINE_PARAM_B(quietHistoryDivisor, 30000, 10000, 50000);
 DEFINE_PARAM_S(quietHistoryMalusBase, 30, 6);
 DEFINE_PARAM_S(quietHistoryMalusMax, 2000, 150);
 DEFINE_PARAM_S(quietHistoryMalusDepthMultiplyer, 200, 25);
 
 // Continuation Hisotry
-DEFINE_PARAM_S(continuationHistoryDivisor, 30000, 750);
+DEFINE_PARAM_B(continuationHistoryDivisor, 30000, 10000, 50000);
 DEFINE_PARAM_S(continuationHistoryMalusBase, 30, 6);
 DEFINE_PARAM_S(continuationHistoryMalusMax, 2000, 150);
 DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplyer, 200, 25);
@@ -71,7 +71,7 @@ DEFINE_PARAM_S(materialScaleBishop, 3, 1);
 DEFINE_PARAM_S(materialScaleRook, 5, 1);
 DEFINE_PARAM_S(materialScaleQueen, 12, 3);
 DEFINE_PARAM_S(materialScaleGamePhaseAdder, 200, 25);
-DEFINE_PARAM_S(materialScaleGamePhaseDivisor, 256, 30);
+DEFINE_PARAM_B(materialScaleGamePhaseDivisor, 256, 1, 700);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
