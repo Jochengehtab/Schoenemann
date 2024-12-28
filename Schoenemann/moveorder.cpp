@@ -1,5 +1,7 @@
 #include "moveorder.h"
 
+DEFINE_PARAM_S(mvaLvvMultiplyer, 100, 20);
+
 void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer, int ply)
 {
 	const bool isNullptr = entry == nullptr ? true : false;
@@ -24,7 +26,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 			int captureScore = see(board, move, 0) ? goodCapture : badCapture;
 
 			// MVA - LVV
-			captureScore += 100 * PIECE_VALUES[captured] - PIECE_VALUES[capturing];
+			captureScore += mvaLvvMultiplyer * PIECE_VALUES[captured] - PIECE_VALUES[capturing];
 
 			scores[i] = captureScore;
 		}
