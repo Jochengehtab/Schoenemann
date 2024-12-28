@@ -85,6 +85,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (shouldStopSoft(start) && !isNormalSearch)
         {
             shouldStop = true;
+            return beta;
         }
 
         if (hasNodeLimit)
@@ -92,6 +93,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             if (nodes >= nodeLimit)
             {
                 shouldStop = true;
+                return beta;
             }
         }
     }
@@ -496,6 +498,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         // Check for a timeout
         if (shouldStopSoft(start) && !isNormalSearch)
         {
+            shouldStop = true;
             return beta;
         }
 
@@ -504,6 +507,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             if (nodes >= nodeLimit)
             {
                 shouldStop = true;
+                return beta;
             }
         }
     }
