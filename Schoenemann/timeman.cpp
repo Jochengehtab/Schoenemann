@@ -2,11 +2,6 @@
 
 void getTimeForMove()
 {
-	if (searcher.timeLeft < 0)
-	{
-		searcher.timeLeft = 1000;
-	}
-
 	searcher.timeLeft -= searcher.timeLeft / 2;
 	searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
 
