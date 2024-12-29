@@ -1,11 +1,7 @@
 ﻿#include <iostream>
 #include <thread>
-#include <atomic>
 #include <sstream>
 #include <cstring>
-#include <queue>
-#include <mutex>
-#include <condition_variable>
 #include "schoenemann.h"
 #include "search.h"
 #include "consts.h"
