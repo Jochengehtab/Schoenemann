@@ -2,76 +2,76 @@
 
 std::chrono::time_point start = std::chrono::steady_clock::now();
 
-DEFINE_PARAM_S(probeCutBetaAdder, 403, 25);
-DEFINE_PARAM_S(probeCuteSubtractor, 3, 1);
+DEFINE_PARAM_S(probeCutBetaAdder, 463, 25);
+DEFINE_PARAM_S(probeCuteSubtractor, 4, 1);
 
-DEFINE_PARAM_S(iidDepth, 4, 1);
+DEFINE_PARAM_S(iidDepth, 3, 1);
 
-DEFINE_PARAM_S(rfpDepth, 4, 1);
-DEFINE_PARAM_S(rfpEvalSubtractor, 72, 6);
+DEFINE_PARAM_S(rfpDepth, 5, 1);
+DEFINE_PARAM_S(rfpEvalSubtractor, 78, 6);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
-DEFINE_PARAM_S(winningEvalSubtractor, 100, 20);
-DEFINE_PARAM_S(winningDepthMultiplier, 16, 4);
+DEFINE_PARAM_S(winningEvalSubtractor, 97, 20);
+DEFINE_PARAM_S(winningDepthMultiplier, 20, 4);
 
-DEFINE_PARAM_S(probeCutMarginAdder, 59, 10);
+DEFINE_PARAM_S(probeCutMarginAdder, 72, 10);
 
-DEFINE_PARAM_B(winningDepthDivisor, 5, 1, 20);
+DEFINE_PARAM_B(winningDepthDivisor, 3, 1, 20);
 DEFINE_PARAM_S(winningDepthSubtractor, 4, 1);
 DEFINE_PARAM_B(winningCount, 3, 1, 6);
 
 DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
-DEFINE_PARAM_S(nmpDepthAdder, 3, 1);
+DEFINE_PARAM_S(nmpDepthAdder, 2, 1);
 DEFINE_PARAM_B(nmpDepthDivisor, 3, 1, 10);
 
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
-DEFINE_PARAM_S(razorAlpha, 318, 30);
-DEFINE_PARAM_S(razorDepthMultiplier, 63, 9);
+DEFINE_PARAM_S(razorAlpha, 274, 30);
+DEFINE_PARAM_S(razorDepthMultiplier, 48, 9);
 
 // PVS - SEE
-DEFINE_PARAM_B(pvsSSEDepth, 2, 1, 6);
-DEFINE_PARAM_S(pvsSSECaptureCutoff, 95, 10);
-DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 42, 10);
+DEFINE_PARAM_B(pvsSSEDepth, 3, 1, 6);
+DEFINE_PARAM_S(pvsSSECaptureCutoff, 93, 10);
+DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 24, 10);
 
 // Aspiration Window
-DEFINE_PARAM_S(aspDelta, 27, 6);
+DEFINE_PARAM_S(aspDelta, 22, 6);
 // DEFINE_PARAM_B(aspDivisor, 2, 2, 8); When tuned this triggers crashes for some reason :(
-DEFINE_PARAM_B(aspMultiplier, 121, 1, 450);
+DEFINE_PARAM_B(aspMultiplier, 131, 1, 450);
 DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 
 // Late Move Reductions
-DEFINE_PARAM_B(lmrBase, 78, 1, 300);
-DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
+DEFINE_PARAM_B(lmrBase, 74, 1, 300);
+DEFINE_PARAM_B(lmrDivisor, 231, 1, 700);
 DEFINE_PARAM_B(lmrDepth, 1, 1, 7);
 
-DEFINE_PARAM_S(iirReduction, 1, 1);
-DEFINE_PARAM_S(fpCutoff, 1, 1);
+DEFINE_PARAM_S(iirReduction, 2, 1);
+DEFINE_PARAM_S(fpCutoff, 2, 1);
 
 // Quiet History 
-DEFINE_PARAM_S(quietHistoryGravityBase, 25, 5);
-DEFINE_PARAM_S(quietHistoryDepthMultiplier, 200, 25);
-DEFINE_PARAM_S(quietHistoryBonusCap, 2000, 200);
-DEFINE_PARAM_B(quietHistoryDivisor, 30000, 10000, 50000);
-DEFINE_PARAM_S(quietHistoryMalusBase, 30, 6);
-DEFINE_PARAM_S(quietHistoryMalusMax, 2000, 150);
-DEFINE_PARAM_S(quietHistoryMalusDepthMultiplier, 200, 25);
+DEFINE_PARAM_S(quietHistoryGravityBase, 35, 5);
+DEFINE_PARAM_S(quietHistoryDepthMultiplier, 197, 25);
+DEFINE_PARAM_S(quietHistoryBonusCap, 1700, 200);
+DEFINE_PARAM_B(quietHistoryDivisor, 29478, 10000, 50000);
+DEFINE_PARAM_S(quietHistoryMalusBase, 20, 6);
+DEFINE_PARAM_S(quietHistoryMalusMax, 1942, 150);
+DEFINE_PARAM_S(quietHistoryMalusDepthMultiplier, 179, 25);
 
 // Continuation Hisotry
-DEFINE_PARAM_B(continuationHistoryDivisor, 30000, 10000, 50000);
-DEFINE_PARAM_S(continuationHistoryMalusBase, 30, 6);
-DEFINE_PARAM_S(continuationHistoryMalusMax, 2000, 150);
-DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplier, 200, 25);
-DEFINE_PARAM_S(continuationHistoryGravityBase, 25, 5);
+DEFINE_PARAM_B(continuationHistoryDivisor, 26811, 10000, 50000);
+DEFINE_PARAM_S(continuationHistoryMalusBase, 26, 6);
+DEFINE_PARAM_S(continuationHistoryMalusMax, 2113, 150);
+DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplier, 197, 25);
+DEFINE_PARAM_S(continuationHistoryGravityBase, 24, 5);
 DEFINE_PARAM_S(continuationHistoryDepthMultiplier, 200, 25);
-DEFINE_PARAM_S(continuationHistoryBonusCap, 2000, 200);
+DEFINE_PARAM_S(continuationHistoryBonusCap, 1868, 200);
 
 // Material Scaling
 DEFINE_PARAM_S(materialScaleKnight, 3, 1);
 DEFINE_PARAM_S(materialScaleBishop, 3, 1);
 DEFINE_PARAM_S(materialScaleRook, 5, 1);
-DEFINE_PARAM_S(materialScaleQueen, 12, 3);
-DEFINE_PARAM_S(materialScaleGamePhaseAdder, 200, 25);
-DEFINE_PARAM_B(materialScaleGamePhaseDivisor, 256, 1, 700);
+DEFINE_PARAM_S(materialScaleQueen, 16, 3);
+DEFINE_PARAM_S(materialScaleGamePhaseAdder, 150, 25);
+DEFINE_PARAM_B(materialScaleGamePhaseDivisor, 285, 1, 700);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
