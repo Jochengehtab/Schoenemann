@@ -2,7 +2,7 @@
 
 std::chrono::time_point start = std::chrono::steady_clock::now();
 
-DEFINE_PARAM_S(probeCutBetaAddition, 403, 25);
+DEFINE_PARAM_S(probeCutBetaAdder, 403, 25);
 DEFINE_PARAM_S(probeCuteSubtractor, 3, 1);
 
 DEFINE_PARAM_S(iidDepth, 4, 1);
@@ -12,7 +12,7 @@ DEFINE_PARAM_S(rfpEvalSubtractor, 72, 6);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSubtractor, 100, 20);
-DEFINE_PARAM_S(winningDepthMultiplyer, 16, 4);
+DEFINE_PARAM_S(winningDepthMultiplier, 16, 4);
 
 DEFINE_PARAM_S(probeCutMarginAdder, 59, 10);
 
@@ -26,7 +26,7 @@ DEFINE_PARAM_B(nmpDepthDivisor, 3, 1, 10);
 
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
 DEFINE_PARAM_S(razorAlpha, 318, 30);
-DEFINE_PARAM_S(razorDepthMultiplyer, 63, 9);
+DEFINE_PARAM_S(razorDepthMultiplier, 63, 9);
 
 // PVS - SEE
 DEFINE_PARAM_B(pvsSSEDepth, 2, 1, 6);
@@ -44,25 +44,25 @@ DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 291, 1, 700);
 DEFINE_PARAM_B(lmrDepth, 1, 1, 7);
 
-DEFINE_PARAM_S(iirRduction, 1, 1);
+DEFINE_PARAM_S(iirReduction, 1, 1);
 DEFINE_PARAM_S(fpCutoff, 1, 1);
 
 // Quiet History 
 DEFINE_PARAM_S(quietHistoryGravityBase, 25, 5);
-DEFINE_PARAM_S(quietHistoryDepthMuliplyper, 200, 25);
+DEFINE_PARAM_S(quietHistoryDepthMultiplier, 200, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 2000, 200);
 DEFINE_PARAM_B(quietHistoryDivisor, 30000, 10000, 50000);
 DEFINE_PARAM_S(quietHistoryMalusBase, 30, 6);
 DEFINE_PARAM_S(quietHistoryMalusMax, 2000, 150);
-DEFINE_PARAM_S(quietHistoryMalusDepthMultiplyer, 200, 25);
+DEFINE_PARAM_S(quietHistoryMalusDepthMultiplier, 200, 25);
 
 // Continuation Hisotry
 DEFINE_PARAM_B(continuationHistoryDivisor, 30000, 10000, 50000);
 DEFINE_PARAM_S(continuationHistoryMalusBase, 30, 6);
 DEFINE_PARAM_S(continuationHistoryMalusMax, 2000, 150);
-DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplyer, 200, 25);
+DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplier, 200, 25);
 DEFINE_PARAM_S(continuationHistoryGravityBase, 25, 5);
-DEFINE_PARAM_S(continuationHistoryDepthMuliplyper, 200, 25);
+DEFINE_PARAM_S(continuationHistoryDepthMultiplier, 200, 25);
 DEFINE_PARAM_S(continuationHistoryBonusCap, 2000, 200);
 
 // Material Scaling
@@ -187,13 +187,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         if (zobristKey != entry->key && !inCheck && depth >= iidDepth)
         {
-            depth -= iirRduction;
+            depth -= iirReduction;
         }
     }
 
     if (!isNullptr)
     {
-        int probCutBeta = beta + probeCutBetaAddition;
+        int probCutBeta = beta + probeCutBetaAdder;
         if (hashedDepth >= depth - probeCuteSubtractor && hashedScore >= probCutBeta && std::abs(beta) < infinity)
         {
             return probCutBeta;
@@ -238,7 +238,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Razoring
     if (!pvNode && !board.inCheck() && depth <= razorDepth)
     {
-        const int ralpha = alpha - razorAlpha - depth * razorDepthMultiplyer;
+        const int ralpha = alpha - razorAlpha - depth * razorDepthMultiplier;
 
         if (staticEval < ralpha)
         {
@@ -261,7 +261,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Idea by Laser
     // If we can make a winning move and can confirm that when we do a lower depth search
     // it causes a beta cutoff we can make that beta cutoff
-    if (!pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplyer * depth && std::abs(beta) < infinity)
+    if (!pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplier * depth && std::abs(beta) < infinity)
     {
         int probCutMargin = beta + probeCutMarginAdder;
         int probCutCount = 0;
@@ -437,16 +437,16 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 if (isQuiet)
                 {
                     stack[ply].killerMove = move;
-                    int quietHistoryBonus = std::min(static_cast<int>(quietHistoryGravityBase) + static_cast<int>(quietHistoryDepthMuliplyper) * depth, static_cast<int>(quietHistoryBonusCap));
+                    int quietHistoryBonus = std::min(static_cast<int>(quietHistoryGravityBase) + static_cast<int>(quietHistoryDepthMultiplier) * depth, static_cast<int>(quietHistoryBonusCap));
                     updateQuietHistory(board, move, quietHistoryBonus);
 
-                    int continuationHistoryBonus = std::min(static_cast<int>(continuationHistoryGravityBase) + static_cast<int>(continuationHistoryDepthMuliplyper) * depth, static_cast<int>(continuationHistoryBonusCap));
+                    int continuationHistoryBonus = std::min(static_cast<int>(continuationHistoryGravityBase) + static_cast<int>(continuationHistoryDepthMultiplier) * depth, static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
                     updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply);
 
-                    int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMultiplyer) * depth, static_cast<int>(quietHistoryMalusMax));
-                    int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMultiplyer) * depth, static_cast<int>(continuationHistoryMalusMax));
+                    int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMultiplier) * depth, static_cast<int>(quietHistoryMalusMax));
+                    int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMultiplier) * depth, static_cast<int>(continuationHistoryMalusMax));
                     // History malus
                     for (int i = 0; i < movesMadeCounter; i++)
                     {
