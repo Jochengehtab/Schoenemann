@@ -607,12 +607,15 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             {
                 alpha = score;
 
-                // Update pvLine
-                stack[ply].pvLine[0] = move;
-                stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                if (pvNode)
                 {
-                    stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                    // Update pvLine
+                    stack[ply].pvLine[0] = move;
+                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                    for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                    {
+                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                    }
                 }
 
                 bestMoveInQs = move;
