@@ -25,7 +25,7 @@ At first glance, it may appear that White is hanging a bishop, but they are not 
 
 ## How It Works  
 Schönemann implemts this features (and some more that if forgot to include here):  
-- **NNUE** with 1024 hidden layers, trained using **Leela** data (Currently doing selfgen in the background)
+- **NNUE** with 1024 hidden layers, trained using **Monty** data (Currently doing selfgen in the background)
 - **Principal Variation Search (PVS)**  
 - **SEE Pruning** 
 - **Check Extensions**
@@ -47,7 +47,7 @@ This will produce an executable named `null.exe`.
 ---
 
 ## Performance Rating  
-Schönemann is rated approximately **3000 Elo** on the CCRL.  
+Schönemann is rated approximately **3300 Elo** on the CCRL.  
 
 Lichess performance:  
 - **[Bullet](https://lichess.org/@/Schoenemann/perf/bullet):**  
