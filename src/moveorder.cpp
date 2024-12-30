@@ -1,6 +1,6 @@
 #include "moveorder.h"
 
-DEFINE_PARAM_S(mvaLvvMultiplyer, 105, 20);
+DEFINE_PARAM_S(mvaLvvMultiplyer, 103, 20);
 
 void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer, int ply)
 {
