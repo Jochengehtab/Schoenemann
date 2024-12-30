@@ -422,14 +422,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 // Update the pvLine
                 if (pvNode)
                 {
-                    if (move != Move::NULL_MOVE || move != Move::NO_MOVE)
+                    stack[ply].pvLine[0] = move;
+                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                    for (int i = 0; i < stack[ply + 1].pvLength; i++)
                     {
-                        stack[ply].pvLine[0] = move;
-                        stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                        for (int i = 0; i < stack[ply + 1].pvLength; i++)
-                        {
-                            stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
-                        }
+                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
                     }
                 }
             }
@@ -610,15 +607,12 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             {
                 alpha = score;
 
-                if (move != Move::NULL_MOVE || move != Move::NO_MOVE)
+                // Update pvLine
+                stack[ply].pvLine[0] = move;
+                stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                for (int i = 0; i < stack[ply + 1].pvLength; i++)
                 {
-                    // Update pvLine
-                    stack[ply].pvLine[0] = move;
-                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                    for (int i = 0; i < stack[ply + 1].pvLength; i++)
-                    {
-                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
-                    }
+                    stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
                 }
 
                 bestMoveInQs = move;
@@ -686,6 +680,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
     isNormalSearch = false;
+    bool hasOneLegalMove = Move::NULL_MOVE;
 
     if (isInfinite)
     {
@@ -700,6 +695,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         bestMoveThisIteration = rootBestMove;
+        hasOneLegalMove = bestMoveThisIteration != Move::NULL_MOVE;
 
         if (!hasNodeLimit)
         {
@@ -716,7 +712,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
 
-        if ((shouldStopID(start) && !isInfinite) || i == 256)
+        if (hasOneLegalMove && (shouldStopID(start) && !isInfinite) || i == 256)
         {
             if (!hasNodeLimit)
             {
@@ -754,7 +750,6 @@ std::string Search::getPVLine()
     std::string pvLine;
     for (int i = 0; i < stack[0].pvLength; i++)
     {
-
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
     return pvLine;
