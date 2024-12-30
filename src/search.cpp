@@ -422,11 +422,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 // Update the pvLine
                 if (pvNode)
                 {
-                    stack[ply].pvLine[0] = move;
-                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                    for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                    if (move != Move::NULL_MOVE || move != Move::NO_MOVE)
                     {
-                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                        stack[ply].pvLine[0] = move;
+                        stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                        for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                        {
+                            stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                        }
                     }
                 }
             }
@@ -607,12 +610,15 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             {
                 alpha = score;
 
-                // Update pvLine
-                stack[ply].pvLine[0] = move;
-                stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                if (move != Move::NULL_MOVE || move != Move::NO_MOVE)
                 {
-                    stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                    // Update pvLine
+                    stack[ply].pvLine[0] = move;
+                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                    for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                    {
+                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                    }
                 }
 
                 bestMoveInQs = move;
@@ -748,12 +754,7 @@ std::string Search::getPVLine()
     std::string pvLine;
     for (int i = 0; i < stack[0].pvLength; i++)
     {
-        if (stack[0].pvLine[i] == Move::NULL_MOVE || stack[0].pvLine[i] == Move::NO_MOVE)
-        {
-            pvLine = uci::moveToUci(stack[0].pvLine[0]);
-            break;
-        }
-        
+
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
     return pvLine;
