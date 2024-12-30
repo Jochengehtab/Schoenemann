@@ -679,12 +679,12 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     getTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
+
     isNormalSearch = false;
     bool hasOneLegalMove = Move::NULL_MOVE;
 
     if (isInfinite)
     {
-        timeForMove = 0;
         isNormalSearch = true;
     }
 
@@ -696,6 +696,16 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         bestMoveThisIteration = rootBestMove;
         hasOneLegalMove = bestMoveThisIteration != Move::NULL_MOVE && bestMoveThisIteration != Move::NO_MOVE;
+        if (!hasOneLegalMove)
+        {
+            searcher.hardLimit = 10000;
+            searcher.softLimit = 10000;
+            isNormalSearch = true;
+            shouldStop = false;
+            pvs(-infinity, infinity, 1, 0, board, false);
+            std::cout << "bestmove " << uci::moveToUci(rootBestMove) << std::endl;
+            break;
+        }
 
         if (!hasNodeLimit)
         {
