@@ -712,13 +712,12 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
 
-        if (hasOneLegalMove && (shouldStopID(start) && !isInfinite) || i == 256)
+        if ((hasOneLegalMove && (shouldStopID(start) && !isInfinite)) || i == 256)
         {
             if (!hasNodeLimit)
             {
                 std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
             }
-            shouldStop = true;
             break;
         }
     }
