@@ -1,6 +1,5 @@
 #include "see.h"
 
-
 int getPieceValue(const Board &board, Move &move)
 {
     auto moveType = move.typeOf();
@@ -24,7 +23,6 @@ int getPieceValue(const Board &board, Move &move)
 
     return score;
 }
-
 
 // SEE prunning by Starzix
 bool see(const Board &board, Move &move, int cutoff)

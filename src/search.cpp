@@ -47,7 +47,7 @@ DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
 DEFINE_PARAM_S(iirReduction, 2, 1);
 DEFINE_PARAM_S(fpCutoff, 2, 1);
 
-// Quiet History 
+// Quiet History
 DEFINE_PARAM_S(quietHistoryGravityBase, 31, 5);
 DEFINE_PARAM_S(quietHistoryDepthMultiplier, 204, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 1734, 200);
@@ -174,8 +174,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (!pvNode && hashedDepth >= depth && ply > 0 && zobristKey == entry->key)
         {
             if ((hashedType == EXACT) ||
-                    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                    (hashedType == LOWER_BOUND && hashedScore >= beta))
+                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                (hashedType == LOWER_BOUND && hashedScore >= beta))
             {
                 return hashedScore;
             }
@@ -364,12 +364,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         board.makeMove(move);
 
-        if (isQuiet) 
+        if (isQuiet)
         {
             movesMade[movesMadeCounter] = move;
             movesMadeCounter++;
         }
-        
+
         moveCounter++;
 
         short checkExtension = 0;
@@ -451,7 +451,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     for (int i = 0; i < movesMadeCounter; i++)
                     {
                         Move madeMove = movesMade[i];
-                        if (madeMove == bestMoveInPVS) 
+                        if (madeMove == bestMoveInPVS)
                         {
                             continue;
                         }
@@ -459,7 +459,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         updateQuietHistory(board, madeMove, -(quietHistoryMalus * movesMadeCounter));
                         updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -(continuationHistoryMalus * movesMadeCounter), ply);
                     }
-                    
                 }
 
                 break;
@@ -541,8 +540,8 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         if (!pvNode && transpositionTabel.checkForMoreInformation(hashedType, hashedScore, beta))
         {
             if ((hashedType == EXACT) ||
-                    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                    (hashedType == LOWER_BOUND && hashedScore >= beta))
+                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                (hashedType == LOWER_BOUND && hashedScore >= beta))
             {
                 return hashedScore;
             }
@@ -700,11 +699,11 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         {
             std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
             std::cout
-                    << "info depth "
-                    << i << " score cp "
-                    << scoreData << " nodes "
-                    << nodes << " nps "
-                    << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
+                << "info depth "
+                << i << " score cp "
+                << scoreData << " nodes "
+                << nodes << " nps "
+                << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
                 << getPVLine()
                 << std::endl;
         }
@@ -738,9 +737,9 @@ void Search::initLMR()
     }
 }
 
-int Search::scaleOutput(int rawEval, Board& board) 
+int Search::scaleOutput(int rawEval, Board &board)
 {
-    int gamePhase =  materialScaleKnight * board.pieces(PieceType::KNIGHT).count() + materialScaleBishop * board.pieces(PieceType::BISHOP).count() + materialScaleRook * board.pieces(PieceType::ROOK).count() + materialScaleQueen * board.pieces(PieceType::QUEEN).count();
+    int gamePhase = materialScaleKnight * board.pieces(PieceType::KNIGHT).count() + materialScaleBishop * board.pieces(PieceType::BISHOP).count() + materialScaleRook * board.pieces(PieceType::ROOK).count() + materialScaleQueen * board.pieces(PieceType::QUEEN).count();
     return rawEval * (materialScaleGamePhaseAdder + gamePhase) / materialScaleGamePhaseDivisor;
 }
 
@@ -754,17 +753,17 @@ std::string Search::getPVLine()
     return pvLine;
 }
 
-void Search::updateQuietHistory(Board& board, Move move, int bonus)
+void Search::updateQuietHistory(Board &board, Move move, int bonus)
 {
     quietHistory
-    [board.sideToMove()]
-    [board.at(move.from()).type()]
-    [move.to().index()] 
-    +=
-    (bonus - quietHistory
-            [board.sideToMove()]
-            [board.at(move.from()).type()]
-            [move.to().index()] * std::abs(bonus) / quietHistoryDivisor);
+        [board.sideToMove()]
+        [board.at(move.from()).type()]
+        [move.to().index()] +=
+        (bonus - quietHistory
+                         [board.sideToMove()]
+                         [board.at(move.from()).type()]
+                         [move.to().index()] *
+                     std::abs(bonus) / quietHistoryDivisor);
 }
 
 void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply)
@@ -772,7 +771,7 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
     // Continuation History is indexed as follows
     // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
     int scaledBonus = (bonus - continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] * std::abs(bonus) / continuationHistoryDivisor);
-    
+
     if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {
         // Continuation History is indexed as follows

@@ -11,4 +11,4 @@
 
 using namespace chess;
 
-void generate(Board& board);
+void generate(Board &board);

@@ -12,8 +12,8 @@
 class network
 {
 private:
-
-    struct {
+    struct
+    {
         std::array<std::int16_t, inputHidden> featureWeight;
         std::array<std::int16_t, hiddenSize> featureBias;
 
@@ -21,7 +21,7 @@ private:
         std::array<std::int16_t, outputSize> outputBias;
 
         std::array<std::int32_t, outputSize> finalOutput;
-    } innerNet; 
+    } innerNet;
 
     std::array<accumulator, 1> accumulators;
     std::uint16_t currentAccumulator = 0;
@@ -44,11 +44,12 @@ public:
         initAccumulator();
 
         // open the nn file
-        //FILE* nn = fopen("C:\\GitHub\\Schoenemann\\Schoenemann\\NNUE\\quantised.bin", "rb");
-        FILE* nn = nullptr;
+        // FILE* nn = fopen("C:\\GitHub\\Schoenemann\\Schoenemann\\NNUE\\quantised.bin", "rb");
+        FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
-        if (nn) {
+        if (nn)
+        {
             std::cout << "Reading network file" << std::endl;
             // initialize an accumulator for every input of the second layer
             size_t read = 0;
@@ -60,7 +61,8 @@ public:
             read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2, nn);
             read += fread(&innerNet.outputBias, sizeof(int16_t), 1, nn);
 
-            if (std::abs((int64_t) read - (int64_t) objectsExpected) >= 16) {
+            if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
+            {
                 std::cout << "Error loading the net, aborting ";
                 std::cout << "Expected " << objectsExpected << " shorts, got " << read << "\n";
                 exit(1);
@@ -69,8 +71,9 @@ public:
             // after reading the config we can close the file
             fclose(nn);
         }
-        else {
-            //std::cout << "Using the default loading method" << std::endl;
+        else
+        {
+            // std::cout << "Using the default loading method" << std::endl;
             stream.readArray(innerNet.featureWeight);
             stream.readArray(innerNet.featureBias);
             stream.readArray(innerNet.outputWeight);

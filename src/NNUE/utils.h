@@ -7,7 +7,6 @@
 class utilitys
 {
 public:
-
     static inline std::int32_t crelu(int input)
     {
         const std::int32_t clipped = std::clamp<std::int32_t>(static_cast<std::int32_t>(input), 0, QA);

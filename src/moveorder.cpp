@@ -2,7 +2,7 @@
 
 DEFINE_PARAM_S(mvaLvvMultiplyer, 103, 20);
 
-void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Move killer, int ply)
+void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], Move killer, int ply)
 {
 	const bool isNullptr = entry == nullptr ? true : false;
 	const std::uint64_t key = board.zobrist();
@@ -21,7 +21,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		if (board.isCapture(move))
 		{
 			PieceType captured = board.at<PieceType>(move.to());
-            PieceType capturing = board.at<PieceType>(move.from());
+			PieceType capturing = board.at<PieceType>(move.from());
 
 			int captureScore = see(board, move, 0) ? goodCapture : badCapture;
 
@@ -30,7 +30,7 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 
 			scores[i] = captureScore;
 		}
-		else if (move == killer) 
+		else if (move == killer)
 		{
 			scores[i] = killerScore;
 		}
@@ -38,23 +38,22 @@ void orderMoves(Movelist& moveList, Hash* entry, Board& board, int scores[], Mov
 		{
 			scores[i] = promotion;
 		}
-		else 
+		else
 		{
 			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + (searcher.continuationHistory[searcher.stack[ply - 1].previousMovedPiece][searcher.stack[ply - 1].previousMove.to().index()][board.at(move.from()).type()][move.to().index()]);
 		}
 	}
-	
 }
 
-Move sortByScore(Movelist& moveList, int scores[], int i)
+Move sortByScore(Movelist &moveList, int scores[], int i)
 {
 	for (int j = i + 1; j < moveList.size(); j++)
-    {
-        if (scores[j] > scores[i])
-        {
-            std::swap(moveList[i], moveList[j]);
-            std::swap(scores[i], scores[j]);
-        }
-    }
-    return moveList[i];
+	{
+		if (scores[j] > scores[i])
+		{
+			std::swap(moveList[i], moveList[j]);
+			std::swap(scores[i], scores[j]);
+		}
+	}
+	return moveList[i];
 }

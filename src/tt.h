@@ -7,18 +7,19 @@
 
 using namespace chess;
 
-const short EXACT = 0;          //Exact bound
-const short UPPER_BOUND = 1;    //Upper bound
-const short LOWER_BOUND = 2;    //Lower bound
+const short EXACT = 0;       // Exact bound
+const short UPPER_BOUND = 1; // Upper bound
+const short LOWER_BOUND = 2; // Lower bound
 const short infinity = 32767;
 
-struct Hash {
-    std::uint64_t key;  //The zobrist Key of the position  
-    short depth;        //The current depth
-    short type;         //Ether EXACT, UPPER_BOUND or LOWER_BOUND
-    int score;          //The current score
-    Move move;          //The bestmove that we currently have
-    int eval;           //The static eval
+struct Hash
+{
+    std::uint64_t key; // The zobrist Key of the position
+    short depth;       // The current depth
+    short type;        // Ether EXACT, UPPER_BOUND or LOWER_BOUND
+    int score;         // The current score
+    Move move;         // The bestmove that we currently have
+    int eval;          // The static eval
 
     void setEntry(std::uint64_t _key, short _depth, short _type, int _score, Move _move, int _eval)
     {
@@ -31,16 +32,17 @@ struct Hash {
     }
 };
 
-class tt {
+class tt
+{
 public:
     tt(std::uint64_t MB);
-    tt(const tt& other) = delete;
-    tt& operator=(const tt& other) = delete;
+    tt(const tt &other) = delete;
+    tt &operator=(const tt &other) = delete;
     ~tt();
 
     void storeEvaluation(std::uint64_t key, short depth, short type, int score, Move move, int eval);
 
-    Hash* getHash(std::uint64_t zobristKey);
+    Hash *getHash(std::uint64_t zobristKey);
 
     std::uint64_t getSize() const;
 
@@ -50,18 +52,18 @@ public:
 
     int estimateHashfull() const;
 
-    int scoreToTT(int score, int ply) 
+    int scoreToTT(int score, int ply)
     {
-        return score >= infinity ? score + ply
-            : score <= -infinity ? score - ply
-            : score;
+        return score >= infinity    ? score + ply
+               : score <= -infinity ? score - ply
+                                    : score;
     }
-    
-    int scoreFromTT(int score, int ply) 
+
+    int scoreFromTT(int score, int ply)
     {
-        return score >= infinity ? score - ply
-            : score <= -infinity ? score + ply
-            : score;
+        return score >= infinity    ? score - ply
+               : score <= -infinity ? score + ply
+                                    : score;
     }
 
     bool checkForMoreInformation(short type, int ttScore, int score)

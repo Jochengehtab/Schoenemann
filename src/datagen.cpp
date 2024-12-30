@@ -1,6 +1,6 @@
 #include "datagen.h"
 
-void generate(Board& board)
+void generate(Board &board)
 {
     // Set up the nodes limit
     searcher.hasNodeLimit = true;
@@ -117,10 +117,10 @@ void generate(Board& board)
 
             // We skip check moves, captures and if the score is to high for any side
             if (bestMove.typeOf() == Move::PROMOTION ||
-                    board.inCheck() ||
-                    board.isCapture(bestMove) ||
-                    (board.sideToMove() == Color::WHITE && searcher.scoreData >= 10000) ||
-                    (board.sideToMove() == Color::BLACK && searcher.scoreData <= 10000))
+                board.inCheck() ||
+                board.isCapture(bestMove) ||
+                (board.sideToMove() == Color::WHITE && searcher.scoreData >= 10000) ||
+                (board.sideToMove() == Color::BLACK && searcher.scoreData <= 10000))
             {
                 board.makeMove(bestMove);
                 continue;
@@ -171,7 +171,7 @@ void generate(Board& board)
             auto currentTime = std::chrono::steady_clock::now();
             auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
             double positionsPerSecond = static_cast<double>(positions) / elapsedTime;
-            std::cout << "Generated: " << positions << " positions | " << "PPS: " <<(int) positionsPerSecond << std::endl;
+            std::cout << "Generated: " << positions << " positions | " << "PPS: " << (int)positionsPerSecond << std::endl;
         }
     }
 

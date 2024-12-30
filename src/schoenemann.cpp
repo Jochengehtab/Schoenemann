@@ -21,7 +21,7 @@ network net(memoryStream);
 
 int transpositionTableSize = 8;
 
-int uciLoop(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     // The main board
     Board board;
@@ -35,7 +35,7 @@ int uciLoop(int argc, char *argv[])
     // Disable FRC (Fisher-Random-Chess)
     board.set960(false);
 
-    // Init the LMR 
+    // Init the LMR
     searcher.initLMR();
 
     transpositionTabel.setSize(8);
