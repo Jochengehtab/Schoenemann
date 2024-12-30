@@ -748,6 +748,12 @@ std::string Search::getPVLine()
     std::string pvLine;
     for (int i = 0; i < stack[0].pvLength; i++)
     {
+        if (stack[0].pvLine[i] == Move::NULL_MOVE || stack[0].pvLine[i] == Move::NO_MOVE)
+        {
+            pvLine = uci::moveToUci(stack[0].pvLine[0]);
+            break;
+        }
+        
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
     return pvLine;
