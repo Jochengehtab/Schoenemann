@@ -92,7 +92,7 @@ void runBenchmark()
 	Board benchBoard;
 
 	// Setting up the clock
-	auto start = std::chrono::high_resolution_clock::now();
+	auto start = std::chrono::steady_clock::now();
 
 	// Reseting the nodes
 	searcher.nodes = 0;
@@ -104,7 +104,7 @@ void runBenchmark()
 		searcher.pvs(-infinity, infinity, benchDepth, 0, benchBoard, false);
 	}
 
-	auto end = std::chrono::high_resolution_clock::now();
+	auto end = std::chrono::steady_clock::now();
 
 	// Calculates the total time used
 	std::chrono::duration<double, std::milli> timeElapsed = end - start;
