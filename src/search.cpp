@@ -680,10 +680,11 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
     isNormalSearch = false;
-    bool hasFoundMove = false;
+    bool hasOneLegalMove = Move::NULL_MOVE;
 
     if (isInfinite)
     {
+        timeForMove = 0;
         isNormalSearch = true;
     }
 
@@ -693,68 +694,36 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     {
         scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
-        if (!shouldStop)
-        {
-            bestMoveThisIteration = rootBestMove;
-        }
-
-        if (bestMoveThisIteration == Move::NULL_MOVE)
-        {
-            bestMoveThisIteration = rootBestMove;
-        }
-
-        if (bestMoveThisIteration != Move::NULL_MOVE)
-        {
-            hasFoundMove = true;
-        }
+        bestMoveThisIteration = rootBestMove;
+        hasOneLegalMove = bestMoveThisIteration != Move::NULL_MOVE && bestMoveThisIteration != Move::NO_MOVE;
 
         if (!hasNodeLimit)
         {
             std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
             std::cout
-                    << "info depth "
-                    << i << " score cp "
-                    << scoreData << " nodes "
-                    << nodes << " nps "
-                    << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
+                << "info depth "
+                << i << " score cp "
+                << scoreData << " nodes "
+                << nodes << " nps "
+                << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
                 << getPVLine()
                 << std::endl;
         }
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
-        if (i == 256 && hasFoundMove)
-        {
-            if (!hasNodeLimit)
-            {
-                std::cout << "bestmove " << uci::moveToUci(rootBestMove) << std::endl;
-            }
-            break;
-        }
 
-        if (shouldStopID(start) && hasFoundMove && !isInfinite)
+        if ((hasOneLegalMove && (shouldStopID(start) && !isInfinite)) || i == 255)
         {
             if (!hasNodeLimit)
             {
                 std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
             }
-            shouldStop = true;
-            break;
-        }
-
-        if (shouldStop && hasFoundMove)
-        {
-            if (!hasNodeLimit)
-            {
-                std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
-            }
-            shouldStop = true;
             break;
         }
     }
     shouldStop = false;
     isNormalSearch = true;
 }
-
 
 void Search::initLMR()
 {

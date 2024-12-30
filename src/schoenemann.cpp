@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
                 else if (token == "depth")
                 {
                     is >> token;
-                    searcher.pvs(-infinity, infinity, std::stoi(token), 0, board, false);
+                    searcher.pvs(-32767, 32767, std::stoi(token), 0, board, false);
                     std::cout << "bestmove " << uci::moveToUci(searcher.rootBestMove) << std::endl;
                 }
                 else if (token == "nodes")
