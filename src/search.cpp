@@ -352,11 +352,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
-        if (stack[ply].exludedMove == move)
-        {
-            continue;
-        }
-
         bool isQuiet = !board.isCapture(move);
 
         if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
@@ -370,18 +365,23 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int extensions = 0;
 
-        if (hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && hashedType != LOWER_BOUND)
+        if (hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && stack[ply].exludedMove != move && hashedType == LOWER_BOUND)
         {
-            const int singularBeta = std::max(-infinity, hashedScore - depth * 30 / 16);
+            const int singularBeta = hashedScore - depth;
             const std::uint8_t singualrDepth = (depth - 1) / 2;
 
-            stack[ply].exludedMove = hashedMove;
-            int score = pvs(singularBeta - 1, singularBeta, singualrDepth, ply, board, false);
+            stack[ply].exludedMove = move;
+            int score = pvs(singularBeta - 1, singularBeta, singualrDepth, ply, board, isCutNode);
             stack[ply].exludedMove = Move::NULL_MOVE;
 
             if (score < singularBeta)
             {
-                extensions = 1;
+                extensions++;
+                if (!pvNode && score < singualrDepth)
+                {
+                    extensions++;
+                }
+                
             }
             else if (singularBeta >= beta)
             {
@@ -390,8 +390,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             }
             else if (hashedScore >= beta)
             {
-                extensions = -2;
+                extensions -= 2;
             }
+            else if (isCutNode)
+            {
+                extensions -= 2;
+            }
+            
         }
 
         board.makeMove(move);
