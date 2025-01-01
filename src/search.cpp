@@ -382,6 +382,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             if (score < singularBeta)
             {
                 extensions++;
+                if (!pvNode && score < singularBeta)
+                {
+                    extensions++;
+                }
             }
         }
 
