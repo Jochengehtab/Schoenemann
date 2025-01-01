@@ -15,3 +15,5 @@ all:
 test:
 # Possible santizier: address, undefined, leak, thread, memory
 	clang++ -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -fsanitize=address -g3 schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o $(EXE)
+release:
+	clang++ -Wall -std=c++20 -O3 -funroll-loops -DNDEBUG schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp tuneconsts.cpp datagen.cpp -o Schoenemann
