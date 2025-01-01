@@ -23,6 +23,7 @@ struct SearchStack
 	Move killerMove;
 	PieceType previousMovedPiece;
 	Move previousMove;
+	Move exludedMove;
 };
 
 class Search
