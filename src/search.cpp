@@ -352,6 +352,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         Move move = sortByScore(moveList, scoreMoves, i);
 
+        if (move == stack[ply].exludedMove)
+        {
+            continue;
+        }
+        
         bool isQuiet = !board.isCapture(move);
 
         if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
@@ -381,22 +386,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 {
                     extensions++;
                 }
-                
             }
             else if (singularBeta >= beta)
             {
                 // Multicut
                 return singularBeta;
             }
-            else if (hashedScore >= beta)
-            {
-                extensions -= 2;
-            }
-            else if (isCutNode)
-            {
-                extensions -= 2;
-            }
-            
         }
 
         board.makeMove(move);
