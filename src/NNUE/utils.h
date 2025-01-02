@@ -52,7 +52,8 @@ public:
         const std::array<std::int16_t, hiddenSize> &secondAccumulator,
         const std::array<std::int16_t, hiddenSize * 2 * outputSize> &weight,
         const std::array<std::int16_t, outputSize> &bias,
-        std::array<std::int32_t, outputSize> &output)
+        std::array<std::int32_t, outputSize> &output,
+        int bucket)
     {
         std::uint16_t step = 0;
         for (std::uint16_t i = 0; i < outputSize; i++)
@@ -67,7 +68,7 @@ public:
             }
             step += hiddenSize * 2;
             sum /= QA;
-            output[i] = sum + bias[i];
+            output[bucket] = sum + bias[i];
         }
     }
 };

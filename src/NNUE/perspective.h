@@ -125,16 +125,6 @@ public:
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
 
-        // Make a forward pass throw the network based on the sideToMove
-        if (sideToMove == 0)
-        {
-            utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput);
-        }
-        else
-        {
-            utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput);
-        }
-
         int bucket = 0;
         if (sideToMove == 0) 
         {
@@ -143,6 +133,16 @@ public:
         else 
         {
             bucket = (blackPieces - 2) / ((32 + outputSize - 1) / outputSize);
+        }
+
+        // Make a forward pass throw the network based on the sideToMove
+        if (sideToMove == 0)
+        {
+            utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput, bucket);
+        }
+        else
+        {
+            utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput, bucket);
         }
 
         //std::cout << std::endl;
