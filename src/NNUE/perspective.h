@@ -108,7 +108,7 @@ public:
 
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
-
+        
         // Update the accumolator
         if (operation == activate)
         {
@@ -120,7 +120,7 @@ public:
         }
     }
 
-    inline std::int32_t evaluate(const std::uint8_t sideToMove)
+    inline std::int32_t evaluate(const std::uint8_t sideToMove, int whitePieces, int blackPieces)
     {
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
@@ -135,7 +135,24 @@ public:
             utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput);
         }
 
+        int bucket = 0;
+        if (sideToMove == 0) 
+        {
+            bucket = (whitePieces - 2) / ((32 + outputSize - 1) / outputSize);
+        }
+        else 
+        {
+            bucket = (blackPieces - 2) / ((32 + outputSize - 1) / outputSize);
+        }
+
+        //std::cout << std::endl;
+
+        //std::cout << "White amount pieces: " << whitePieces << std::endl;
+        //std::cout << "Black amount pieces: " << blackPieces << std::endl;
+
+        //std::cout << "The bucket is: " << bucket << std::endl;
+
         // Scale ouput and dived it by QAB
-        return innerNet.finalOutput[0] * scale / (QA * QB);
+        return innerNet.finalOutput[bucket] * scale / (QA * QB);
     }
 };

@@ -256,7 +256,8 @@ int main(int argc, char* argv[])
         }
         else if (token == "eval")
         {
-            std::cout << "The evaluation is: " << searcher.scaleOutput(net.evaluate((int)board.sideToMove()), board) << " cp" << std::endl;
+            std::cout << "The raw eval is: " << net.evaluate((int)board.sideToMove(), board.us(Color::WHITE).count(),  board.us(Color::BLACK).count()) << std::endl;
+            std::cout << "The scaled evaluation is: " << searcher.scaleOutput(net.evaluate((int)board.sideToMove(), board.us(Color::WHITE).count(),  board.us(Color::BLACK).count()), board) << " cp" << std::endl;
         }
         else if (token == "test")
         {

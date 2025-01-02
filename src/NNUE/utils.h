@@ -47,23 +47,6 @@ public:
         }
     }
 
-    static inline void subAddAll(
-        std::array<std::int16_t, hiddenSize> &firstAccumulator,
-        std::array<std::int16_t, hiddenSize> &secondAccumulator,
-        const std::array<std::int16_t, inputHidden> &bias,
-        const std::uint32_t firstBiasWithSub,
-        const std::uint32_t firstBiasWithAdd,
-        const std::uint32_t secondBiasWithSub,
-        const std::uint32_t secondBiasWithAdd)
-    {
-        // Subtract and add the bias to the input arrays:
-        for (std::uint16_t i = 0; i < hiddenSize; i++)
-        {
-            firstAccumulator[i] = firstAccumulator[i] - bias[firstBiasWithSub + i] + bias[firstBiasWithAdd + i];
-            secondAccumulator[i] = secondAccumulator[i] - bias[secondBiasWithSub + i] + bias[secondBiasWithAdd + i];
-        }
-    }
-
     static void activate(
         const std::array<std::int16_t, hiddenSize> &firstAccumulator,
         const std::array<std::int16_t, hiddenSize> &secondAccumulator,

@@ -3248,6 +3248,7 @@ namespace chess
 
             net.resetAccumulator();
             net.refreshAccumulator();
+            
 
             occ_bb_.fill(0ULL);
             pieces_bb_.fill(0ULL);
