@@ -8,7 +8,7 @@
 
 #include "accumulator.h"
 #include "utils.h"
-#include "stream.h"
+
 class network
 {
 private:
@@ -31,24 +31,19 @@ private:
     }
 
 public:
-    network()
-    {
-        initAccumulator();
-    }
 
-    // Read the in memory network which is sotred in a headerfile
-    explicit network(memorystream &stream)
+    network()
     {
         initAccumulator();
 
         // open the nn file
         FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        // FILE *nn = nullptr;
+        //FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
         if (nn)
         {
-            std::cout << "Reading network file" << std::endl;
+            //std::cout << "Reading network file" << std::endl;
             // initialize an accumulator for every input of the second layer
             size_t read = 0;
             size_t fileSize = sizeof(innerNet);
@@ -56,18 +51,8 @@ public:
 
             read += fread(&innerNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
             read += fread(&innerNet.featureBias, sizeof(int16_t), hiddenSize, nn);
-            std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> transposed;
-            read += fread(&transposed, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
+            read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
             read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
-
-
-            for (std::size_t i = 0; i < outputSize;i++)
-            {
-                for (std::size_t j = 0; j < hiddenSize * 2; j++)
-                {
-                    innerNet.outputWeight[i][j] = transposed[i][j];
-                }
-            }
 
             if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
             {
@@ -81,11 +66,8 @@ public:
         }
         else
         {
-            // std::cout << "Using the default loading method" << std::endl;
-            stream.readArray(innerNet.featureWeight);
-            stream.readArray(innerNet.featureBias);
-            // stream.readArray(innerNet.outputWeight);
-            stream.readArray(innerNet.outputBias);
+            std::cout << "The NNUE File wasn't found" << std::endl;
+            exit(1);
         }
     }
 
@@ -143,6 +125,8 @@ public:
             bucket = (blackPieces - 2) / ((32 + outputSize - 1) / outputSize);
         }
 
+        bucket = 7;
+
         // Make a forward pass throw the network based on the sideToMove
         int eval = 0;
         if (sideToMove == 0)
@@ -159,7 +143,7 @@ public:
         // std::cout << "White amount pieces: " << whitePieces << std::endl;
         // std::cout << "Black amount pieces: " << blackPieces << std::endl;
 
-        // std::cout << "The bucket is: " << bucket << std::endl;
+        std::cout << "The bucket is: " << bucket << std::endl;
 
         // Scale ouput and dived it by QAB
         return eval;

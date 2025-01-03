@@ -57,8 +57,8 @@ public:
         int eval = 0;
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            eval += screlu(us[i] * outputWeight[bucket][i]) +
-                    screlu(them[i] * outputWeight[bucket][i + hiddenSize]);
+           eval += screlu(us[i]) * outputWeight[bucket][i] +
+                    screlu(them[i]) * outputWeight[bucket][i + hiddenSize];
         }
         eval /= QA;
         eval += outputBias[bucket];
