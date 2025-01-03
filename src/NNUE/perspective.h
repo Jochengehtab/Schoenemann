@@ -17,7 +17,7 @@ private:
         std::array<std::int16_t, inputHidden> featureWeight;
         std::array<std::int16_t, hiddenSize> featureBias;
 
-        std::array<std::array<std::int16_t, outputSize>, hiddenSize * 2> outputWeight;
+        std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> outputWeight;
         std::array<std::int16_t, outputSize> outputBias;
     } innerNet;
 
@@ -110,22 +110,12 @@ public:
         }
     }
 
-    inline std::int32_t evaluate(const std::uint8_t sideToMove, int whitePieces, int blackPieces)
+    inline std::int32_t evaluate(const std::uint8_t sideToMove, int pieces)
     {
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
 
-        int bucket = 0;
-        if (sideToMove == 0)
-        {
-            bucket = (whitePieces - 2) / ((32 + outputSize - 1) / outputSize);
-        }
-        else
-        {
-            bucket = (blackPieces - 2) / ((32 + outputSize - 1) / outputSize);
-        }
-
-        bucket = 7;
+        int bucket = (pieces - 2) / ((32 + outputSize - 1) / outputSize);
 
         // Make a forward pass throw the network based on the sideToMove
         int eval = 0;
@@ -142,9 +132,6 @@ public:
 
         // std::cout << "White amount pieces: " << whitePieces << std::endl;
         // std::cout << "Black amount pieces: " << blackPieces << std::endl;
-
-        std::cout << "The bucket is: " << bucket << std::endl;
-
         // Scale ouput and dived it by QAB
         return eval;
     }
