@@ -111,7 +111,7 @@ public:
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
 
-        int bucket = (pieces - 2) / ((32 + outputSize - 1) / outputSize);
+        const short bucket = (pieces - 2) / ((32 + outputSize - 1) / outputSize);
 
         int eval = 0;
 

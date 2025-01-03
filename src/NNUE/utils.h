@@ -17,33 +17,33 @@ public:
         std::array<std::int16_t, hiddenSize> &us,
         std::array<std::int16_t, hiddenSize> &them,
         const std::array<std::int16_t, inputHiddenSize> &outputBias,
-        const std::uint32_t firstDelta,
-        const std::uint32_t secondDelta)
+        const std::uint32_t usOffset,
+        const std::uint32_t themOffset)
     {
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            us[i] += outputBias[firstDelta + i];
+            us[i] += outputBias[usOffset + i];
         }
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            them[i] += outputBias[secondDelta + i];
+            them[i] += outputBias[themOffset + i];
         }
     }
     static inline void subAll(
         std::array<std::int16_t, hiddenSize> &us,
         std::array<std::int16_t, hiddenSize> &them,
         const std::array<std::int16_t, inputHiddenSize> &outputBias,
-        const std::uint32_t firstDelta,
-        const std::uint32_t secondDelta)
+        const std::uint32_t usOffset,
+        const std::uint32_t themOffset)
     {
         // Subtract the outputBias from the input arrays:
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            us[i] -= outputBias[firstDelta + i];
+            us[i] -= outputBias[usOffset + i];
         }
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            them[i] -= outputBias[secondDelta + i];
+            them[i] -= outputBias[themOffset + i];
         }
     }
 
@@ -52,7 +52,7 @@ public:
         const std::array<std::int16_t, hiddenSize> &them,
         const std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> outputWeight,
         const std::array<std::int16_t, outputSize> &outputBias,
-        int bucket)
+        const short bucket)
     {
         int eval = 0;
         for (std::uint16_t i = 0; i < hiddenSize; i++)
