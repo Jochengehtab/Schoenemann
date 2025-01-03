@@ -17,7 +17,7 @@ private:
         std::array<std::int16_t, inputHidden> featureWeight;
         std::array<std::int16_t, hiddenSize> featureBias;
 
-        std::array<std::int16_t, hiddenSize * 2 * outputSize> outputWeight;
+        std::array<std::array<std::int16_t, outputSize>, hiddenSize * 2> outputWeight;
         std::array<std::int16_t, outputSize> outputBias;
     } innerNet;
 
@@ -43,8 +43,10 @@ public:
         initAccumulator();
 
         // open the nn file
-        FILE* nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        //FILE *nn = nullptr;
+        FILE *nn;
+        fopen_s(&nn, "C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
+        ;
+        // FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
         if (nn)
@@ -57,8 +59,18 @@ public:
 
             read += fread(&innerNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
             read += fread(&innerNet.featureBias, sizeof(int16_t), hiddenSize, nn);
-            read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2, nn);
+            std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> transposed;
+            read += fread(&transposed, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
             read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
+
+
+            for (std::size_t i = 0; i < outputSize; ++i)
+            {
+                for (std::size_t j = 0; j < hiddenSize * 2; ++j)
+                {
+                    innerNet.outputWeight[i][j] = transposed[i][j];
+                }
+            }
 
             if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
             {
@@ -75,7 +87,7 @@ public:
             // std::cout << "Using the default loading method" << std::endl;
             stream.readArray(innerNet.featureWeight);
             stream.readArray(innerNet.featureBias);
-            stream.readArray(innerNet.outputWeight);
+            // stream.readArray(innerNet.outputWeight);
             stream.readArray(innerNet.outputBias);
         }
     }
@@ -107,7 +119,7 @@ public:
 
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
-        
+
         // Update the accumolator
         if (operation == activate)
         {
@@ -125,33 +137,34 @@ public:
         accumulator &accumulator = accumulators[currentAccumulator];
 
         int bucket = 0;
-        if (sideToMove == 0) 
+        if (sideToMove == 0)
         {
             bucket = (whitePieces - 2) / ((32 + outputSize - 1) / outputSize);
         }
-        else 
+        else
         {
             bucket = (blackPieces - 2) / ((32 + outputSize - 1) / outputSize);
         }
 
         // Make a forward pass throw the network based on the sideToMove
+        int eval = 0;
         if (sideToMove == 0)
         {
-            utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
+            eval = utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
         }
         else
         {
-            utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
+            eval = utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
         }
 
-        //std::cout << std::endl;
+        // std::cout << std::endl;
 
-        //std::cout << "White amount pieces: " << whitePieces << std::endl;
-        //std::cout << "Black amount pieces: " << blackPieces << std::endl;
+        // std::cout << "White amount pieces: " << whitePieces << std::endl;
+        // std::cout << "Black amount pieces: " << blackPieces << std::endl;
 
-        //std::cout << "The bucket is: " << bucket << std::endl;
+        // std::cout << "The bucket is: " << bucket << std::endl;
 
         // Scale ouput and dived it by QAB
-        return finalOutput[bucket] * scale / (QA * QB);
+        return eval;
     }
 };
