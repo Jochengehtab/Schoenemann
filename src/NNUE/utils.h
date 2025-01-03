@@ -50,19 +50,23 @@ public:
     static void activate(
         const std::array<std::int16_t, hiddenSize> &firstAccumulator,
         const std::array<std::int16_t, hiddenSize> &secondAccumulator,
-        const std::array<std::array<std::array<int, hiddenSize>, 2>, outputSize> outputWeight,
+        const std::array<std::int16_t, hiddenSize * 2 * outputSize> &weight,
         const std::array<std::int16_t, outputSize> &bias,
         std::array<std::int32_t, outputSize> &output,
         int bucket)
     {
         std::uint16_t step = 0;
-        for (std::uint16_t i = 0; i < hiddenSize; i++)
+        for (std::uint16_t i = 0; i < outputSize; i++)
         {
-            int sum = 0;
-            // Activate everything
-            sum += crelu(firstAccumulator[0]) * outputWeight[bucket][0][i];
-            sum += crelu(secondAccumulator[1]) * outputWeight[bucket][1][i];
+            std::int32_t sum = 0;
 
+            for (std::uint16_t j = 0; j < hiddenSize; j++)
+            {
+                // Activate everything
+                sum += crelu(firstAccumulator[j]) * weight[step + j];
+                sum += crelu(secondAccumulator[j]) * weight[hiddenSize + step + j];
+            }
+            step += hiddenSize * 2;
             sum /= QA;
             output[bucket] = sum + bias[i];
         }

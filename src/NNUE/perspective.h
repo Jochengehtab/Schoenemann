@@ -5,7 +5,6 @@
 #include <cassert>
 #include <sstream>
 #include <immintrin.h>
-#include <algorithm>
 
 #include "accumulator.h"
 #include "utils.h"
@@ -18,16 +17,7 @@ private:
         std::array<std::int16_t, inputHidden> featureWeight;
         std::array<std::int16_t, hiddenSize> featureBias;
 
-        std::array<std::array<std::array<int, hiddenSize>, 2>, outputSize> outputWeight;
-        std::array<std::int16_t, outputSize> outputBias;
-    } tempNet;
-
-    struct
-    {
-        std::array<std::int16_t, inputHidden> featureWeight;
-        std::array<std::int16_t, hiddenSize> featureBias;
-
-        std::array<std::array<std::array<int, hiddenSize>, 2>, outputSize> outputWeight;
+        std::array<std::int16_t, hiddenSize * 2 * outputSize> outputWeight;
         std::array<std::int16_t, outputSize> outputBias;
     } innerNet;
 
@@ -53,8 +43,8 @@ public:
         initAccumulator();
 
         // open the nn file
-        // FILE* nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        FILE *nn = nullptr;
+        FILE* nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
+        //FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
         if (nn)
@@ -65,25 +55,10 @@ public:
             size_t fileSize = sizeof(innerNet);
             size_t objectsExpected = fileSize / sizeof(int16_t);
 
-            read += fread(&tempNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
-            read += fread(&tempNet.featureBias, sizeof(int16_t), hiddenSize, nn);
-            read += fread(&tempNet.outputWeight, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
-            read += fread(&tempNet.outputBias, sizeof(int16_t), outputSize, nn); 
-
-            innerNet.featureBias = tempNet.featureBias;
-            innerNet.featureWeight = innerNet.featureWeight;
-            for(int bucket = 0; bucket < outputSize; bucket++) 
-            {
-                for (int color = 0; color < 2; color++)
-                {
-                    for (int weight = 0; weight < hiddenSize; weight++)
-                    {
-                        innerNet.outputWeight[bucket][color][weight] = tempNet.outputWeight[color][weight][bucket];
-                    }
-                }
-            }
-
-            innerNet.outputBias = tempNet.outputBias;
+            read += fread(&innerNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
+            read += fread(&innerNet.featureBias, sizeof(int16_t), hiddenSize, nn);
+            read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2, nn);
+            read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
 
             if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
             {
@@ -100,7 +75,7 @@ public:
             // std::cout << "Using the default loading method" << std::endl;
             stream.readArray(innerNet.featureWeight);
             stream.readArray(innerNet.featureBias);
-            //stream.readArray(innerNet.outputWeight);
+            stream.readArray(innerNet.outputWeight);
             stream.readArray(innerNet.outputBias);
         }
     }
@@ -132,7 +107,7 @@ public:
 
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
-
+        
         // Update the accumolator
         if (operation == activate)
         {
@@ -150,11 +125,11 @@ public:
         accumulator &accumulator = accumulators[currentAccumulator];
 
         int bucket = 0;
-        if (sideToMove == 0)
+        if (sideToMove == 0) 
         {
             bucket = (whitePieces - 2) / ((32 + outputSize - 1) / outputSize);
         }
-        else
+        else 
         {
             bucket = (blackPieces - 2) / ((32 + outputSize - 1) / outputSize);
         }
@@ -169,12 +144,12 @@ public:
             utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
         }
 
-        // std::cout << std::endl;
+        //std::cout << std::endl;
 
-        // std::cout << "White amount pieces: " << whitePieces << std::endl;
-        // std::cout << "Black amount pieces: " << blackPieces << std::endl;
+        //std::cout << "White amount pieces: " << whitePieces << std::endl;
+        //std::cout << "Black amount pieces: " << blackPieces << std::endl;
 
-        // std::cout << "The bucket is: " << bucket << std::endl;
+        //std::cout << "The bucket is: " << bucket << std::endl;
 
         // Scale ouput and dived it by QAB
         return finalOutput[bucket] * scale / (QA * QB);
