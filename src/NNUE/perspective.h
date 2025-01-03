@@ -44,8 +44,8 @@ public:
         initAccumulator();
 
         // open the nn file
-        // FILE* nn = fopen("C:\\GitHub\\Schoenemann\\Schoenemann\\NNUE\\quantised.bin", "rb");
-        FILE *nn = nullptr;
+        FILE* nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
+        //FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
         if (nn)
@@ -59,7 +59,7 @@ public:
             read += fread(&innerNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
             read += fread(&innerNet.featureBias, sizeof(int16_t), hiddenSize, nn);
             read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2, nn);
-            read += fread(&innerNet.outputBias, sizeof(int16_t), 1, nn);
+            read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
 
             if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
             {
