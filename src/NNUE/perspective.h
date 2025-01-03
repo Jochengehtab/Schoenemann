@@ -19,12 +19,11 @@ private:
 
         std::array<std::int16_t, hiddenSize * 2 * outputSize> outputWeight;
         std::array<std::int16_t, outputSize> outputBias;
-
-        std::array<std::int32_t, outputSize> finalOutput;
     } innerNet;
 
     std::array<accumulator, 1> accumulators;
     std::uint16_t currentAccumulator = 0;
+    std::array<std::int32_t, outputSize> finalOutput;
 
     void initAccumulator()
     {
@@ -138,11 +137,11 @@ public:
         // Make a forward pass throw the network based on the sideToMove
         if (sideToMove == 0)
         {
-            utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput, bucket);
+            utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
         }
         else
         {
-            utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, innerNet.finalOutput, bucket);
+            utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
         }
 
         //std::cout << std::endl;
@@ -153,6 +152,6 @@ public:
         //std::cout << "The bucket is: " << bucket << std::endl;
 
         // Scale ouput and dived it by QAB
-        return innerNet.finalOutput[bucket] * scale / (QA * QB);
+        return finalOutput[bucket] * scale / (QA * QB);
     }
 };
