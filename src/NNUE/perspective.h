@@ -8,6 +8,7 @@
 
 #include "accumulator.h"
 #include "utils.h"
+#include "stream.h"
 
 class network
 {
@@ -35,10 +36,16 @@ public:
     network()
     {
         initAccumulator();
+    }
+
+    // Read the in memory network which is sotred in a headerfile
+    explicit network(memorystream &stream)
+    {
+        initAccumulator();
 
         // open the nn file
-        FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        //FILE *nn = nullptr;
+        // FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
+        FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
         if (nn)
@@ -66,8 +73,10 @@ public:
         }
         else
         {
-            std::cout << "The NNUE File wasn't found" << std::endl;
-            exit(1);
+            stream.readArray(innerNet.featureWeight);
+            stream.readArray(innerNet.featureBias);
+            stream.readArray(innerNet.outputWeight);
+            stream.readArray(innerNet.outputBias);
         }
     }
 

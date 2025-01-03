@@ -9,11 +9,14 @@
 #include "nnue.h"
 #include "datagen.h"
 #include "tune.h"
+#include "quantised.h"
 
 Search searcher;
 tt transpositionTabel(8);
+memorystream memoryStream(quantised_bin, quantised_bin_len);
 
-network net;
+// Define and load the network from the stream
+network net(memoryStream);
 
 int transpositionTableSize = 8;
 
