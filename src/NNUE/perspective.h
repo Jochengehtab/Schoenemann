@@ -14,7 +14,7 @@ class network
 private:
     struct
     {
-        std::array<std::int16_t, inputHidden> featureWeight;
+        std::array<std::int16_t, inputHiddenSize> featureWeight;
         std::array<std::int16_t, hiddenSize> featureBias;
 
         std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> outputWeight;
@@ -36,15 +36,11 @@ public:
     {
         initAccumulator();
 
-        // open the nn file
+        // Open the NNUE file with the given path
         FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        //FILE *nn = nullptr;
-
-        // if it's not invalid read the config values from it
+        
         if (nn)
         {
-            //std::cout << "Reading network file" << std::endl;
-            // initialize an accumulator for every input of the second layer
             size_t read = 0;
             size_t fileSize = sizeof(innerNet);
             size_t objectsExpected = fileSize / sizeof(int16_t);
@@ -61,7 +57,7 @@ public:
                 exit(1);
             }
 
-            // after reading the config we can close the file
+            // Close the file after reading it
             fclose(nn);
         }
         else
@@ -86,15 +82,15 @@ public:
     inline void updateAccumulator(
         const std::uint8_t piece,
         const std::uint8_t color,
-        const std::uint8_t sq,
+        const std::uint8_t square,
         const bool operation)
     {
         // Calculate the stride necessary to get to the correct piece:
         const std::uint16_t pieceIndex = piece * whiteSquares;
 
         // Get the squre index based on the color
-        const std::uint16_t whiteIndex = color * blackSqures + pieceIndex + sq;
-        const std::uint16_t blackIndex = (color ^ 1) * blackSqures + pieceIndex + (sq ^ 56);
+        const std::uint16_t whiteIndex = color * blackSqures + pieceIndex + square;
+        const std::uint16_t blackIndex = (color ^ 1) * blackSqures + pieceIndex + (square ^ 56);
 
         // Get the accumulatror
         accumulator &accumulator = accumulators[currentAccumulator];
@@ -102,11 +98,11 @@ public:
         // Update the accumolator
         if (operation == activate)
         {
-            utilitys::addAll(accumulator.white, accumulator.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
+            util::addAll(accumulator.white, accumulator.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
         }
         else
         {
-            utilitys::subAll(accumulator.white, accumulator.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
+            util::subAll(accumulator.white, accumulator.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
         }
     }
 
@@ -117,22 +113,17 @@ public:
 
         int bucket = (pieces - 2) / ((32 + outputSize - 1) / outputSize);
 
-        // Make a forward pass throw the network based on the sideToMove
         int eval = 0;
+
+        // If the side to move is white we evaluate for white
         if (sideToMove == 0)
         {
-            eval = utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, bucket);
+            eval = util::forward(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
         else
         {
-            eval = utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, bucket);
+            eval = util::forward(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
-
-        // std::cout << std::endl;
-
-        // std::cout << "White amount pieces: " << whitePieces << std::endl;
-        // std::cout << "Black amount pieces: " << blackPieces << std::endl;
-        // Scale ouput and dived it by QAB
         return eval;
     }
 };

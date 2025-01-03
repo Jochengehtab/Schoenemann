@@ -4,7 +4,7 @@
 
 #include "nnueconstants.h"
 
-class utilitys
+class util
 {
 public:
     static inline std::int32_t screlu(int input)
@@ -16,7 +16,7 @@ public:
     static inline void addAll(
         std::array<std::int16_t, hiddenSize> &us,
         std::array<std::int16_t, hiddenSize> &them,
-        const std::array<std::int16_t, inputHidden> &outputBias,
+        const std::array<std::int16_t, inputHiddenSize> &outputBias,
         const std::uint32_t firstDelta,
         const std::uint32_t secondDelta)
     {
@@ -32,7 +32,7 @@ public:
     static inline void subAll(
         std::array<std::int16_t, hiddenSize> &us,
         std::array<std::int16_t, hiddenSize> &them,
-        const std::array<std::int16_t, inputHidden> &outputBias,
+        const std::array<std::int16_t, inputHiddenSize> &outputBias,
         const std::uint32_t firstDelta,
         const std::uint32_t secondDelta)
     {
@@ -47,7 +47,7 @@ public:
         }
     }
 
-    static int activate(
+    static int forward(
         const std::array<std::int16_t, hiddenSize> &us,
         const std::array<std::int16_t, hiddenSize> &them,
         const std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> outputWeight,
