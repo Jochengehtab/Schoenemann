@@ -42,9 +42,7 @@ public:
         initAccumulator();
 
         // open the nn file
-        FILE *nn;
-        fopen_s(&nn, "C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        ;
+        FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
         // FILE *nn = nullptr;
 
         // if it's not invalid read the config values from it
