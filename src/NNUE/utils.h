@@ -14,65 +14,56 @@ public:
     }
 
     static inline void addAll(
-        std::array<std::int16_t, hiddenSize> &firstAccumulator,
-        std::array<std::int16_t, hiddenSize> &secondAccumulator,
-        const std::array<std::int16_t, inputHidden> &bias,
+        std::array<std::int16_t, hiddenSize> &us,
+        std::array<std::int16_t, hiddenSize> &them,
+        const std::array<std::int16_t, inputHidden> &outputBias,
         const std::uint32_t firstDelta,
         const std::uint32_t secondDelta)
     {
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            firstAccumulator[i] += bias[firstDelta + i];
+            us[i] += outputBias[firstDelta + i];
         }
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            secondAccumulator[i] += bias[secondDelta + i];
+            them[i] += outputBias[secondDelta + i];
         }
     }
     static inline void subAll(
-        std::array<std::int16_t, hiddenSize> &firstAccumulator,
-        std::array<std::int16_t, hiddenSize> &secondAccumulator,
-        const std::array<std::int16_t, inputHidden> &bias,
+        std::array<std::int16_t, hiddenSize> &us,
+        std::array<std::int16_t, hiddenSize> &them,
+        const std::array<std::int16_t, inputHidden> &outputBias,
         const std::uint32_t firstDelta,
         const std::uint32_t secondDelta)
     {
-        // Subtract the bias from the input arrays:
+        // Subtract the outputBias from the input arrays:
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            firstAccumulator[i] -= bias[firstDelta + i];
+            us[i] -= outputBias[firstDelta + i];
         }
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            secondAccumulator[i] -= bias[secondDelta + i];
+            them[i] -= outputBias[secondDelta + i];
         }
     }
 
     static int activate(
-        const std::array<std::int16_t, hiddenSize> &firstAccumulator,
-        const std::array<std::int16_t, hiddenSize> &secondAccumulator,
+        const std::array<std::int16_t, hiddenSize> &us,
+        const std::array<std::int16_t, hiddenSize> &them,
         const std::array<std::array<std::int16_t, outputSize>, hiddenSize * 2> outputWeight,
-        const std::array<std::int16_t, outputSize> &bias,
-        std::array<std::int32_t, outputSize> &output,
+        const std::array<std::int16_t, outputSize> &outputBias,
         int bucket)
     {
         int eval = 0;
-        for (std::uint16_t i = 0; i < outputSize; i++)
+        for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
-            int step = 0;
-            for (std::uint16_t j = 0; j < hiddenSize; j++)
-            {
-                int ourEval = screlu(firstAccumulator[j] * outputWeight[bucket][j + step]);
-                int theirEval = screlu(secondAccumulator[j] * outputWeight[bucket][j + step]);
-                eval += ourEval + theirEval;
-                step += hiddenSize * 2;
-            eval /= QA;
-            eval += bias[bucket];
+            eval += screlu(us[i] * outputWeight[bucket][i]) +
+                    screlu(them[i] * outputWeight[bucket][i + hiddenSize]);
+        }
+        eval /= QA;
+        eval += outputBias[bucket];
         eval *= scale;
         eval /= (QA * QB);
-            }
-        
-
-        }
         return eval;
     }
 };

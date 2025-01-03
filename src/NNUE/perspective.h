@@ -23,7 +23,6 @@ private:
 
     std::array<accumulator, 1> accumulators;
     std::uint16_t currentAccumulator = 0;
-    std::array<std::int32_t, outputSize> finalOutput;
 
     void initAccumulator()
     {
@@ -64,9 +63,9 @@ public:
             read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
 
 
-            for (std::size_t i = 0; i < outputSize; ++i)
+            for (std::size_t i = 0; i < outputSize;i++)
             {
-                for (std::size_t j = 0; j < hiddenSize * 2; ++j)
+                for (std::size_t j = 0; j < hiddenSize * 2; j++)
                 {
                     innerNet.outputWeight[i][j] = transposed[i][j];
                 }
@@ -150,11 +149,11 @@ public:
         int eval = 0;
         if (sideToMove == 0)
         {
-            eval = utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
+            eval = utilitys::activate(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
         else
         {
-            eval = utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, finalOutput, bucket);
+            eval = utilitys::activate(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
 
         // std::cout << std::endl;
