@@ -1,6 +1,7 @@
 #pragma once
 #include "consts.h"
 #include "chess.hpp"
+#include "see.h"
 #include <random>
 #include <chrono>
 #include <iostream>

@@ -17,7 +17,7 @@ network net;
 
 int transpositionTableSize = 8;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     // The main board
     Board board;
@@ -44,7 +44,25 @@ int main(int argc, char* argv[])
 
     if (argc > 1 && strcmp(argv[1], "datagen") == 0)
     {
-        generate(board);
+        // Vector to hold threads
+        std::vector<std::thread> threads;
+
+        // Launch multiple threads
+        for (int i = 0; i < 5; ++i)
+        {
+            threads.emplace_back(std::thread([&board]() {
+    generate(board);
+}));
+        }
+
+        // Join threads to ensure they complete before exiting main
+        for (auto &t : threads)
+        {
+            if (t.joinable())
+            {
+                t.join();
+            }
+        }
         return 0;
     }
     // Main UCI-Loop

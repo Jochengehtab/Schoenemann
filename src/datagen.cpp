@@ -4,14 +4,14 @@ void generate(Board &board)
 {
     // Set up the nodes limit
     searcher.hasNodeLimit = true;
-    searcher.nodeLimit = 5000;
+    searcher.nodeLimit = 10000;
 
     // Initialize stuff for random moves
     std::random_device rd;
     std::mt19937 gen(rd());
 
     // Open the outfile
-    std::ofstream outputFile("output.txt", std::ios::app);
+    std::ofstream outputFile("outputt.txt", std::ios::app);
 
     // Check if the file is open
     if (!outputFile.is_open())
@@ -21,7 +21,7 @@ void generate(Board &board)
     }
 
     // Set TT-Size
-    transpositionTabel.setSize(4);
+    transpositionTabel.setSize(16);
 
     // Needed for logging
     std::uint64_t counter = 0;
@@ -62,8 +62,16 @@ void generate(Board &board)
             // Pick a random move
             std::uniform_int_distribution<> dis(0, moveList.size() - 1);
 
+            // Choose a random move
+            Move move = moveList[dis(gen)];
+            if (!see(board, move, 0))
+            {
+                exitEarly = true;
+                break;
+            }
+
             // Make the random move
-            board.makeMove(moveList[dis(gen)]);
+            board.makeMove(move);
         }
 
         // If we got an early exit we continue
@@ -166,7 +174,7 @@ void generate(Board &board)
         }
 
         // Every 1000 iterations we want to print stats
-        if (counter % 1000 == 0)
+        if (counter % 10 == 0)
         {
             auto currentTime = std::chrono::steady_clock::now();
             auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
