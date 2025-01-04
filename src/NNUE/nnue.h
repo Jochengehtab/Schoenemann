@@ -8,6 +8,7 @@
 
 #include "accumulator.h"
 #include "utils.h"
+#include "incbin.h"
 
 class network
 {
