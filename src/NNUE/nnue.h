@@ -31,14 +31,13 @@ private:
     }
 
 public:
-
     network()
     {
         initAccumulator();
 
         // Open the NNUE file with the given path
         FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
-        
+
         if (nn)
         {
             size_t read = 0;
@@ -50,6 +49,7 @@ public:
             read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
             read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
 
+            // Check if the file was read correctly
             if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
             {
                 std::cout << "Error loading the net, aborting ";
