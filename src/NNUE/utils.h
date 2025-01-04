@@ -50,7 +50,7 @@ public:
     static int forward(
         const std::array<std::int16_t, hiddenSize> &us,
         const std::array<std::int16_t, hiddenSize> &them,
-        const std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> outputWeight,
+        const std::array<std::array<std::int16_t, hiddenSize * 2>, outputSize> &outputWeight,
         const std::array<std::int16_t, outputSize> &outputBias,
         const short bucket)
     {
