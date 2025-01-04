@@ -2,7 +2,6 @@
 #include <thread>
 #include <sstream>
 #include <cstring>
-#include <fstream>
 #include "schoenemann.h"
 #include "search.h"
 #include "consts.h"
@@ -20,13 +19,6 @@ int transpositionTableSize = 8;
 
 int main(int argc, char* argv[])
 {
-    // Open a file for writing
-    std::ofstream file("macro_output.txt");
-    // Write the macro value to the file
-    file << "EVALFILE: " << EVALFILE << std::endl;
-
-    // Close the file
-    file.close();
     // The main board
     Board board;
 

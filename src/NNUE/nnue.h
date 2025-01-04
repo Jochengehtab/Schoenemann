@@ -37,7 +37,7 @@ public:
         initAccumulator();
 
         // Open the NNUE file with the given path
-        FILE *nn = fopen("C:\\GitHub\\Schoenemann\\src\\quantised.bin", "rb");
+        FILE *nn = fopen(EVALFILE, "rb");
 
         if (nn)
         {
