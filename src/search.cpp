@@ -375,7 +375,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
 
         // Late move prunning
-        if (!pvNode && isQuiet && bestScore > -infinity + 256 && moveCounter > (3 + depth * depth) / (2 - improving))
+        if (!pvNode && isQuiet && bestScore > -infinity && moveCounter > (5 + depth * depth) / (2 - improving))
         {
             continue;
         }
