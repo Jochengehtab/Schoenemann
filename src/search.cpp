@@ -322,6 +322,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
     }
 
+    if(ply > 0)
+    {
+        stack[ply].doubleExtension = stack[ply - 1].doubleExtension;
+    }
+
     short type = LOWER_BOUND;
     Movelist moveList;
     movegen::legalmoves(moveList, board);
@@ -382,8 +387,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             if (score < singularBeta)
             {
                 extensions++;
-                if (!pvNode && score < singularBeta - 100)
+                if (!pvNode && score < singularBeta - 100 && stack[ply].doubleExtension <= 10)
                 {
+                    stack[ply].doubleExtension++;
                     extensions++;
                 }
             }
@@ -704,6 +710,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     getTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
+    stack[0].doubleExtension = 0;
 
     isNormalSearch = false;
     bool hasOneLegalMove = Move::NULL_MOVE;

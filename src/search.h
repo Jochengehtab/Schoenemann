@@ -18,6 +18,7 @@ struct SearchStack
 {
 	int staticEval;
 	int pvLength;
+	int doubleExtension;
 	bool inCheck;
 	std::array<Move, 150> pvLine;
 	Move killerMove;
