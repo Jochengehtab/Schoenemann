@@ -1,6 +1,7 @@
 *.exe
 *.txt
 *.py
+quantised.bin
 null.exp
 null.lib
 null.pdb
