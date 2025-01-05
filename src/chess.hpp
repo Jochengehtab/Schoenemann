@@ -3246,7 +3246,6 @@ namespace chess
         {
             original_fen_ = fen;
 
-            net.resetAccumulator();
             net.refreshAccumulator();
 
             occ_bb_.fill(0ULL);

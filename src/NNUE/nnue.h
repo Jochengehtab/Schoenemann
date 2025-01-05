@@ -22,19 +22,11 @@ private:
         std::array<std::int16_t, outputSize> outputBias;
     } innerNet;
 
-    std::array<accumulator, 1> accumulators;
-    std::uint16_t currentAccumulator = 0;
-
-    void initAccumulator()
-    {
-        accumulator accumulator;
-        std::fill(std::begin(accumulators), std::end(accumulators), accumulator);
-    }
+    accumulator acc;
 
 public:
     network()
     {
-        initAccumulator();
 
         // Open the NNUE file with the given path
         FILE *nn;
@@ -50,6 +42,7 @@ public:
             size_t fileSize = sizeof(innerNet);
             size_t objectsExpected = fileSize / sizeof(int16_t);
 
+            // Read all the different weight and bias
             read += fread(&innerNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
             read += fread(&innerNet.featureBias, sizeof(int16_t), hiddenSize, nn);
             read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
@@ -73,16 +66,10 @@ public:
         }
     }
 
-    inline void resetAccumulator()
-    {
-        currentAccumulator = 0;
-    }
-
     inline void refreshAccumulator()
     {
-        accumulator &accumulator = accumulators[currentAccumulator];
-        accumulator.zeroAccumulator();
-        accumulator.loadBias(innerNet.featureBias);
+        acc.zeroAccumulator();
+        acc.loadBias(innerNet.featureBias);
     }
 
     inline void updateAccumulator(
@@ -98,37 +85,33 @@ public:
         const std::uint16_t whiteIndex = color * blackSqures + pieceIndex + square;
         const std::uint16_t blackIndex = (color ^ 1) * blackSqures + pieceIndex + (square ^ 56);
 
-        // Get the accumulatror
-        accumulator &accumulator = accumulators[currentAccumulator];
-
         // Update the accumolator
         if (operation == activate)
         {
-            util::addAll(accumulator.white, accumulator.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
+            util::addAll(acc.white, acc.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
         }
         else
         {
-            util::subAll(accumulator.white, accumulator.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
+            util::subAll(acc.white, acc.black, innerNet.featureWeight, whiteIndex * hiddenSize, blackIndex * hiddenSize);
         }
     }
 
     inline std::int32_t evaluate(const std::uint8_t sideToMove, int pieces)
     {
-        // Get the accumulatror
-        accumulator &accumulator = accumulators[currentAccumulator];
 
+        // Calculate the bucket based on the number of pieces on the board
         const short bucket = (pieces - 2) / ((32 + outputSize - 1) / outputSize);
 
         int eval = 0;
 
-        // If the side to move is white we evaluate for white
+        // Perform a forward pass throw the network
         if (sideToMove == 0)
         {
-            eval = util::forward(accumulator.white, accumulator.black, innerNet.outputWeight, innerNet.outputBias, bucket);
+            eval = util::forward(acc.white, acc.black, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
         else
         {
-            eval = util::forward(accumulator.black, accumulator.white, innerNet.outputWeight, innerNet.outputBias, bucket);
+            eval = util::forward(acc.black, acc.white, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
         return eval;
     }
