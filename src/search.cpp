@@ -374,6 +374,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
+        // Late move prunning
+        if (!pvNode && isQuiet && bestScore > -infinity + 256 && moveCounter > (3 + depth * depth) / (2 - improving))
+        {
+            break;
+        }
+
         // Update the the piece and the move for continuationHistory
         stack[ply].previousMovedPiece = board.at(move.from()).type();
         stack[ply].previousMove = move;
