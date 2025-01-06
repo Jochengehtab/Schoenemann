@@ -1851,15 +1851,6 @@ namespace chess
 
         static constexpr int MAP_HASH_PIECE[12] = {1, 3, 5, 7, 9, 11, 0, 2, 4, 6, 8, 10};
 
-        [[nodiscard]] static U64 piece(Piece piece, Square square) noexcept
-        {
-            assert(piece < 12);
-#if __cplusplus >= 202207L
-            [[assume(x < 12)]];
-#endif
-            return RANDOM_ARRAY[64 * MAP_HASH_PIECE[piece] + square.index()];
-        }
-
         [[nodiscard]] static U64 enpassant(File file) noexcept
         {
             assert(int(file) < 8);
@@ -1891,6 +1882,14 @@ namespace chess
 
     public:
         friend class Board;
+        [[nodiscard]] static U64 piece(Piece piece, Square square) noexcept
+        {
+            assert(piece < 12);
+#if __cplusplus >= 202207L
+            [[assume(x < 12)]];
+#endif
+            return RANDOM_ARRAY[64 * MAP_HASH_PIECE[piece] + square.index()];
+        }
     };
 
 } // namespace chess

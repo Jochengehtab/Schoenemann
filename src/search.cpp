@@ -224,6 +224,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         staticEval = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
     }
 
+    int rawEval = staticEval;
+    staticEval = correctEval(staticEval, stack[ply].pawnHash, ply);
+
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
 
@@ -527,6 +530,16 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
     }
+
+    if (!inCheck && bestMoveInPVS != Move::NULL_MOVE && !board.isCapture(bestMoveInPVS) && (finalType == LOWER_BOUND || bestScore <= staticEval) && (finalType == UPPER_BOUND || bestScore > staticEval))
+    {
+        if (board.at(bestMoveInPVS.from()).type() == PieceType::PAWN)
+        {
+            stack[ply].pawnHash = Zobrist::piece(board.at(bestMoveInPVS.from()), bestMoveInPVS.from());
+            int bonus = std::clamp((int)(bestScore - stack[ply].staticEval) * depth * 150 / 1024, -256, 256);
+            updatePawnCorrectionHistory(board.sideToMove(), bonus, ply);
+        }
+    }
     
 
     return bestScore;
@@ -751,6 +764,8 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         bestMoveThisIteration = rootBestMove;
         hasOneLegalMove = bestMoveThisIteration != Move::NULL_MOVE && bestMoveThisIteration != Move::NO_MOVE;
+
+        // This is ugly but whitout it i get time losses etc
         if (!hasOneLegalMove)
         {
             searcher.hardLimit = 10000;
@@ -850,4 +865,23 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
         // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
         continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
+}
+
+void Search::updatePawnCorrectionHistory(Color sideToMove, int bonus, int ply)
+{
+    // Gravity
+    int scaledBonus = bonus - pawnCorrectionHistory[sideToMove][stack[ply].pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 1024;
+    pawnCorrectionHistory[sideToMove][stack[ply].pawnHash & (pawnCorrectionHistorySize - 1)] += scaledBonus;
+}
+
+int Search::correctEval(int rawEval, Color sideToMove, int ply)
+{
+    int pawnEntry = pawnCorrectionHistory[sideToMove][stack[ply].pawnHash & (pawnCorrectionHistorySize - 1)];
+
+    int corrHistoryBonus = pawnEntry; // Later here come minor Corr Hist all multipled
+
+
+    std::cout << stack[ply].pawnHash << std::endl;
+
+    return rawEval + corrHistoryBonus / 6553;
 }
