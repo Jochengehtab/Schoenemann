@@ -18,6 +18,7 @@ struct SearchStack
 {
 	int staticEval;
 	int pvLength;
+	int pawnHash;
 	bool inCheck;
 	std::array<Move, 150> pvLine;
 	Move killerMove;
@@ -47,18 +48,23 @@ public:
 	int quietHistory[2][6][64];
 
 	std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
+	std::array<std::array<int, 2>, 16384> pawnCorrectionHistory;
 	std::array<std::array<std::uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
+
+	const int pawnCorrectionHistorySize = 16384;
 
 	int pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode);
 	int qs(int alpha, int beta, Board &board, int ply);
 	int aspiration(int maxDepth, int score, Board &board);
 	int scaleOutput(int rawEval, Board &board);
+	int correctEval(int rawEval, Color sideToMove, int ply);
 
 	void iterativeDeepening(Board &board, bool isInfinite);
 	void initLMR();
 	void updateQuietHistory(Board &board, Move move, int bonus);
 	void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply);
+	void updatePawnCorrectionHistory(Color sideToMove, int bonus, int ply);
 
 	std::string getPVLine();
 
