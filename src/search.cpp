@@ -361,7 +361,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         // Late move prunning
         if (!pvNode && isQuiet && bestScore > -infinity && moveCounter > (3 + depth * depth * 3))
         {
-            continue;
+            break;
         }
 
         // Update the the piece and the move for continuationHistory
