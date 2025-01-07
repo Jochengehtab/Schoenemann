@@ -535,7 +535,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         if (board.at(bestMoveInPVS.from()).type() == PieceType::PAWN)
         {
-            int bonus = std::clamp((int)(bestScore - staticEval) * depth * 150 / 1024, -256, 256);
+            int bonus = std::clamp((int)(bestScore - staticEval) * depth * 150 / 1024, -CORRHIST_LIMIT/4, CORRHIST_LIMIT/4);
             updatePawnCorrectionHistory(bonus, board);
         }
     }
