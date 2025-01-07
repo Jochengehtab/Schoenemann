@@ -225,10 +225,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     int rawEval = staticEval;
-    staticEval = correctEval(staticEval, board.sideToMove(), board);
+    staticEval = correctEval(staticEval, board);
 
     // Update the static Eval on the stack
-    stack[ply].staticEval = staticEval;
+    stack[ply].staticEval = rawEval;
 
     bool improving = false;
 
@@ -536,7 +536,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (board.at(bestMoveInPVS.from()).type() == PieceType::PAWN)
         {
             int bonus = std::clamp((int)(bestScore - stack[ply].staticEval) * depth * 150 / 1024, -256, 256);
-            updatePawnCorrectionHistory(board.sideToMove(), bonus, board);
+            updatePawnCorrectionHistory(bonus, board);
         }
     }
 
@@ -865,7 +865,7 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
     }
 }
 
-void Search::updatePawnCorrectionHistory(Color sideToMove, int bonus, Board &board)
+void Search::updatePawnCorrectionHistory(int bonus, Board &board)
 {int pawnHash = 0;
     Bitboard pawns = board.pieces(PieceType::PAWN);
     while (pawns)
@@ -874,20 +874,21 @@ void Search::updatePawnCorrectionHistory(Color sideToMove, int bonus, Board &boa
         pawnHash ^= Zobrist::piece(board.at(sq), sq);
     }
     // Gravity
-    int scaledBonus = bonus - pawnCorrectionHistory[sideToMove][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 1024;
-    pawnCorrectionHistory[sideToMove][pawnHash & (pawnCorrectionHistorySize - 1)] += scaledBonus;
+    int scaledBonus = bonus - pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 1024;
+    pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] += scaledBonus;
 }
 
-int Search::correctEval(int rawEval, Color sideToMove, Board &board)
+int Search::correctEval(int rawEval, Board &board)
 {
     int pawnHash = 0;
     Bitboard pawns = board.pieces(PieceType::PAWN);
     while (pawns)
     {
-        const Square sq = pawns.pop();
-        pawnHash ^= Zobrist::piece(board.at(sq), sq);
+        const Square square = pawns.pop();
+        pawnHash ^= Zobrist::piece(board.at(square), square);
     }
-    int pawnEntry = pawnCorrectionHistory[sideToMove][pawnHash & (pawnCorrectionHistorySize - 1)];
+
+    int pawnEntry = pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)];
 
     int corrHistoryBonus = pawnEntry; // Later here come minor Corr Hist all multipled
 
