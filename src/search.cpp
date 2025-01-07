@@ -228,7 +228,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     staticEval = correctEval(staticEval, board);
 
     // Update the static Eval on the stack
-    stack[ply].staticEval = rawEval;
+    stack[ply].staticEval = staticEval;
 
     bool improving = false;
 
@@ -535,7 +535,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         if (board.at(bestMoveInPVS.from()).type() == PieceType::PAWN)
         {
-            int bonus = std::clamp((int)(bestScore - stack[ply].staticEval) * depth * 150 / 1024, -256, 256);
+            int bonus = std::clamp((int)(bestScore - staticEval) * depth * 150 / 1024, -256, 256);
             updatePawnCorrectionHistory(bonus, board);
         }
     }
@@ -892,5 +892,5 @@ int Search::correctEval(int rawEval, Board &board)
 
     int corrHistoryBonus = pawnEntry; // Later here come minor Corr Hist all multipled
 
-    return rawEval + corrHistoryBonus / 10;
+    return rawEval + corrHistoryBonus / 15;
 }
