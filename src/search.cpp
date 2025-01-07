@@ -533,11 +533,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
-        if (board.at(bestMoveInPVS.from()).type() == PieceType::PAWN)
-        {
-            int bonus = std::clamp((int)(bestScore - staticEval) * depth * 150 / 1024, -CORRHIST_LIMIT/4, CORRHIST_LIMIT/4);
-            updatePawnCorrectionHistory(bonus, board);
-        }
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 150 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        updatePawnCorrectionHistory(bonus, board);
     }
 
     return bestScore;
@@ -866,7 +863,8 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
 }
 
 void Search::updatePawnCorrectionHistory(int bonus, Board &board)
-{int pawnHash = 0;
+{
+    int pawnHash = 0;
     Bitboard pawns = board.pieces(PieceType::PAWN);
     while (pawns)
     {
