@@ -531,7 +531,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
     }
 
-    if (!inCheck && bestMoveInPVS != Move::NULL_MOVE && !board.isCapture(bestMoveInPVS) && (finalType == LOWER_BOUND || bestScore <= staticEval) && (finalType == UPPER_BOUND || bestScore > staticEval))
+    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
         if (board.at(bestMoveInPVS.from()).type() == PieceType::PAWN)
         {
