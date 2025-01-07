@@ -870,8 +870,8 @@ void Search::updatePawnCorrectionHistory(int bonus, Board &board)
     Bitboard pawns = board.pieces(PieceType::PAWN);
     while (pawns)
     {
-        const Square sq = pawns.pop();
-        pawnHash ^= Zobrist::piece(board.at(sq), sq);
+        const Square square = pawns.pop();
+        pawnHash ^= Zobrist::piece(board.at(square), square);
     }
     // Gravity
     int scaledBonus = bonus - pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 1024;
@@ -892,5 +892,5 @@ int Search::correctEval(int rawEval, Board &board)
 
     int corrHistoryBonus = pawnEntry; // Later here come minor Corr Hist all multipled
 
-    return rawEval + corrHistoryBonus / 15;
+    return rawEval + corrHistoryBonus / 40;
 }
