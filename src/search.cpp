@@ -533,7 +533,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
-        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 175 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         updatePawnCorrectionHistory(bonus, board);
     }
 
@@ -864,13 +864,7 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
 
 void Search::updatePawnCorrectionHistory(int bonus, Board &board)
 {
-    int pawnHash = 0;
-    Bitboard pawns = board.pieces(PieceType::PAWN);
-    while (pawns)
-    {
-        const Square square = pawns.pop();
-        pawnHash ^= Zobrist::piece(board.at(square), square);
-    }
+    int pawnHash = getPieceKey(PieceType::PAWN, board);
     // Gravity
     int scaledBonus = bonus - pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 1024;
     pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] += scaledBonus;
@@ -878,17 +872,21 @@ void Search::updatePawnCorrectionHistory(int bonus, Board &board)
 
 int Search::correctEval(int rawEval, Board &board)
 {
-    int pawnHash = 0;
-    Bitboard pawns = board.pieces(PieceType::PAWN);
-    while (pawns)
-    {
-        const Square square = pawns.pop();
-        pawnHash ^= Zobrist::piece(board.at(square), square);
-    }
-
-    int pawnEntry = pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)];
+    int pawnEntry = pawnCorrectionHistory[board.sideToMove()][getPieceKey(PieceType::PAWN, board) & (pawnCorrectionHistorySize - 1)];
 
     int corrHistoryBonus = pawnEntry; // Later here come minor Corr Hist all multipled
 
-    return rawEval + corrHistoryBonus / 40;
+    return rawEval + corrHistoryBonus / 50;
+}
+
+std::uint64_t Search::getPieceKey(PieceType piece, const Board& board)
+{
+    std::uint64_t key = 0;
+    Bitboard bitboard = board.pieces(piece);
+    while (bitboard)
+    {
+        const Square square = bitboard.pop();
+        key ^= Zobrist::piece(board.at(square), square);
+    }
+    return key;
 }

@@ -77,6 +77,7 @@ public:
 	int getQuietHistory(Board &board, Move move);
 	int getContinuationHistory(PieceType piece, Move move, int ply);
 	int correctEval(int rawEval, Board &board);
+	std::uint64_t getPieceKey(PieceType piece, const Board& board);
 
 	void iterativeDeepening(Board &board, bool isInfinite);
 	void initLMR();
