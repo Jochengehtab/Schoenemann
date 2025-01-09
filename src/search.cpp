@@ -533,7 +533,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
-        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 182 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 175 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         updatePawnCorrectionHistory(bonus, board);
     }
 
@@ -619,6 +619,9 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         standPat = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
     }
 
+    int rawEval = standPat;
+    standPat = std::clamp(correctEval(standPat, board), -infinity + 150, infinity - 150);
+
     if (standPat >= beta)
     {
         return standPat;
@@ -697,6 +700,8 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     {
         transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
     }
+    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, rawEval);
+
     return bestScore;
 }
 
