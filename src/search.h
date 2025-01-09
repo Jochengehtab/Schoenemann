@@ -59,6 +59,7 @@ public:
 	int aspiration(int maxDepth, int score, Board &board);
 	int scaleOutput(int rawEval, Board &board);
 	int correctEval(int rawEval, Board &board);
+	std::uint64_t getPieceKey(PieceType piece, const Board& board);
 
 	void iterativeDeepening(Board &board, bool isInfinite);
 	void initLMR();
