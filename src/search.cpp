@@ -757,10 +757,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     {
         scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
-        if (rootBestMove != Move::NULL_MOVE) 
-        {
-            bestMoveThisIteration = rootBestMove;
-        }
+        bestMoveThisIteration = rootBestMove;
         hasOneLegalMove = bestMoveThisIteration != Move::NULL_MOVE && bestMoveThisIteration != Move::NO_MOVE;
 
         // This is ugly but whitout it i get time losses etc
