@@ -225,7 +225,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     int rawEval = staticEval;
-    staticEval = correctEval(staticEval, board);
+    staticEval = std::clamp(correctEval(staticEval, board), -infinity + 150, infinity - 150);
 
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
