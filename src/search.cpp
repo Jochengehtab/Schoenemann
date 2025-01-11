@@ -531,9 +531,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
     }
 
-    if (!inCheck && (bestMoveInPVS != Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
+    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
-        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 200 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 220 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         updatePawnCorrectionHistory(bonus, board);
     }
 
