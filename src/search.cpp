@@ -533,7 +533,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
-        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 1024, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         updatePawnCorrectionHistory(bonus, board);
     }
 
@@ -871,7 +871,7 @@ void Search::updatePawnCorrectionHistory(int bonus, Board &board)
 {
     int pawnHash = getPieceKey(PieceType::PAWN, board);
     // Gravity
-    int scaledBonus = bonus - pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 1024;
+    int scaledBonus = bonus - pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / 768;
     pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] += scaledBonus;
 }
 
