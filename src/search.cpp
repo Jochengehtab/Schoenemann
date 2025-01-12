@@ -183,12 +183,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // Initial Iterative Deepening
-    if (!isNullptr)
+    if (!isNullptr && zobristKey != entry->key && !inCheck && depth >= iidDepth)
     {
-        if (zobristKey != entry->key && !inCheck && depth >= iidDepth)
-        {
-            depth -= iirReduction;
-        }
+        depth -= iirReduction;
     }
 
     if (!isNullptr)
@@ -509,6 +506,12 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 return beta;
             }
         }
+    }
+
+    // Check for a draw
+    if (board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
+    {
+        return 0;
     }
 
     // Increment nodes by one
