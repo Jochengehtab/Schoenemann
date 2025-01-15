@@ -66,21 +66,6 @@ public:
                                     : score;
     }
 
-    bool checkForMoreInformation(short type, int ttScore, int score)
-    {
-        short tempType;
-        if (ttScore >= score)
-        {
-            tempType = LOWER_BOUND;
-        }
-        else
-        {
-            tempType = UPPER_BOUND;
-        }
-
-        return type & tempType;
-    }
-
 private:
     std::uint64_t size;
     Hash *table;

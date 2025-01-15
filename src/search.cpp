@@ -537,7 +537,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode && !inCheck)
+        if (!pvNode)
         {
             if ((hashedType == EXACT) ||
                 (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
@@ -546,11 +546,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 return hashedScore;
             }
         }
-    }
-
-    if (!inCheck && !pvNode && !isNullptr)
-    {
-        standPat = hashedScore;
     }
 
     if (standPat == NO_VALUE)
