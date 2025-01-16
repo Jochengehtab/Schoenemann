@@ -57,25 +57,37 @@ public:
     {
         int eval = 0;
 #ifdef __AVX2__
-        const __m256i vec_zero = _mm256_setzero_si256();
-        const __m256i vec_qa = _mm256_set1_epi16(QA);
-        __m256i sum = vec_zero;
+        const __m256i vecZero = _mm256_setzero_si256();
+        const __m256i vecQA = _mm256_set1_epi16(QA);
+        __m256i sum = vecZero;
 
         for (int i = 0; i < hiddenSize; i++)
         {
-            const __m256i us_vec = _mm256_loadu_si256((const __m256i *)(us.data() + i));
-            const __m256i them_vec = _mm256_loadu_si256((const __m256i *)(them.data() + i));
-            const __m256i us_weights = _mm256_loadu_si256((const __m256i *)(outputWeight[bucket].data() + i));
-            const __m256i them_weights = _mm256_loadu_si256((const __m256i *)(outputWeight[bucket].data() + i + hiddenSize));
+            const __m256i usVec = _mm256_loadu_si256((const __m256i *)(&us[i]));
+            const __m256i themVec = _mm256_loadu_si256((const __m256i *)(&them[i]));
+            const __m256i usWeights = _mm256_loadu_si256((const __m256i *)(&outputWeight[bucket][i]));
+            const __m256i themWeights = _mm256_loadu_si256((const __m256i *)(&outputWeight[bucket][i + hiddenSize]));
 
-            const __m256i us_clamped = _mm256_min_epi16(_mm256_max_epi16(us_vec, vec_zero), vec_qa);
-            const __m256i them_clamped = _mm256_min_epi16(_mm256_max_epi16(them_vec, vec_zero), vec_qa);
+            // Clamp all the values using _mm256_min_epi16
+            const __m256i usClamped = _mm256_min_epi16(_mm256_max_epi16(usVec, vecZero), vecQA);
+            const __m256i themClamped = _mm256_min_epi16(_mm256_max_epi16(themVec, vecZero), vecQA);
 
-            const __m256i us_results = _mm256_madd_epi16(_mm256_mullo_epi16(us_weights, us_clamped), us_clamped);
-            const __m256i them_results = _mm256_madd_epi16(_mm256_mullo_epi16(them_weights, them_clamped), them_clamped);
+            const __m256i usResults = _mm256_madd_epi16(_mm256_mullo_epi16(usWeights, usClamped), usClamped);
+            const __m256i themResults = _mm256_madd_epi16(_mm256_mullo_epi16(themWeights, themClamped), themClamped);
 
-            sum = _mm256_add_epi32(sum, us_results);
-            sum = _mm256_add_epi32(sum, them_results);
+            sum = _mm256_add_epi32(sum, usResults);
+            sum = _mm256_add_epi32(sum, themResults);
+
+            __m256i vecOne = _mm256_hadd_epi32(sum, sum);
+            __m256i vecTwo = _mm256_hadd_epi32(vecOne, vecOne);
+            
+            eval = _mm256_extract_epi32(vecTwo, 0) + _mm256_extract_epi32(vecTwo, 4);
+
+            eval /= QA;
+            eval += outputBias[bucket];
+            eval *= scale;
+            eval /= (QA * QB);
+            return eval;
         }
 #else
         for (std::uint16_t i = 0; i < hiddenSize; i++)

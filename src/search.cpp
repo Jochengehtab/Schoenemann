@@ -424,9 +424,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 {
                     stack[ply].pvLine[0] = move;
                     stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                    for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                    for (int x = 0; x < stack[ply + 1].pvLength; x++)
                     {
-                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                        stack[ply].pvLine[x + 1] = stack[ply + 1].pvLine[x];
                     }
                 }
             }
@@ -448,9 +448,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMultiplier) * depth, static_cast<int>(quietHistoryMalusMax));
                     int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMultiplier) * depth, static_cast<int>(continuationHistoryMalusMax));
                     // History malus
-                    for (int i = 0; i < movesMadeCounter; i++)
+                    for (int x = 0; x < movesMadeCounter; x++)
                     {
-                        Move madeMove = movesMade[i];
+                        Move madeMove = movesMade[x];
                         if (madeMove == bestMoveInPVS)
                         {
                             continue;
