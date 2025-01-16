@@ -61,7 +61,7 @@ public:
         const __m256i vecQA = _mm256_set1_epi16(QA);
         __m256i sum = vecZero;
 
-        for (int i = 0; i < hiddenSize; i++)
+        for (int i = 0; i < hiddenSize; i += 16)
         {
             const __m256i usVec = _mm256_loadu_si256((const __m256i *)(&us[i]));
             const __m256i themVec = _mm256_loadu_si256((const __m256i *)(&them[i]));
@@ -77,18 +77,18 @@ public:
 
             sum = _mm256_add_epi32(sum, usResults);
             sum = _mm256_add_epi32(sum, themResults);
-
-            __m256i vecOne = _mm256_hadd_epi32(sum, sum);
-            __m256i vecTwo = _mm256_hadd_epi32(vecOne, vecOne);
-            
-            eval = _mm256_extract_epi32(vecTwo, 0) + _mm256_extract_epi32(vecTwo, 4);
-
-            eval /= QA;
-            eval += outputBias[bucket];
-            eval *= scale;
-            eval /= (QA * QB);
-            return eval;
         }
+
+        __m256i vecOne = _mm256_hadd_epi32(sum, sum);
+        __m256i vecTwo = _mm256_hadd_epi32(vecOne, vecOne);
+
+        eval = _mm256_extract_epi32(vecTwo, 0) + _mm256_extract_epi32(vecTwo, 4);
+
+        eval /= QA;
+        eval += outputBias[bucket];
+        eval *= scale;
+        eval /= (QA * QB);
+        return eval;
 #else
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
