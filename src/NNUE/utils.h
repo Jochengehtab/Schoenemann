@@ -27,14 +27,14 @@ public:
             const __m256i usVec = _mm256_loadu_si256((const __m256i *)(&us[i]));
             const __m256i bias = _mm256_loadu_si256((const __m256i *)(&outputBias[usOffset + i]));
             const __m256i result = _mm256_add_epi16(usVec, bias);
-            _mm256_storeu_si256((__m256i *)(&us[i]), result);
+            _mm256_store_si256((__m256i *)(&us[i]), result);
         }
         for (std::uint16_t i = 0; i < hiddenSize; i += 16)
         {
             const __m256i themVec = _mm256_loadu_si256((const __m256i *)(&them[i]));
             const __m256i bias = _mm256_loadu_si256((const __m256i *)(&outputBias[themOffset + i]));
             const __m256i result = _mm256_add_epi16(themVec, bias);
-            _mm256_storeu_si256((__m256i *)(&them[i]), result);
+            _mm256_store_si256((__m256i *)(&them[i]), result);
         }
 #else
         for (std::uint16_t i = 0; i < hiddenSize; i++)
@@ -60,14 +60,14 @@ public:
             const __m256i usVec = _mm256_loadu_si256((const __m256i *)(&us[i]));
             const __m256i bias = _mm256_loadu_si256((const __m256i *)(&outputBias[usOffset + i]));
             const __m256i result = _mm256_sub_epi16(usVec, bias);
-            _mm256_storeu_si256((__m256i *)(&us[i]), result);
+            _mm256_store_si256((__m256i *)(&us[i]), result);
         }
         for (std::uint16_t i = 0; i < hiddenSize; i += 16)
         {
             const __m256i themVec = _mm256_loadu_si256((const __m256i *)(&them[i]));
             const __m256i bias = _mm256_loadu_si256((const __m256i *)(&outputBias[themOffset + i]));
             const __m256i result = _mm256_sub_epi16(themVec, bias);
-            _mm256_storeu_si256((__m256i *)(&them[i]), result);
+            _mm256_store_si256((__m256i *)(&them[i]), result);
         }
 #else
         // Subtract the outputBias from the input arrays:
