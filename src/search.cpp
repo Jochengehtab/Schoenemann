@@ -517,7 +517,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     // Set the pvLength to zero
     stack[ply].pvLength = 0;
 
-    const bool pvNode = beta > alpha + 1;
     const std::uint64_t zobristKey = board.zobrist();
 
     Hash *entry = transpositionTabel.getHash(zobristKey);
@@ -534,7 +533,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         {
             hashedScore = transpositionTabel.scoreFromTT(entry->score, ply);
             hashedType = entry->type;
-            standPat = entry->eval;
+            standPat = entry->score;
         }
 
         if ((hashedType == EXACT) ||
