@@ -15,7 +15,7 @@ void registerParam(EngineParam *param)
 
 EngineParam *findParam(std::string name)
 {
-  for (int i = 0; i < tuningParams.size(); i++)
+  for (int i = 0; i < static_cast<int>(tuningParams.size()); i++)
   {
     if (tuningParams.at(i)->name == name)
     {
@@ -29,7 +29,7 @@ std::string paramsToUci()
 {
   std::ostringstream ss;
 
-  for (int i = 0; i < tuningParams.size(); i++)
+  for (int i = 0; i < static_cast<int>(tuningParams.size()); i++)
   {
     EngineParam *p = tuningParams.at(i);
 
@@ -43,7 +43,7 @@ std::string paramsToSpsaInput()
 {
   std::ostringstream ss;
 
-  for (int i = 0; i < tuningParams.size(); i++)
+  for (int i = 0; i < static_cast<int>(tuningParams.size()); i++)
   {
     EngineParam *p = tuningParams.at(i);
 
