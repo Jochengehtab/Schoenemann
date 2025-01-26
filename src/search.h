@@ -3,16 +3,12 @@
 #include <chrono>
 #include <iostream>
 
-#include "chess.hpp"
 #include "timeman.h"
 #include "moveorder.h"
 #include "consts.h"
 #include "see.h"
 #include "nnue.h"
 #include "tune.h"
-#include "tuneconsts.h"
-
-using namespace chess;
 
 struct SearchStack
 {

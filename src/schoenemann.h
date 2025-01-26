@@ -2,12 +2,12 @@
 
 #include <iostream>
 #include <chrono>
+#include <thread>
+
 #include "consts.h"
 #include "helper.h"
 #include "nnue.h"
-#include "search.h"
-
-#include "chess.hpp"
-using namespace chess;
+#include "datagen.h"
+#include "tune.h"
 
 int main(int argc, char *argv[]);

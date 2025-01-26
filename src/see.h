@@ -1,10 +1,7 @@
 #pragma once
 
-#include "chess.hpp"
 #include "consts.h"
 #include "tune.h"
-
-using namespace chess;
 
 int getPieceValue(const Board &board, Move &move);
 bool see(const Board &board, Move &move, int cutoff);

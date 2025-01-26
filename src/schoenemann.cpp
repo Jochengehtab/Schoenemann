@@ -1,14 +1,4 @@
-﻿#include <iostream>
-#include <thread>
-#include <sstream>
-#include <cstring>
-#include "schoenemann.h"
-#include "search.h"
-#include "consts.h"
-#include "helper.h"
-#include "nnue.h"
-#include "datagen.h"
-#include "tune.h"
+﻿#include "schoenemann.h"
 
 Search searcher;
 tt transpositionTabel(8);

@@ -45,6 +45,10 @@ struct EngineParam
   }
 };
 
+
+extern int SEE_PIECE_VALUES[7];
+extern int PIECE_VALUES[7];
+
 // #define DO_TUNING
 
 #ifdef DO_TUNING

@@ -5,7 +5,6 @@
 
 #include "tt.h"
 #include "search.h"
-#include "NNUE/nnue.h"
 
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -34,5 +33,6 @@ const std::string testStrings[] = {
 	"8/2b3p1/4knNp/2p4P/1pPp1P2/1P1P1BPK/8/8 w - -"};
 
 extern tt transpositionTabel;
+
 class Search;
 extern Search searcher;
