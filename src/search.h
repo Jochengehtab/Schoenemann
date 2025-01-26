@@ -7,7 +7,6 @@
 #include "moveorder.h"
 #include "consts.h"
 #include "see.h"
-#include "nnue.h"
 #include "tune.h"
 
 struct SearchStack
