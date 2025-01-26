@@ -746,9 +746,7 @@ void Search::initLMR()
     {
         for (int moveCount = 1; moveCount < 218; moveCount++)
         {
-            double rawValue = lmrBaseFinal + std::log(depth) * std::log(moveCount) / lmrDivisorFinal;
-            double clampedValue = std::clamp(rawValue, 0.0, 255.0);
-            reductions[depth][moveCount] = static_cast<std::uint8_t>(clampedValue);
+            reductions[depth][moveCount] = static_cast<std::uint8_t>(std::clamp(lmrBaseFinal + std::log(depth) * std::log(moveCount) / lmrDivisorFinal, 0.0, 255.0));
         }
     }
 }
