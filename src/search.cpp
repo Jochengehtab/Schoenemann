@@ -508,17 +508,17 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         }
     }
 
-    // Check for a draw
-    if (board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
-    {
-        return 0;
-    }
-
     // Increment nodes by one
     nodes++;
 
     // Set the pvLength to zero
     stack[ply].pvLength = 0;
+
+    // Check for a draw
+    if (board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
+    {
+        return 0;
+    }
 
     const bool pvNode = beta > alpha + 1;
     const std::uint64_t zobristKey = board.zobrist();
@@ -742,11 +742,13 @@ void Search::initLMR()
 {
     double lmrBaseFinal = lmrBase / 100.0;
     double lmrDivisorFinal = lmrDivisor / 100.0;
-    for (int depth = 0; depth < 150; depth++)
+    for (int depth = 1; depth < 150; depth++)
     {
-        for (int move = 0; move < 218; move++)
+        for (int moveCount = 1; moveCount < 218; moveCount++)
         {
-            reductions[depth][move] = std::uint8_t(std::clamp(lmrBaseFinal + std::log(depth) * std::log(move) / lmrDivisorFinal, -32678.0, 32678.0));
+            double rawValue = lmrBaseFinal + std::log(depth) * std::log(moveCount) / lmrDivisorFinal;
+            double clampedValue = std::clamp(rawValue, 0.0, 255.0);
+            reductions[depth][moveCount] = static_cast<std::uint8_t>(clampedValue);
         }
     }
 }
