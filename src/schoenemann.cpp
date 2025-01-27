@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
             uciPrint();
 
 #ifdef DO_TUNING
-            std::cout << paramsToUci();
+            std::cout << engineParameterToUCI();
 #endif
             std::cout << "uciok" << std::endl;
         }
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
             {
                 is >> token;
 #ifdef DO_TUNING
-                EngineParam *param = findParam(token);
+                EngineParameter *param = findEngineParameterByName(token);
                 if (param != nullptr)
                 {
                     is >> token;
@@ -250,14 +250,6 @@ int main(int argc, char *argv[])
         {
             runBenchmark();
         }
-        else if (token == "nodes")
-        {
-            std::cout << searcher.nodes << std::endl;
-        }
-        else if (token == "ttest")
-        {
-            transpositionTableTest(board);
-        }
         else if (token == "eval")
         {
             std::cout << "The raw eval is: " << net.evaluate((int)board.sideToMove(), board.occ().count()) << std::endl;
@@ -269,11 +261,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "spsa")
         {
-            std::cout << paramsToSpsaInput() << std::endl;
-        }
-        else if (token == "params")
-        {
-            std::cout << paramsToUci() << std::endl;
+            std::cout << engineParameterToSpsaInput() << std::endl;
         }
         else if (token == "stop")
         {

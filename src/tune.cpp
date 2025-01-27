@@ -1,63 +1,43 @@
 #include "tune.h"
 
-#include <sstream>
-#include <vector>
+std::vector<EngineParameter *> engineParameter;
 
-// Tuner taken from Obsidian
-// Thx gabe
-
-std::vector<EngineParam *> tuningParams;
-
-void registerParam(EngineParam *param)
+EngineParameter *findEngineParameterByName(std::string name)
 {
-  tuningParams.push_back(param);
-}
-
-EngineParam *findParam(std::string name)
-{
-  for (int i = 0; i < static_cast<int>(tuningParams.size()); i++)
-  {
-    if (tuningParams.at(i)->name == name)
+    // Loop over the whole vector
+    for (EngineParameter *e : engineParameter)
     {
-      return tuningParams.at(i);
+        if (e->name == name)
+        {
+            return e;
+        }
     }
-  }
-  return nullptr;
+    return nullptr;
 }
 
-std::string paramsToUci()
+void addEngineParameter(EngineParameter *parameter)
 {
-  std::ostringstream ss;
-
-  for (int i = 0; i < static_cast<int>(tuningParams.size()); i++)
-  {
-    EngineParam *p = tuningParams.at(i);
-
-    ss << "option name " << p->name << " type spin default " << p->value << " min -999999999 max 999999999\n";
-  }
-
-  return ss.str();
+    engineParameter.push_back(parameter);
 }
 
-std::string paramsToSpsaInput()
+std::string engineParameterToUCI()
 {
-  std::ostringstream ss;
+    std::stringstream stream;
+    for (EngineParameter *e : engineParameter)
+    {
+        stream << "option name " << e->name << " type spin default " << e->value << " min -999999999 max 999999999\n";
+    }
+    return stream.str();
+}
 
-  for (int i = 0; i < static_cast<int>(tuningParams.size()); i++)
-  {
-    EngineParam *p = tuningParams.at(i);
-
-    ss << p->name
-       << ", " << "int"
-       << ", " << double(p->value)
-       << ", " << double(p->min)
-       << ", " << double(p->max)
-       << ", " << std::max(0.5, double(p->max - p->min) / 20.0)
-       << ", " << 0.002
-       << "\n";
-  }
-
-  return ss.str();
+std::string engineParameterToSpsaInput()
+{
+    std::stringstream stream;
+    for (EngineParameter *e : engineParameter)
+    {
+        stream << e->name << ", " << "int" << ", " << double(e->value) << ", " << double(e->min) << ", " << double(e->max) << ", " << std::max(0.5, double(e->max - e->min) / 20.0) << ", " << 0.002 << "\n";
+    }
+    return stream.str();
 }
 
 

@@ -1,70 +1,76 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
 
-// Tuner taken from Obsidian
-// Thx gabe
+// Forward declaration of the struct
+struct EngineParameter;
 
-struct EngineParam;
+EngineParameter *findEngineParameterByName(std::string name);
+void addEngineParameter(EngineParameter *parameter);
 
-void registerParam(EngineParam *param);
+// UCI Stuff
+std::string engineParameterToUCI();
+std::string engineParameterToSpsaInput();
 
-EngineParam *findParam(std::string name);
-
-std::string paramsToUci();
-
-std::string paramsToSpsaInput();
-
-struct EngineParam
+struct EngineParameter
 {
-  std::string name;
-  int value;
-  int min, max;
+    // The order of this values is importatnt
+    std::string name;
+    int value;
+    int min;
+    int max;
 
-  EngineParam(std::string _name, int _value, int _min, int _max) : name(_name), value(_value), min(_min), max(_max)
-  {
-    if (_max < _min)
+    operator int()
     {
-      std::cout << "[Warning] Parameter " << _name << " has invalid bounds" << std::endl;
+        return value;
     }
 
-    registerParam(this);
-  }
+    EngineParameter(std::string parameterName, int startValue, int step)
+    : name(parameterName), value(startValue)
+    {
+        this->max = startValue + 15 * step;
+        this->min = startValue - 15 * step;
 
-  EngineParam(std::string _name, int _value, int _step) : name(_name), value(_value)
-  {
-    this->min = _value - 10 * _step;
-    this->max = _value + 10 * _step;
+        if (this->max < this->min)
+        {
+            std::cout << "Max Value is smaller than the Min value" << std::endl;
+        }
 
-    registerParam(this);
-  }
+        addEngineParameter(this);
+    }
 
-  inline operator int() const
-  {
-    return value;
-  }
+    EngineParameter(std::string parameterName, int startValue, int minValue, int maxValue)
+    : name(parameterName), value(startValue), min(minValue), max(maxValue)
+    {
+        if (this->max < this->min)
+        {
+            std::cout << "Max Value is smaller than the Min value" << std::endl;
+        }
+
+        addEngineParameter(this);
+    }
 };
-
 
 extern int SEE_PIECE_VALUES[7];
 extern int PIECE_VALUES[7];
 
-// #define DO_TUNING
+#define DO_TUNING
 
 #ifdef DO_TUNING
 
-constexpr bool doTuning = true;
+// The # turns parameterName into a string
 
-#define DEFINE_PARAM_S(_name, _value, _step) EngineParam _name(#_name, _value, _step)
+#define DEFINE_PARAM_S(parameterName, startValue, step) EngineParameter parameterName(#parameterName, startValue, step)
 
-#define DEFINE_PARAM_B(_name, _value, _min, _max) EngineParam _name(#_name, _value, _min, _max)
+#define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) EngineParameter parameterName(#parameterName, startValue, minValue, maxValue)
 
 #else
 
-constexpr bool doTuning = false;
+#define DEFINE_PARAM_S(parameterName, startValue, step) constexpr int parameterName = startValue
 
-#define DEFINE_PARAM_S(_name, _value, _step) constexpr int _name = _value
+#define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) constexpr int parameterName = startValue
 
-#define DEFINE_PARAM_B(_name, _value, _min, _max) constexpr int _name = _value
-
-#endif // DO_TUNING
+#endif
