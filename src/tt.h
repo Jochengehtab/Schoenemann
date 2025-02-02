@@ -40,7 +40,7 @@ struct Hash
     Move move;         // The bestmove that we currently have
     int eval;          // The static eval
 
-    void setEntry(std::uint64_t _key, short _depth, short _type, int _score, Move _move, int _eval)
+    void setEntry(std::uint64_t _key, std::uint8_t _depth, std::uint8_t _type, int _score, Move _move, int _eval)
     {
         key = _key;
         depth = _depth;
@@ -59,7 +59,7 @@ public:
     tt &operator=(const tt &other) = delete;
     ~tt();
 
-    void storeEvaluation(std::uint64_t key, short depth, short type, int score, Move move, int eval);
+    void storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t type, int score, Move move, int eval);
 
     Hash *getHash(std::uint64_t zobristKey);
 

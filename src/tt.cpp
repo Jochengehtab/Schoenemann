@@ -19,7 +19,7 @@
 
 #include "tt.h"
 
-void tt::storeEvaluation(std::uint64_t key, short depth, short type, int score, Move move, int eval)
+void tt::storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t type, int score, Move move, int eval)
 {
 	std::uint64_t index = key % size;
 
