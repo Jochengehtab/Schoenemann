@@ -43,9 +43,8 @@ DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
 DEFINE_PARAM_S(nmpDepthAdder, 2, 1);
 DEFINE_PARAM_B(nmpDepthDivisor, 3, 1, 10);
 
+// Razoring
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
-DEFINE_PARAM_S(razorAlpha, 247, 30);
-DEFINE_PARAM_S(razorDepthMultiplier, 50, 9);
 
 // PVS - SEE
 DEFINE_PARAM_B(pvsSSEDepth, 2, 1, 6);
@@ -254,24 +253,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Razoring
     if (!pvNode && !board.inCheck() && depth <= razorDepth)
     {
-        const int ralpha = alpha - razorAlpha - depth * razorDepthMultiplier;
-
-        if (staticEval < ralpha)
-        {
-            int qscore;
-            if (depth == 1 && ralpha < alpha)
-            {
-                qscore = qs(alpha, beta, board, ply);
-                return qscore;
-            }
-
-            qscore = qs(ralpha, ralpha + 1, board, ply);
-
-            if (qscore <= ralpha)
-            {
-                return qscore;
-            }
-        }
+        return qs(alpha, beta, board, ply);
     }
 
     // Idea by Laser
