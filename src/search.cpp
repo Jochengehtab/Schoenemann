@@ -208,7 +208,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         depth -= iirReduction;
     }
 
-    if (!isNullptr)
+    if (!isSingularSearch && !isNullptr)
     {
         int probCutBeta = beta + probeCutBetaAdder;
         if (hashedDepth >= depth - probeCuteSubtractor && hashedScore >= probCutBeta && std::abs(beta) < infinity)
@@ -247,13 +247,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // Reverse futility pruning
-    if (!inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * (depth - improving) >= beta)
+    if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * (depth - improving) >= beta)
     {
         return (staticEval + beta) / 2;
     }
 
     // Razoring
-    if (!pvNode && !board.inCheck() && depth <= razorDepth)
+    if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= razorDepth)
     {
         const int ralpha = alpha - razorAlpha - depth * razorDepthMultiplier;
 
@@ -278,7 +278,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Idea by Laser
     // If we can make a winning move and can confirm that when we do a lower depth search
     // it causes a beta cutoff we can make that beta cutoff
-    if (!pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplier * depth && std::abs(beta) < infinity)
+    if (!isSingularSearch && !pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplier * depth && std::abs(beta) < infinity)
     {
         int probCutMargin = beta + probeCutMarginAdder;
         int probCutCount = 0;
@@ -318,7 +318,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
     }
 
-    if (!pvNode && !inCheck && depth >= nmpDepth && staticEval >= beta)
+    if (!isSingularSearch && !pvNode && !inCheck)
     {
         board.makeNullMove();
         int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
@@ -374,10 +374,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
-        // Update the the piece and the move for continuationHistory
-        stack[ply].previousMovedPiece = board.at(move.from()).type();
-        stack[ply].previousMove = move;
-
         int extensions = 0;
 
         if (hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
@@ -395,6 +391,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             }
         }
 
+        // Update the the piece and the move for continuationHistory
+        stack[ply].previousMovedPiece = board.at(move.from()).type();
+        stack[ply].previousMove = move;
+
         board.makeMove(move);
 
         if (isQuiet)
@@ -405,9 +405,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         moveCounter++;
 
-        if (board.inCheck() == true)
+        if (board.inCheck())
         {
-            extensions = 1;
+            extensions++;
         }
 
         if (moveCounter == 1)
@@ -511,7 +511,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         finalType = UPPER_BOUND;
     }
-    transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
+    
+    if (!isSingularSearch)
+    {
+        transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, staticEval);
+    }
+    
 
     return bestScore;
 }
