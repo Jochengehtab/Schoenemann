@@ -176,7 +176,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Check if we this stored position is valid
     const bool isNullptr = entry == nullptr ? true : false;
 
-    if (!isNullptr)
+    if (!isNullptr && !isSingularSearch)
     {
         // If we have a transposition
         // That means that the current board zobrist key
