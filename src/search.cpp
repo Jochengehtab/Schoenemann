@@ -167,6 +167,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Get some important search constants
     const bool pvNode = beta > alpha + 1;
     const bool inCheck = board.inCheck();
+    const bool isSingularSearch = stack[ply].exludedMove != Move::NULL_MOVE;
     stack[ply].inCheck = inCheck;
 
     // Get an potential hash entry
@@ -360,6 +361,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
+
+        if (move == stack[ply].exludedMove)
+        {
+            continue;
+        }
+
         bool isQuiet = !board.isCapture(move);
 
         if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
@@ -371,6 +378,23 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         stack[ply].previousMovedPiece = board.at(move.from()).type();
         stack[ply].previousMove = move;
 
+        int extensions = 0;
+
+        if (hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
+        {
+            const int singularBeta = hashedScore - depth;
+            const std::uint8_t singualrDepth = (depth - 1) / 2;
+
+            stack[ply].exludedMove = move;
+            int singularScore = pvs(singularBeta - 1, singularBeta, singualrDepth, ply, board, isCutNode);
+            stack[ply].exludedMove = Move::NULL_MOVE;
+
+            if (singularScore < singularBeta)
+            {
+                extensions++;
+            }
+        }
+
         board.makeMove(move);
 
         if (isQuiet)
@@ -381,16 +405,14 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         moveCounter++;
 
-        short checkExtension = 0;
-
         if (board.inCheck() == true)
         {
-            checkExtension = 1;
+            extensions = 1;
         }
 
         if (moveCounter == 1)
         {
-            score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board, false);
+            score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board, false);
         }
         else
         {
@@ -403,10 +425,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
-            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + checkExtension, ply + 1, board, true);
+            score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + extensions, ply + 1, board, true);
             if (score > alpha && (score < beta || lmr > 0))
             {
-                score = -pvs(-beta, -alpha, depth - 1 + checkExtension, ply + 1, board, false);
+                score = -pvs(-beta, -alpha, depth - 1 + extensions, ply + 1, board, false);
                 isCutNode = false;
             }
         }
