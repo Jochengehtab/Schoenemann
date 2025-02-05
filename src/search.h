@@ -49,17 +49,18 @@ public:
 	bool shouldStop = false;
 	bool isNormalSearch = true;
 	bool hasNodeLimit = false;
+
 	int nodeLimit = 0;
 	int timeForMove = 0;
 	int scoreData = 0;
-
-	int nodes = 0;
-	long hardLimit = 0;
-	long softLimit = 0;
 	int timeLeft = 0;
 	int increment = 0;
-	int quietHistory[2][6][64];
+	int nodes = 0;
 
+	long hardLimit = 0;
+	long softLimit = 0;
+	
+	std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
 	std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
 	std::array<std::array<std::uint8_t, 218>, 150> reductions;
 	std::array<SearchStack, 150> stack;
@@ -68,6 +69,8 @@ public:
 	int qs(int alpha, int beta, Board &board, int ply);
 	int aspiration(int maxDepth, int score, Board &board);
 	int scaleOutput(int rawEval, Board &board);
+	int getQuietHistory(Board &board, Move move);
+	int getContinuationHistory(PieceType piece, Move move, int ply);
 
 	void iterativeDeepening(Board &board, bool isInfinite);
 	void initLMR();

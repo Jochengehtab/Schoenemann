@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
         }
 
         // Join threads to ensure they complete before exiting main
-        for (auto &t : threads)
+        for (auto &thread : threads)
         {
-            if (t.joinable())
+            if (thread.joinable())
             {
-                t.join();
+                thread.join();
             }
         }
         return 0;

@@ -317,52 +317,46 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
     }
 
-    if (!pvNode && !inCheck)
+    if (!pvNode && !inCheck && depth >= nmpDepth && staticEval >= beta)
     {
-        if (depth >= nmpDepth && staticEval >= beta)
+        board.makeNullMove();
+        int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
+
+        // Update the the piece and the move for continuationHistory
+        stack[ply].previousMovedPiece = PieceType::NONE;
+        stack[ply].previousMove = Move::NULL_MOVE;
+
+        int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, !isCutNode);
+        board.unmakeNullMove();
+        if (score >= beta)
         {
-            board.makeNullMove();
-            int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
-
-            // Update the the piece and the move for continuationHistory
-            stack[ply].previousMovedPiece = PieceType::NONE;
-            stack[ply].previousMove = Move::NULL_MOVE;
-
-            int score = -pvs(-beta, -alpha, depth - depthReduction, ply + 1, board, !isCutNode);
-            board.unmakeNullMove();
-            if (score >= beta)
-            {
-                return score;
-            }
+            return score;
         }
     }
 
-    short type = LOWER_BOUND;
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
     if (moveList.size() == 0)
     {
-        if (inCheck == true)
-        {
-            return -infinity + ply;
-        }
-        else
-        {
-            return 0;
-        }
+        return inCheck ? -infinity + ply : 0;
     }
 
     int scoreMoves[218] = {0};
     // Sort the list
     orderMoves(moveList, entry, board, scoreMoves, stack[ply].killerMove, ply);
 
+    // Set up values for the search
     int score = 0;
     int bestScore = -infinity;
-    Move bestMoveInPVS = Move::NULL_MOVE;
-    int moveCounter = 0;
-    std::array<Move, 218> movesMade;
     int movesMadeCounter = 0;
+    int moveCounter = 0;
+
+    short type = LOWER_BOUND;
+
+    Move bestMoveInPVS = Move::NULL_MOVE;
+    std::array<Move, 218> movesMade;
+
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
@@ -547,8 +541,8 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     const bool inCheck = board.inCheck();
 
     int hashedScore = 0;
-    short hashedType = 0;
     int standPat = NO_VALUE;
+    short hashedType = 0;
 
     if (!isNullptr)
     {
@@ -786,24 +780,30 @@ std::string Search::getPVLine()
     return pvLine;
 }
 
+int Search::getQuietHistory(Board &board, Move move)
+{
+    return quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()];
+}
+
 void Search::updateQuietHistory(Board &board, Move move, int bonus)
 {
     quietHistory
         [board.sideToMove()]
         [board.at(move.from()).type()]
         [move.to().index()] +=
-        (bonus - quietHistory
-                         [board.sideToMove()]
-                         [board.at(move.from()).type()]
-                         [move.to().index()] *
-                     std::abs(bonus) / quietHistoryDivisor);
+        (bonus - getQuietHistory(board, move) * std::abs(bonus) / quietHistoryDivisor);
+}
+
+int Search::getContinuationHistory(PieceType piece, Move move, int ply)
+{
+    return continuationHistory[stack[ply].previousMovedPiece][stack[ply].previousMove.to().index()][piece][move.to().index()];
 }
 
 void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply)
 {
     // Continuation History is indexed as follows
     // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
-    int scaledBonus = (bonus - continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] * std::abs(bonus) / continuationHistoryDivisor);
+    int scaledBonus = (bonus - getContinuationHistory(piece, move, ply - 1) * std::abs(bonus) / continuationHistoryDivisor);
 
     if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {

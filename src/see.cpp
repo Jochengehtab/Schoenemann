@@ -21,7 +21,7 @@
 
 int getPieceValue(const Board &board, Move &move)
 {
-    auto moveType = move.typeOf();
+    std::uint16_t moveType = move.typeOf();
 
     if (moveType == move.CASTLING)
     {
@@ -33,11 +33,11 @@ int getPieceValue(const Board &board, Move &move)
         return SEE_PIECE_VALUES[0];
     }
 
-    int score = SEE_PIECE_VALUES[(int)board.at<PieceType>(move.to())];
+    int score = SEE_PIECE_VALUES[board.at<PieceType>(move.to())];
 
     if (moveType == move.PROMOTION)
     {
-        score += SEE_PIECE_VALUES[(int)move.promotionType()] - SEE_PIECE_VALUES[0];
+        score += SEE_PIECE_VALUES[move.promotionType()] - SEE_PIECE_VALUES[0];
     }
 
     return score;
@@ -53,7 +53,8 @@ bool see(const Board &board, Move &move, int cutoff)
     }
 
     PieceType next = (move.typeOf() == move.PROMOTION) ? move.promotionType() : board.at<PieceType>(move.from());
-    score -= SEE_PIECE_VALUES[(int)next];
+    score -= SEE_PIECE_VALUES[next];
+
     if (score >= 0)
     {
         return true;
@@ -99,7 +100,7 @@ bool see(const Board &board, Move &move, int cutoff)
         }
 
         attackers &= occupancy;
-        score = -score - 1 - SEE_PIECE_VALUES[(int)next];
+        score = -score - 1 - SEE_PIECE_VALUES[next];
         us = ~us;
 
         if (score >= 0)

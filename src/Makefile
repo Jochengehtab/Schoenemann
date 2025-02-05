@@ -1,5 +1,5 @@
 EXE := null
-CC ?= null
+CC := clang++
 EVALFILE := quantised.bin
  
 
@@ -12,9 +12,9 @@ ifeq ($(OS),Windows_NT)
 endif
 
 all:
-	clang++ -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp -o $(EXE)
+	$(CC) -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp -o $(EXE)
 test:
 # Possible santizier: address, undefined, leak, thread, memory
-	clang++ -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp -o $(EXE)
+	$(CC) -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp -o $(EXE)
 release:
-	clang++ -Wall -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cppdatagen.cpp -o Schoenemann
+	$(CC) -Wall -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cppdatagen.cpp -o Schoenemann

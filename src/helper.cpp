@@ -21,7 +21,7 @@
 
 void transpositionTableTest(Board &board)
 {
-	// Set up a unice position
+	// Set up a unique position
 	board.setFen("3N4/2p5/5K2/k1PB3p/3Pr3/1b5p/6p1/5nB1 w - - 0 1");
 	std::uint64_t key = board.hash();
 

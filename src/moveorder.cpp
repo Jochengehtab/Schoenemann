@@ -59,7 +59,8 @@ void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], Mov
 		}
 		else
 		{
-			scores[i] += searcher.quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()] + (searcher.continuationHistory[searcher.stack[ply - 1].previousMovedPiece][searcher.stack[ply - 1].previousMove.to().index()][board.at(move.from()).type()][move.to().index()]);
+			PieceType type = searcher.stack[ply - 1].previousMovedPiece;
+			scores[i] += searcher.getQuietHistory(board, move) + searcher.continuationHistory[type][searcher.stack[ply - 1].previousMove.to().index()][board.at(move.from()).type()][move.to().index()];
 		}
 	}
 }
