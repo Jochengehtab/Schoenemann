@@ -353,6 +353,20 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
     }
 
+    if (moveList.size() == 1 && !pvNode)
+    {
+        board.makeMove(moveList[0]);
+        int newDepth = 3 + depth / 3;
+
+        int score = -pvs(-beta, -alpha, newDepth, ply + 1, board, !isCutNode);
+
+        board.unmakeMove(moveList[0]);
+        if (score >= beta)
+        {
+            return score;
+        }
+    }
+
     int scoreMoves[218] = {0};
     // Sort the list
     orderMoves(moveList, entry, board, scoreMoves, stack[ply].killerMove, ply);
