@@ -167,7 +167,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Get some important search constants
     const bool pvNode = beta > alpha + 1;
     const bool inCheck = board.inCheck();
-    const bool isSingularSearch = stack[ply].exludedMove != Move::NULL_MOVE;
+    const bool isSingularSearch = stack[ply].exludedMove == Move::NULL_MOVE;
     stack[ply].inCheck = inCheck;
 
     // Get an potential hash entry
