@@ -356,7 +356,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     if (moveList.size() == 1 && !pvNode && depth >= 5)
     {
         board.makeMove(moveList[0]);
-        int newDepth = 3 + depth / 3;
+        int newDepth = 2 + depth;
 
         int score = -pvs(-beta, -alpha, newDepth, ply + 1, board, !isCutNode);
 
