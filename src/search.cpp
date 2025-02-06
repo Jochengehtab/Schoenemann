@@ -318,7 +318,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
     }
 
-    if (!isSingularSearch && !pvNode && !inCheck)
+    if (!isSingularSearch && !pvNode && !inCheck && depth >= nmpDepth && staticEval >= beta)
     {
         board.makeNullMove();
         int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
