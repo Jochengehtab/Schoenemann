@@ -37,7 +37,7 @@ struct SearchStack
 	Move killerMove;
 	PieceType previousMovedPiece;
 	Move previousMove;
-	Move exludedMove;
+	Move exludedMove = Move::NULL_MOVE;
 };
 
 class Search
