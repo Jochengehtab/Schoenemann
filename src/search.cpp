@@ -674,8 +674,10 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
         return -infinity + ply;
     }
 
-    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
-
+    if (stack[ply].exludedMove != Move::NULL_MOVE)
+    {
+        transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
+    }
     return bestScore;
 }
 
