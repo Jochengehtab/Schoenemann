@@ -1,4 +1,4 @@
-CC ?= clang++
+CXX ?= clang++
 
 # Name of the executable
 EXE = Schoenemann
@@ -13,10 +13,10 @@ endif
 SOURCES = schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp
 
 all:
-	$(CC) -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 test:
-	$(CC) -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) -Wall -Wextra -Wpedantic -Wshadow -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 release:
-	$(CC) -Wall -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) -Wall -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
