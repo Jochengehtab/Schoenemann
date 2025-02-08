@@ -1,7 +1,8 @@
 CXX = clang++
 
-# Name of the executable
 EXE = null
+
+FLAGS = -Wall -Wextra -Wpedantic -Wshadow -pedantic
 
 EVALFILE = quantised.bin
 
@@ -13,10 +14,10 @@ endif
 SOURCES = schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp
 
 all:
-	$(CXX) -Wall -Wextra -Wpedantic -Wshadow -pthread -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) $(FLAGS) -pthread -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 test:
-	$(CXX) -Wall -Wextra -Wpedantic -Wshadow -pthread -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) $(FLAGS) -pthread -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 release:
-	$(CXX) -Wall -pthread -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) $(FLAGS) -pthread -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
