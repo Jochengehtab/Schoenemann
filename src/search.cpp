@@ -360,7 +360,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     for (int i = 0; i < moveList.size(); i++)
     {
         Move move = sortByScore(moveList, scoreMoves, i);
-
         bool isQuiet = !board.isCapture(move);
 
         if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
