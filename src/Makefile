@@ -1,5 +1,5 @@
 EXE := null
-CC = clang++
+CC ?= clang++
 EVALFILE := quantised.bin
  
 
