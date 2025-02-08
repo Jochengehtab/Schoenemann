@@ -34,9 +34,9 @@ struct SearchStack
 	int pvLength;
 	bool inCheck;
 	std::array<Move, 150> pvLine;
-	Move killerMove;
-	PieceType previousMovedPiece;
-	Move previousMove;
+	Move killerMove = Move::NULL_MOVE;
+	PieceType previousMovedPiece = PieceType::NONE;
+	Move previousMove = Move::NULL_MOVE;
 };
 
 class Search
@@ -63,7 +63,7 @@ public:
 	std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
 	std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
 	std::array<std::array<std::uint8_t, 218>, 150> reductions;
-	std::array<SearchStack, 150> stack;
+	std::array<SearchStack, 150> stack{};
 
 	int pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode);
 	int qs(int alpha, int beta, Board &board, int ply);
