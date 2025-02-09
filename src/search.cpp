@@ -388,6 +388,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             if (singularScore < singularBeta)
             {
                 extensions++;
+                // If we aren't in a pvNode and our score plus some margin is still less then our singular beta when can extend furthur
+                if (!pvNode && singularScore + 5 < singularBeta)
+                {
+                    extensions++;
+                }
             }
             // Multicut 
             else if (singularBeta >= beta)
