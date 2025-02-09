@@ -394,6 +394,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     extensions++;
                 }
             }
+            
             // Multicut 
             else if (singularBeta >= beta)
             {
