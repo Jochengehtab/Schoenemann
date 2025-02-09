@@ -376,7 +376,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int extensions = 0;
 
-        if (!isSingularSearch && !isNullptr && hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
+        if (!isSingularSearch && hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
         {
             const int singularBeta = hashedScore - depth * 2;
             const std::uint8_t singularDepth = (depth - 1) / 2;
@@ -402,7 +402,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             }
             else if (hashedScore >= beta)
             {
-                extensions -= 2;
+                extensions -= 1;
             }
             
         }
