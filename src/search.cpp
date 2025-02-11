@@ -98,6 +98,12 @@ DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdder, 180, 20);
 DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
 DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
 
+// Singular Extension
+DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
+DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
+DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
+DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
+
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
     if (shouldStop)
@@ -385,9 +391,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int extensions = 0;
 
-        if (!isSingularSearch && hashedMove == move && depth >= 6 && hashedDepth >= depth - 3 && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
+        if (!isSingularSearch && hashedMove == move && depth >= singularMinDepth && hashedDepth >= depth - singularHashDepthReuction && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
         {
-            const int singularBeta = hashedScore - depth * 2;
+            const int singularBeta = hashedScore - depth * singularBetaDepthMul;
             const std::uint8_t singularDepth = (depth - 1) / 2;
 
             stack[ply].exludedMove = move;
@@ -398,7 +404,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             {
                 extensions++;
                 // If we aren't in a pvNode and our score plus some margin is still less then our singular beta when can extend furthur
-                if (!pvNode && singularScore + 5 < singularBeta)
+                if (!pvNode && singularScore + singularBetaDoubleExtensionMargin < singularBeta)
                 {
                     extensions++;
                 }

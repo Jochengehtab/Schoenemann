@@ -20,5 +20,6 @@
 #pragma once
 
 #include "consts.h"
+#include "tune.h"
 
 void getTimeForMove();
