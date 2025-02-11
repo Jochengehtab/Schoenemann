@@ -93,10 +93,10 @@ DEFINE_PARAM_S(materialScaleGamePhaseAdder, 169, 25);
 DEFINE_PARAM_B(materialScaleGamePhaseDivisor, 269, 1, 700);
 
 // Pawn CorrectionHistory
-DEFINE_PARAM_B(correctionValueDiv, 59, 1, 600);
-DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdder, 157, 20);
-DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 909, 1, 4000);
-DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 664, 1, 4000);
+DEFINE_PARAM_B(correctionValueDiv, 30, 1, 600);
+DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdder, 180, 20);
+DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
+DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
