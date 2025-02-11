@@ -19,12 +19,12 @@
 
 #include "timeman.h"
 
-DEFINE_PARAM_B(baseTimeMul, 54, 25, 750);
-DEFINE_PARAM_B(baseTimeIncrement, 85, 40, 1000);
+DEFINE_PARAM_B(baseTimeMul, 54, 25, 99);
+DEFINE_PARAM_B(baseTimeIncrement, 85, 40, 999);
 
-DEFINE_PARAM_B(maxTimeMul, 76, 40, 1000);
+DEFINE_PARAM_B(maxTimeMul, 76, 40, 999);
 
-DEFINE_PARAM_B(hardMul, 304, 100, 1500);
+DEFINE_PARAM_B(hardMul, 304, 100, 999);
 DEFINE_PARAM_B(softMul, 76, 40, 900);
 
 void getTimeForMove()
