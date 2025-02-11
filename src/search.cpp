@@ -872,7 +872,7 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
         continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
 
-    if (ply - 2 > 0 && stack[ply - 2].previousMovedPiece != PieceType::NONE)
+    if ( stack[ply - 2].previousMovedPiece != PieceType::NONE)
     {
         // Continuation History is indexed as follows
         // | Ply - 2 Moved Piece From | Ply - 2 Move To Index | Moved Piece From | Move To Index |

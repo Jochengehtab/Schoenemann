@@ -17,7 +17,8 @@ all:
 	$(CXX) $(FLAGS) -pthread -std=c++20 -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 test:
-	$(CXX) $(FLAGS) -pthread -std=c++20 -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+# Possible santizier: address, undefined, leak, thread, memory
+	$(CXX) $(FLAGS) -pthread -std=c++20 -fsanitize=undefined -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 release:
 	$(CXX) $(FLAGS) -pthread -std=c++20 -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
