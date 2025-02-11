@@ -499,8 +499,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMultiplier) * depth, static_cast<int>(quietHistoryMalusMax));
                     int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMultiplier) * depth, static_cast<int>(continuationHistoryMalusMax));
                     // History malus
-                    for (Move madeMove : movesMade)
+                    for (int x = 0; x < movesMadeCounter; x++)
                     {
+                        Move madeMove = movesMade[x];
                         if (madeMove == bestMoveInPVS)
                         {
                             continue;
