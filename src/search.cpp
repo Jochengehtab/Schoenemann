@@ -872,8 +872,6 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
         continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
 
-    scaledBonus = (bonus - getContinuationHistory(piece, move, ply - 2) * std::abs(bonus) / continuationHistoryDivisor);
-
     if (stack[ply - 2].previousMovedPiece != PieceType::NONE)
     {
         // Continuation History is indexed as follows
