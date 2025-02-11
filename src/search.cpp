@@ -499,9 +499,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMultiplier) * depth, static_cast<int>(quietHistoryMalusMax));
                     int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMultiplier) * depth, static_cast<int>(continuationHistoryMalusMax));
                     // History malus
-                    for (int x = 0; x < movesMadeCounter; x++)
+                    for (Move madeMove : movesMade)
                     {
-                        Move madeMove = movesMade[x];
                         if (madeMove == bestMoveInPVS)
                         {
                             continue;
@@ -870,6 +869,15 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
         // Continuation History is indexed as follows
         // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
         continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
+    }
+
+    scaledBonus = (bonus - getContinuationHistory(piece, move, ply - 2) * std::abs(bonus) / continuationHistoryDivisor);
+
+    if (stack[ply - 2].previousMovedPiece != PieceType::NONE)
+    {
+        // Continuation History is indexed as follows
+        // | Ply - 2 Moved Piece From | Ply - 2 Move To Index | Moved Piece From | Move To Index |
+        continuationHistory[stack[ply - 2].previousMovedPiece][stack[ply - 2].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
 }
 
