@@ -403,8 +403,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                     extensions++;
                 }
             }
-            
-            // Multicut 
+
+            // Multicut
             else if (singularBeta >= beta)
             {
                 return singularBeta;
@@ -531,7 +531,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         finalType = UPPER_BOUND;
     }
-    
+
     if (!isSingularSearch)
     {
         transpositionTabel.storeEvaluation(zobristKey, depth, finalType, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInPVS, rawEval);
@@ -890,7 +890,7 @@ int Search::correctEval(int rawEval, Board &board)
     return rawEval + corrHistoryBonus / correctionValueDiv;
 }
 
-std::uint64_t Search::getPieceKey(PieceType piece, const Board& board)
+std::uint64_t Search::getPieceKey(PieceType piece, const Board &board)
 {
     std::uint64_t key = 0;
     Bitboard bitboard = board.pieces(piece);
