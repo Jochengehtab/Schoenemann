@@ -29,12 +29,19 @@ DEFINE_PARAM_B(softMul, 76, 10, 1800);
 
 void getTimeForMove()
 {
-	searcher.timeLeft -= searcher.timeLeft / 2;
-	searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
+  searcher.timeLeft -= searcher.timeLeft / 2;
+  searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
 
-	int baseTime = (int) (searcher.timeLeft * (baseTimeMul / 1000) + searcher.increment * (baseTimeIncrement / 100));
-	int maxTime = (int) (searcher.timeLeft * (maxTimeMul / 100));
+  double b1 = (baseTimeMul / 1000.0);
+  double b2 = (baseTimeIncrement / 100.0);
+  double m1 = (maxTimeMul / 100.0);
+  double h1 = (hardMul / 100.0);
+  double s1 = (softMul / 100.0);
 
-	searcher.hardLimit = std::min(maxTime, (int) (baseTime * (hardMul / 100)));
-	searcher.softLimit = std::min(maxTime, (int) (baseTime * (softMul / 100)));
+  double baseTime = (searcher.timeLeft * b1 + searcher.increment * b2);
+  double maxTime = (searcher.timeLeft * m1);
+
+  searcher.hardLimit = std::min(maxTime, (baseTime * h1));
+  std::cout << b1 << std::endl;
+  searcher.softLimit = std::min(maxTime, (baseTime * s1));
 }
