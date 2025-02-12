@@ -85,7 +85,7 @@ public:
 	void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply);
 	void updatePawnCorrectionHistory(int bonus, Board &board);
 
-	std::string getPVLine();
+	std::string getPVLine(Move& bestMove);
 
 	bool shouldStopSoft(auto s)
 	{

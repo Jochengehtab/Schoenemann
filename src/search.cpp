@@ -798,7 +798,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
                 << scoreData << " nodes "
                 << nodes << " nps "
                 << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
-                << getPVLine()
+                << getPVLine(bestMoveThisIteration)
                 << std::endl;
         }
 
@@ -836,13 +836,20 @@ int Search::scaleOutput(int rawEval, Board &board)
     return rawEval * (materialScaleGamePhaseAdder + gamePhase) / materialScaleGamePhaseDivisor;
 }
 
-std::string Search::getPVLine()
+std::string Search::getPVLine(Move& bestMove)
 {
     std::string pvLine;
     for (int i = 0; i < stack[0].pvLength; i++)
     {
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
+
+    if (stack[0].pvLength == 0)
+    {
+        pvLine += uci::moveToUci(bestMove);
+    }
+    
+
     return pvLine;
 }
 
