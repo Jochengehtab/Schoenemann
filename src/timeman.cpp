@@ -42,6 +42,5 @@ void getTimeForMove()
   double maxTime = (searcher.timeLeft * m1);
 
   searcher.hardLimit = std::min(maxTime, (baseTime * h1));
-  std::cout << b1 << std::endl;
   searcher.softLimit = std::min(maxTime, (baseTime * s1));
 }
