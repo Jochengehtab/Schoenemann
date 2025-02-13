@@ -21,12 +21,24 @@
 
 void getTimeForMove()
 {
-	searcher.timeLeft -= searcher.timeLeft / 2;
-	searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
+  searcher.timeLeft -= searcher.timeLeft / 2;
+  searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
 
-	int baseTime = (int) (searcher.timeLeft * 0.054 + searcher.increment * 0.85);
-	int maxTime = (int) (searcher.timeLeft * 0.76);
+  int baseTime = (int)(searcher.timeLeft * 0.054 + searcher.increment * 0.85);
+  int maxTime = (int)(searcher.timeLeft * 0.76);
 
-	searcher.hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
-	searcher.softLimit = std::min(maxTime, (int) (baseTime * 0.76));
+  searcher.hardLimit = std::min(maxTime, (int)(baseTime * 3.04));
+  searcher.softLimit = std::min(maxTime, (int)(baseTime * 0.76));
+}
+
+bool shouldStopSoft(std::chrono::steady_clock::time_point start)
+{
+  std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
+  return elapsed.count() > searcher.hardLimit;
+}
+
+bool shouldStopID(std::chrono::steady_clock::time_point start)
+{
+  std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
+  return elapsed.count() > searcher.softLimit;
 }
