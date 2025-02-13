@@ -19,28 +19,14 @@
 
 #include "timeman.h"
 
-DEFINE_PARAM_B(baseTimeMul, 54, 25, 99);
-DEFINE_PARAM_B(baseTimeIncrement, 85, 40, 999);
-
-DEFINE_PARAM_B(maxTimeMul, 76, 40, 999);
-
-DEFINE_PARAM_B(hardMul, 304, 100, 999);
-DEFINE_PARAM_B(softMul, 76, 40, 900);
-
 void getTimeForMove()
 {
-  searcher.timeLeft -= searcher.timeLeft / 2;
-  searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
+	searcher.timeLeft -= searcher.timeLeft / 2;
+	searcher.hardLimit = searcher.softLimit = searcher.timeLeft;
 
-  double b1 = (baseTimeMul / 1000.0);
-  double b2 = (baseTimeIncrement / 100.0);
-  double m1 = (maxTimeMul / 100.0);
-  double h1 = (hardMul / 100.0);
-  double s1 = (softMul / 100.0);
+	int baseTime = (int) (searcher.timeLeft * 0.054 + searcher.increment * 0.85);
+	int maxTime = (int) (searcher.timeLeft * 0.76);
 
-  double baseTime = (searcher.timeLeft * b1 + searcher.increment * b2);
-  double maxTime = (searcher.timeLeft * m1);
-
-  searcher.hardLimit = std::min(maxTime, (baseTime * h1));
-  searcher.softLimit = std::min(maxTime, (baseTime * s1));
+	searcher.hardLimit = std::min(maxTime, (int) (baseTime * 3.04));
+	searcher.softLimit = std::min(maxTime, (int) (baseTime * 0.76));
 }
