@@ -17,6 +17,7 @@ all:
 	$(CXX) $(FLAGS) -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 test:
+# Possible santizier: address, undefined, leak, thread, memory
 	$(CXX) $(FLAGS) -fsanitize=address -g3 -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 release:
