@@ -384,12 +384,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         bool isQuiet = !board.isCapture(move);
 
-        if(bestScore > -infinity && !inCheck && depth <= 1 && staticEval + 300 + depth * 300 <= alpha)
+        if(bestScore > -infinity && !inCheck && depth <= 1 && staticEval + 400 + depth * 400 < alpha)
         {
             break;
         }
         
-
         if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (!isQuiet ? -pvsSSECaptureCutoff : -pvsSSENonCaptureCutoff)))
         {
             continue;
