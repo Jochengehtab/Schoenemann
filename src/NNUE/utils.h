@@ -102,12 +102,6 @@ public:
         __m256i vecTwo = _mm256_hadd_epi32(vecOne, vecOne);
 
         eval = _mm256_extract_epi32(vecTwo, 0) + _mm256_extract_epi32(vecTwo, 4);
-
-        eval /= QA;
-        eval += outputBias[bucket];
-        eval *= scale;
-        eval /= (QA * QB);
-        return eval;
 #else
         for (std::uint16_t i = 0; i < hiddenSize; i++)
         {
