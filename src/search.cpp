@@ -384,7 +384,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         bool isQuiet = !board.isCapture(move);
 
-        if(bestScore > -infinity && !inCheck && depth <= 1 && staticEval + 400 + depth * 400 < alpha)
+        if(bestScore > -infinity && !inCheck && depth <= 1 && staticEval + 250 + depth * 250 < alpha)
         {
             break;
         }
