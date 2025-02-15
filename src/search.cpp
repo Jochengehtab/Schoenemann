@@ -339,7 +339,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
 
         // If we are improving we can search with a even lower depth
-        depthReduction += isCutNode;
+        depthReduction += 1;
 
         // Update the the piece and the move for continuationHistory
         stack[ply].previousMovedPiece = PieceType::NONE;
