@@ -28,6 +28,7 @@ DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
 DEFINE_PARAM_S(rfpEvalSubtractor, 80, 6);
+DEFINE_PARAM_B(rfpDivisory, 2, 1, 10);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSubtractor, 97, 20);
@@ -39,10 +40,13 @@ DEFINE_PARAM_B(winningDepthDivisor, 3, 1, 20);
 DEFINE_PARAM_S(winningDepthSubtractor, 4, 1);
 DEFINE_PARAM_B(winningCount, 2, 1, 6);
 
+// Null Move Prunning
 DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
 DEFINE_PARAM_S(nmpDepthAdder, 2, 1);
 DEFINE_PARAM_B(nmpDepthDivisor, 3, 1, 10);
+DEFINE_PARAM_S(nmpTweak, 1, 12);
 
+// Razoring
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
 DEFINE_PARAM_S(razorAlpha, 247, 30);
 DEFINE_PARAM_S(razorDepthMultiplier, 50, 9);
@@ -62,6 +66,7 @@ DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 240, 1, 700);
 DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
+DEFINE_PARAM_S(lmrCutNodeMul, 2, 15);
 
 DEFINE_PARAM_S(iirReduction, 2, 1);
 DEFINE_PARAM_S(fpCutoff, 2, 1);
@@ -103,6 +108,9 @@ DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
 DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
 DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
 DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
+DEFINE_PARAM_S(singularDepthSub, 1, 15);
+DEFINE_PARAM_B(singularDepthDiv, 2, 1, 20);
+DEFINE_PARAM_S(singularTTSub, 2, 10);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
@@ -237,7 +245,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     int rawEval = staticEval;
-    staticEval = std::clamp(correctEval(staticEval, board), -infinity + 150, infinity - 150);
+    staticEval = std::clamp(correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
@@ -264,7 +272,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Reverse futility pruning
     if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * (depth - improving) >= beta)
     {
-        return (staticEval + beta) / 2;
+        return (staticEval + beta) / rfpDivisory;
     }
 
     // Razoring
@@ -338,8 +346,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         board.makeNullMove();
         int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
 
-        // If we are improving we can search with a even lower depth
-        depthReduction += 1;
+        // Small tweak
+        depthReduction += nmpTweak;
 
         // Update the the piece and the move for continuationHistory
         stack[ply].previousMovedPiece = PieceType::NONE;
@@ -397,7 +405,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (!isSingularSearch && hashedMove == move && depth >= singularMinDepth && hashedDepth >= depth - singularHashDepthReuction && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
         {
             const int singularBeta = hashedScore - depth * singularBetaDepthMul;
-            const std::uint8_t singularDepth = (depth - 1) / 2;
+            const std::uint8_t singularDepth = (depth - singularDepthSub) / singularDepthDiv;
 
             stack[ply].exludedMove = move;
             int singularScore = pvs(singularBeta - 1, singularBeta, singularDepth, ply, board, isCutNode);
@@ -421,7 +429,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
             else if (hashedScore >= beta)
             {
-                extensions -= 2;
+                extensions -= singularTTSub;
             }
         }
 
@@ -455,7 +463,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
-                lmr += isCutNode * 2;
+                lmr += isCutNode * lmrCutNodeMul;
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
@@ -640,7 +648,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     }
 
     int rawEval = standPat;
-    standPat = std::clamp(correctEval(standPat, board), -infinity + 150, infinity - 150);
+    standPat = std::clamp(correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     if (standPat >= beta)
     {
@@ -829,7 +837,7 @@ void Search::initLMR()
 {
     double lmrBaseFinal = lmrBase / 100.0;
     double lmrDivisorFinal = lmrDivisor / 100.0;
-    for (int depth = 1; depth < 150; depth++)
+    for (int depth = 1; depth < MAX_PLY; depth++)
     {
         for (int moveCount = 1; moveCount < 218; moveCount++)
         {

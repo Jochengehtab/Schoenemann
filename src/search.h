@@ -45,6 +45,7 @@ class Search
 public:
 	const int infinity = 32767;
 	const int CORRHIST_LIMIT = 1024;
+	const int MAX_PLY = 150;
 
 	Move rootBestMove = Move::NULL_MOVE;
 
