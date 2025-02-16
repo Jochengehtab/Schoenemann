@@ -107,7 +107,7 @@ DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
 DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
 DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
 DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
-DEFINE_PARAM_B(singularDepthSub, 1, -2, 15);
+DEFINE_PARAM_B(singularDepthSub, 1, 1, 12);
 DEFINE_PARAM_B(singularDepthDiv, 2, 1, 20);
 DEFINE_PARAM_B(singularTTSub, 2, 1, 14);
 
