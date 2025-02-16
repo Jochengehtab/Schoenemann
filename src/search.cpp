@@ -28,7 +28,6 @@ DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
 DEFINE_PARAM_S(rfpEvalSub, 80, 6);
-DEFINE_PARAM_B(rfpDiv, 2, 1, 5);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSub, 97, 20);
@@ -97,10 +96,10 @@ DEFINE_PARAM_S(materialScaleGamePhaseAdd, 169, 25);
 DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 600);
 
 // Pawn CorrectionHistory
-DEFINE_PARAM_B(correctionValueDiv, 30, 1, 600);
+DEFINE_PARAM_B(correctionValueDiv, 30, 15, 600);
 DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdd, 180, 20);
-DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
-DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
+DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 300, 4000);
+DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 300, 4000);
 
 // Singular Extension
 DEFINE_PARAM_B(singularMinDepth, 6, 6, 12);
@@ -271,7 +270,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Reverse futility pruning
     if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSub * (depth - improving) >= beta)
     {
-        return (staticEval + beta) / rfpDiv;
+        return (staticEval + beta) / 2;
     }
 
     // Razoring
