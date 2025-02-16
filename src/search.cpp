@@ -21,35 +21,35 @@
 
 std::chrono::time_point start = std::chrono::steady_clock::now();
 
-DEFINE_PARAM_S(probeCutBetaAdder, 460, 25);
-DEFINE_PARAM_S(probeCuteSubtractor, 4, 1);
+DEFINE_PARAM_S(probeCutBetaAdd, 460, 25);
+DEFINE_PARAM_S(probeCuteSub, 4, 1);
 
 DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
-DEFINE_PARAM_S(rfpEvalSubtractor, 80, 6);
+DEFINE_PARAM_S(rfpEvalSub, 80, 6);
 DEFINE_PARAM_B(rfpDivisory, 2, 1, 10);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
-DEFINE_PARAM_S(winningEvalSubtractor, 97, 20);
-DEFINE_PARAM_S(winningDepthMultiplier, 24, 4);
+DEFINE_PARAM_S(winningEvalSub, 97, 20);
+DEFINE_PARAM_S(winningDepthMul, 24, 4);
 
-DEFINE_PARAM_S(probeCutMarginAdder, 76, 10);
+DEFINE_PARAM_S(probeCutMarginAdd, 76, 10);
 
-DEFINE_PARAM_B(winningDepthDivisor, 3, 1, 20);
-DEFINE_PARAM_S(winningDepthSubtractor, 4, 1);
+DEFINE_PARAM_B(winningDepthDiv, 3, 1, 20);
+DEFINE_PARAM_S(winningDepthSub, 4, 1);
 DEFINE_PARAM_B(winningCount, 2, 1, 6);
 
 // Null Move Prunning
 DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
-DEFINE_PARAM_S(nmpDepthAdder, 2, 1);
-DEFINE_PARAM_B(nmpDepthDivisor, 3, 1, 10);
+DEFINE_PARAM_S(nmpDepthAdd, 2, 1);
+DEFINE_PARAM_B(nmpDepthDiv, 3, 1, 10);
 DEFINE_PARAM_S(nmpTweak, 1, 12);
 
 // Razoring
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
 DEFINE_PARAM_S(razorAlpha, 247, 30);
-DEFINE_PARAM_S(razorDepthMultiplier, 50, 9);
+DEFINE_PARAM_S(razorDepthMul, 50, 9);
 
 // PVS - SEE
 DEFINE_PARAM_B(pvsSSEDepth, 2, 1, 6);
@@ -59,7 +59,7 @@ DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 18, 10);
 // Aspiration Window
 DEFINE_PARAM_S(aspDelta, 26, 6);
 // DEFINE_PARAM_B(aspDivisor, 2, 2, 8); When tuned this triggers crashes for some reason :(
-DEFINE_PARAM_B(aspMultiplier, 134, 1, 450);
+DEFINE_PARAM_B(aspMul, 134, 1, 450);
 DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 
 // Late Move Reductions
@@ -73,20 +73,20 @@ DEFINE_PARAM_S(fpCutoff, 2, 1);
 
 // Quiet History
 DEFINE_PARAM_S(quietHistoryGravityBase, 31, 5);
-DEFINE_PARAM_S(quietHistoryDepthMultiplier, 204, 25);
+DEFINE_PARAM_S(quietHistoryDepthMul, 204, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 1734, 200);
 DEFINE_PARAM_B(quietHistoryDivisor, 28711, 10000, 50000);
 DEFINE_PARAM_S(quietHistoryMalusBase, 15, 6);
 DEFINE_PARAM_S(quietHistoryMalusMax, 1900, 150);
-DEFINE_PARAM_S(quietHistoryMalusDepthMultiplier, 171, 25);
+DEFINE_PARAM_S(quietHistoryMalusDepthMul, 171, 25);
 
 // Continuation Hisotry
-DEFINE_PARAM_B(continuationHistoryDivisor, 28156, 10000, 50000);
+DEFINE_PARAM_B(continuationHistoryDiv, 28156, 10000, 50000);
 DEFINE_PARAM_S(continuationHistoryMalusBase, 25, 6);
 DEFINE_PARAM_S(continuationHistoryMalusMax, 2172, 150);
-DEFINE_PARAM_S(continuationHistoryMalusDepthMultiplier, 185, 25);
+DEFINE_PARAM_S(continuationHistoryMalusDepthMul, 185, 25);
 DEFINE_PARAM_S(continuationHistoryGravityBase, 26, 5);
-DEFINE_PARAM_S(continuationHistoryDepthMultiplier, 208, 25);
+DEFINE_PARAM_S(continuationHistoryDepthMul, 208, 25);
 DEFINE_PARAM_S(continuationHistoryBonusCap, 1959, 200);
 
 // Material Scaling
@@ -94,12 +94,12 @@ DEFINE_PARAM_S(materialScaleKnight, 3, 1);
 DEFINE_PARAM_S(materialScaleBishop, 3, 1);
 DEFINE_PARAM_S(materialScaleRook, 5, 1);
 DEFINE_PARAM_S(materialScaleQueen, 18, 3);
-DEFINE_PARAM_S(materialScaleGamePhaseAdder, 169, 25);
-DEFINE_PARAM_B(materialScaleGamePhaseDivisor, 269, 1, 700);
+DEFINE_PARAM_S(materialScaleGamePhaseAdd, 169, 25);
+DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 700);
 
 // Pawn CorrectionHistory
 DEFINE_PARAM_B(correctionValueDiv, 30, 1, 600);
-DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdder, 180, 20);
+DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdd, 180, 20);
 DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
 DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
 
@@ -230,8 +230,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (!isSingularSearch && !isNullptr)
     {
-        int probCutBeta = beta + probeCutBetaAdder;
-        if (hashedDepth >= depth - probeCuteSubtractor && hashedScore >= probCutBeta && std::abs(beta) < infinity)
+        int probCutBeta = beta + probeCutBetaAdd;
+        if (hashedDepth >= depth - probeCuteSub && hashedScore >= probCutBeta && std::abs(beta) < infinity)
         {
             return probCutBeta;
         }
@@ -270,7 +270,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // Reverse futility pruning
-    if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSubtractor * (depth - improving) >= beta)
+    if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSub * (depth - improving) >= beta)
     {
         return (staticEval + beta) / rfpDivisory;
     }
@@ -278,7 +278,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Razoring
     if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= razorDepth)
     {
-        const int ralpha = alpha - razorAlpha - depth * razorDepthMultiplier;
+        const int ralpha = alpha - razorAlpha - depth * razorDepthMul;
 
         if (staticEval < ralpha)
         {
@@ -301,9 +301,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Idea by Laser
     // If we can make a winning move and can confirm that when we do a lower depth search
     // it causes a beta cutoff we can make that beta cutoff
-    if (!isSingularSearch && !pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSubtractor - winningDepthMultiplier * depth && std::abs(beta) < infinity)
+    if (!isSingularSearch && !pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSub - winningDepthMul * depth && std::abs(beta) < infinity)
     {
-        int probCutMargin = beta + probeCutMarginAdder;
+        int probCutMargin = beta + probeCutMarginAdd;
         int probCutCount = 0;
 
         Movelist moveList;
@@ -330,7 +330,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
             board.makeMove(move);
 
-            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDivisor - winningDepthSubtractor, ply + 1, board, false);
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDiv - winningDepthSub, ply + 1, board, false);
 
             board.unmakeMove(move);
 
@@ -344,7 +344,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     if (!isSingularSearch && !pvNode && !inCheck && depth >= nmpDepth && staticEval >= beta)
     {
         board.makeNullMove();
-        int depthReduction = nmpDepthAdder + depth / nmpDepthDivisor;
+        int depthReduction = nmpDepthAdd + depth / nmpDepthDiv;
 
         // Small tweak
         depthReduction += nmpTweak;
@@ -510,16 +510,16 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 if (isQuiet)
                 {
                     stack[ply].killerMove = move;
-                    int quietHistoryBonus = std::min(static_cast<int>(quietHistoryGravityBase) + static_cast<int>(quietHistoryDepthMultiplier) * depth, static_cast<int>(quietHistoryBonusCap));
+                    int quietHistoryBonus = std::min(static_cast<int>(quietHistoryGravityBase) + static_cast<int>(quietHistoryDepthMul) * depth, static_cast<int>(quietHistoryBonusCap));
                     updateQuietHistory(board, move, quietHistoryBonus);
 
-                    int continuationHistoryBonus = std::min(static_cast<int>(continuationHistoryGravityBase) + static_cast<int>(continuationHistoryDepthMultiplier) * depth, static_cast<int>(continuationHistoryBonusCap));
+                    int continuationHistoryBonus = std::min(static_cast<int>(continuationHistoryGravityBase) + static_cast<int>(continuationHistoryDepthMul) * depth, static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
                     updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply);
 
-                    int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMultiplier) * depth, static_cast<int>(quietHistoryMalusMax));
-                    int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMultiplier) * depth, static_cast<int>(continuationHistoryMalusMax));
+                    int quietHistoryMalus = std::min(static_cast<int>(quietHistoryMalusBase) + static_cast<int>(quietHistoryMalusDepthMul) * depth, static_cast<int>(quietHistoryMalusMax));
+                    int continuationHistoryMalus = std::min(static_cast<int>(continuationHistoryMalusBase) + static_cast<int>(continuationHistoryMalusDepthMul) * depth, static_cast<int>(continuationHistoryMalusMax));
                     // History malus
                     for (int x = 0; x < movesMadeCounter; x++)
                     {
@@ -561,7 +561,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
-        int bonus = std::clamp((int)(bestScore - staticEval) * depth * pawnCorrectionHistoryDepthAdder / pawnCorrectionHistoryDepthDiv, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * pawnCorrectionHistoryDepthAdd / pawnCorrectionHistoryDepthDiv, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         updatePawnCorrectionHistory(bonus, board);
     }
 
@@ -738,7 +738,7 @@ int Search::aspiration(int depth, int score, Board &board)
     int delta = aspDelta;
     int alpha = std::max(-infinity, score - delta);
     int beta = std::min(infinity, score + delta);
-    double finalASPMultiplier = aspMultiplier / 100.0;
+    double finalASPMultiplier = aspMul / 100.0;
 
     while (true)
     {
@@ -849,7 +849,7 @@ void Search::initLMR()
 int Search::scaleOutput(int rawEval, Board &board)
 {
     int gamePhase = materialScaleKnight * board.pieces(PieceType::KNIGHT).count() + materialScaleBishop * board.pieces(PieceType::BISHOP).count() + materialScaleRook * board.pieces(PieceType::ROOK).count() + materialScaleQueen * board.pieces(PieceType::QUEEN).count();
-    return rawEval * (materialScaleGamePhaseAdder + gamePhase) / materialScaleGamePhaseDivisor;
+    return rawEval * (materialScaleGamePhaseAdd + gamePhase) / materialScaleGamePhaseDiv;
 }
 
 std::string Search::getPVLine()
@@ -885,7 +885,7 @@ void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, in
 {
     // Continuation History is indexed as follows
     // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
-    int scaledBonus = (bonus - getContinuationHistory(piece, move, ply - 1) * std::abs(bonus) / continuationHistoryDivisor);
+    int scaledBonus = (bonus - getContinuationHistory(piece, move, ply - 1) * std::abs(bonus) / continuationHistoryDiv);
 
     if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {
