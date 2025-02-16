@@ -429,7 +429,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
             else if (hashedScore >= beta)
             {
-                extensions -= 2;
+                extensions -= singularTTSub;
             }
         }
 
