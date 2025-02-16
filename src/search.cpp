@@ -33,7 +33,7 @@ DEFINE_PARAM_B(rfpDiv, 2, 1, 5);
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSub, 97, 20);
 DEFINE_PARAM_S(winningDepthMul, 24, 4);
-DEFINE_PARAM_B(winningDepthDiv, 3, 1, 20);
+DEFINE_PARAM_B(winningDepthDiv, 3, 1, 12);
 DEFINE_PARAM_S(winningDepthSub, 4, 1);
 DEFINE_PARAM_B(winningCount, 2, 1, 6);
 
@@ -103,7 +103,7 @@ DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
 DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
 
 // Singular Extension
-DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
+DEFINE_PARAM_B(singularMinDepth, 6, 1, 8);
 DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
 DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
 DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
