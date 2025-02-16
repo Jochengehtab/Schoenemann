@@ -1,95 +1,66 @@
-/*
-  This file is part of the Schoenemann chess engine written by Jochengehtab
-
-  Copyright (C) 2024-2025 Jochengehtab
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #pragma once
 
 #include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>
 
-// Forward declaration of the struct
-struct EngineParameter;
+// Tuner taken from Obsidian
+// Thx gabe
 
-EngineParameter *findEngineParameterByName(std::string name);
-void addEngineParameter(EngineParameter *parameter);
+struct EngineParam;
 
-// UCI Stuff
-std::string engineParameterToUCI();
-std::string engineParameterToSpsaInput();
+void registerParam(EngineParam *param);
 
-struct EngineParameter
+EngineParam *findParam(std::string name);
+
+std::string paramsToUci();
+
+std::string paramsToSpsaInput();
+
+struct EngineParam
 {
-    // The order of this values is importatnt
-    std::string name;
-    int value;
-    int min;
-    int max;
+  std::string name;
+  int value;
+  int min, max;
 
-    operator int()
+  EngineParam(std::string _name, int _value, int _min, int _max) : name(_name), value(_value), min(_min), max(_max)
+  {
+    if (_max < _min)
     {
-        return value;
+      std::cout << "[Warning] Parameter " << _name << " has invalid bounds" << std::endl;
     }
 
-    EngineParameter(std::string parameterName, int startValue, int step)
-    : name(parameterName), value(startValue)
-    {
-        this->max = startValue + 15 * step;
-        this->min = startValue - 15 * step;
+    registerParam(this);
+  }
 
-        if (this->max < this->min)
-        {
-            std::cout << "Max Value is smaller than the Min value" << std::endl;
-        }
+  EngineParam(std::string _name, int _value, int _step) : name(_name), value(_value)
+  {
+    this->min = _value - 10 * _step;
+    this->max = _value + 10 * _step;
 
-        addEngineParameter(this);
-    }
+    registerParam(this);
+  }
 
-    EngineParameter(std::string parameterName, int startValue, int minValue, int maxValue)
-    : name(parameterName), value(startValue), min(minValue), max(maxValue)
-    {
-        if (this->max < this->min)
-        {
-            std::cout << "Max Value is smaller than the Min value" << std::endl;
-        }
-
-        addEngineParameter(this);
-    }
+  inline operator int() const
+  {
+    return value;
+  }
 };
-
-extern int SEE_PIECE_VALUES[7];
-extern int PIECE_VALUES[7];
 
 #define DO_TUNING
 
 #ifdef DO_TUNING
 
-// The # turns parameterName into a string
+constexpr bool doTuning = true;
 
-#define DEFINE_PARAM_S(parameterName, startValue, step) EngineParameter parameterName(#parameterName, startValue, step)
+#define DEFINE_PARAM_S(_name, _value, _step) EngineParam _name(#_name, _value, _step)
 
-#define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) EngineParameter parameterName(#parameterName, startValue, minValue, maxValue)
+#define DEFINE_PARAM_B(_name, _value, _min, _max) EngineParam _name(#_name, _value, _min, _max)
 
 #else
 
-#define DEFINE_PARAM_S(parameterName, startValue, step) constexpr int parameterName = startValue
+constexpr bool doTuning = false;
 
-#define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) constexpr int parameterName = startValue
+#define DEFINE_PARAM_S(_name, _value, _step) constexpr int _name = _value
 
-#endif
+#define DEFINE_PARAM_B(_name, _value, _min, _max) constexpr int _name = _value
+
+#endif // DO_TUNING

@@ -21,6 +21,7 @@
 
 #include "consts.h"
 #include "tune.h"
+#include "tuneconsts.h"
 
 int getPieceValue(const Board &board, Move &move);
 bool see(const Board &board, Move &move, int cutoff);

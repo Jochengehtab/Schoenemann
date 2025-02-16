@@ -27,6 +27,7 @@
 #include "consts.h"
 #include "see.h"
 #include "tune.h"
+#include "tuneconsts.h"
 
 struct SearchStack
 {
