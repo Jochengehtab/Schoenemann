@@ -405,7 +405,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         if (!isSingularSearch && hashedMove == move && depth >= singularMinDepth && hashedDepth >= depth - singularHashDepthReuction && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
         {
             const int singularBeta = hashedScore - depth * singularBetaDepthMul;
-            const std::uint8_t singularDepth = (depth - singularDepthSub) / singularDepthDiv;
+            const std::uint8_t singularDepth = (depth - 1) / 2;
 
             stack[ply].exludedMove = move;
             int singularScore = pvs(singularBeta - 1, singularBeta, singularDepth, ply, board, isCutNode);
