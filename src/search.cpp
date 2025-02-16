@@ -172,7 +172,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // If depth is 0 we drop into qs to get a neutral position
-    if (depth == 0)
+    if (depth <= 0)
     {
         return qs(alpha, beta, board, ply);
     }
