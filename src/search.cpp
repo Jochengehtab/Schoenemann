@@ -43,7 +43,7 @@ DEFINE_PARAM_S(probeCutMarginAdd, 76, 10);
 DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
 DEFINE_PARAM_S(nmpDepthAdd, 2, 1);
 DEFINE_PARAM_B(nmpDepthDiv, 3, 1, 10);
-DEFINE_PARAM_S(nmpTweak, 1, 12);
+DEFINE_PARAM_B(nmpTweak, 1, 1, 12);
 
 // Razoring
 DEFINE_PARAM_B(razorDepth, 1, 1, 10);
@@ -107,9 +107,9 @@ DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
 DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
 DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
 DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
-DEFINE_PARAM_S(singularDepthSub, 1, 15);
+DEFINE_PARAM_B(singularDepthSub, 1, -2, 15);
 DEFINE_PARAM_B(singularDepthDiv, 2, 1, 20);
-DEFINE_PARAM_S(singularTTSub, 2, 10);
+DEFINE_PARAM_B(singularTTSub, 2, 1, 14);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
 {
