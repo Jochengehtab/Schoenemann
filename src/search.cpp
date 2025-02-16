@@ -94,7 +94,7 @@ DEFINE_PARAM_B(materialScaleBishop, 3, 1, 33);
 DEFINE_PARAM_B(materialScaleRook, 5, 1, 40);
 DEFINE_PARAM_B(materialScaleQueen, 18, 1, 60);
 DEFINE_PARAM_B(materialScaleGamePhaseAdd, 169, 25, 350);
-DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 600);
+DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 50, 600);
 
 // Pawn CorrectionHistory
 DEFINE_PARAM_B(correctionValueDiv, 30, 15, 600);
@@ -171,7 +171,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // If depth is 0 we drop into qs to get a neutral position
-    if (depth == 0)
+    if (depth <= 0)
     {
         return qs(alpha, beta, board, ply);
     }
