@@ -33,12 +33,11 @@ DEFINE_PARAM_B(rfpDivisory, 2, 1, 10);
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSub, 97, 20);
 DEFINE_PARAM_S(winningDepthMul, 24, 4);
-
-DEFINE_PARAM_S(probeCutMarginAdd, 76, 10);
-
 DEFINE_PARAM_B(winningDepthDiv, 3, 1, 20);
 DEFINE_PARAM_S(winningDepthSub, 4, 1);
 DEFINE_PARAM_B(winningCount, 2, 1, 6);
+
+DEFINE_PARAM_S(probeCutMarginAdd, 76, 10);
 
 // Null Move Prunning
 DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
