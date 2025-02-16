@@ -24,7 +24,7 @@ std::chrono::time_point start = std::chrono::steady_clock::now();
 DEFINE_PARAM_S(probeCutBetaAdd, 460, 25);
 DEFINE_PARAM_S(probeCuteSub, 4, 1);
 
-DEFINE_PARAM_S(iidDepth, 3, 1);
+DEFINE_PARAM_B(iidDepth, 3, 1, 8);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
 DEFINE_PARAM_S(rfpEvalSub, 80, 6);
@@ -68,10 +68,10 @@ DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
 DEFINE_PARAM_B(lmrCutNodeMul, 2, 1, 5);
 
 DEFINE_PARAM_S(iirReduction, 2, 1);
-DEFINE_PARAM_S(fpCutoff, 2, 1);
+DEFINE_PARAM_B(fpCutoff, 2, 1, 12);
 
 // Quiet History
-DEFINE_PARAM_S(quietHistoryGravityBase, 31, 5);
+DEFINE_PARAM_B(quietHistoryGravityBase, 31, 1, 125);
 DEFINE_PARAM_S(quietHistoryDepthMul, 204, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 1734, 200);
 DEFINE_PARAM_B(quietHistoryDivisor, 28711, 10000, 50000);
@@ -81,7 +81,7 @@ DEFINE_PARAM_S(quietHistoryMalusDepthMul, 171, 25);
 
 // Continuation Hisotry
 DEFINE_PARAM_B(continuationHistoryDiv, 28156, 10000, 50000);
-DEFINE_PARAM_S(continuationHistoryMalusBase, 25, 6);
+DEFINE_PARAM_B(continuationHistoryMalusBase, 25, 1, 125);
 DEFINE_PARAM_S(continuationHistoryMalusMax, 2172, 150);
 DEFINE_PARAM_S(continuationHistoryMalusDepthMul, 185, 25);
 DEFINE_PARAM_S(continuationHistoryGravityBase, 26, 5);
@@ -89,11 +89,11 @@ DEFINE_PARAM_S(continuationHistoryDepthMul, 208, 25);
 DEFINE_PARAM_S(continuationHistoryBonusCap, 1959, 200);
 
 // Material Scaling
-DEFINE_PARAM_S(materialScaleKnight, 3, 1);
-DEFINE_PARAM_S(materialScaleBishop, 3, 1);
-DEFINE_PARAM_S(materialScaleRook, 5, 1);
-DEFINE_PARAM_S(materialScaleQueen, 18, 3);
-DEFINE_PARAM_S(materialScaleGamePhaseAdd, 169, 25);
+DEFINE_PARAM_B(materialScaleKnight, 3, 1, 30);
+DEFINE_PARAM_B(materialScaleBishop, 3, 1, 33);
+DEFINE_PARAM_B(materialScaleRook, 5, 1, 40);
+DEFINE_PARAM_B(materialScaleQueen, 18, 1, 60);
+DEFINE_PARAM_B(materialScaleGamePhaseAdd, 169, 25, 350);
 DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 600);
 
 // Pawn CorrectionHistory
