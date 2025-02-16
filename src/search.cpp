@@ -28,7 +28,7 @@ DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
 DEFINE_PARAM_S(rfpEvalSub, 80, 6);
-DEFINE_PARAM_B(rfpDivisory, 2, 1, 10);
+DEFINE_PARAM_B(rfpDiv, 2, 1, 5);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSub, 97, 20);
@@ -94,7 +94,7 @@ DEFINE_PARAM_S(materialScaleBishop, 3, 1);
 DEFINE_PARAM_S(materialScaleRook, 5, 1);
 DEFINE_PARAM_S(materialScaleQueen, 18, 3);
 DEFINE_PARAM_S(materialScaleGamePhaseAdd, 169, 25);
-DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 700);
+DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 600);
 
 // Pawn CorrectionHistory
 DEFINE_PARAM_B(correctionValueDiv, 30, 1, 600);
@@ -107,8 +107,8 @@ DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
 DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
 DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
 DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
-DEFINE_PARAM_B(singularDepthSub, 1, 1, 12);
-DEFINE_PARAM_B(singularDepthDiv, 2, 1, 20);
+DEFINE_PARAM_B(singularDepthSub, 1, 1, 6);
+DEFINE_PARAM_B(singularDepthDiv, 2, 1, 8);
 DEFINE_PARAM_B(singularTTSub, 2, 1, 14);
 
 int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
@@ -271,7 +271,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Reverse futility pruning
     if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSub * (depth - improving) >= beta)
     {
-        return (staticEval + beta) / rfpDivisory;
+        return (staticEval + beta) / rfpDiv;
     }
 
     // Razoring
