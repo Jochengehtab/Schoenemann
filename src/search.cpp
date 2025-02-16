@@ -272,7 +272,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Reverse futility pruning
     if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSub * (depth - improving) >= beta)
     {
-        return (staticEval + beta) / 2;
+        return (staticEval + beta) / rfpDivisory;
     }
 
     // Razoring
