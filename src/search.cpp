@@ -103,7 +103,7 @@ DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
 DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
 
 // Singular Extension
-DEFINE_PARAM_B(singularMinDepth, 6, 1, 8);
+DEFINE_PARAM_B(singularMinDepth, 6, 4, 12);
 DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
 DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
 DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
