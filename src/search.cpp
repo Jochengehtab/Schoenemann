@@ -28,6 +28,7 @@ DEFINE_PARAM_S(iidDepth, 3, 1);
 
 DEFINE_PARAM_S(rfpDepth, 5, 1);
 DEFINE_PARAM_S(rfpEvalSub, 80, 6);
+DEFINE_PARAM_B(rfpDiv, 2, 1, 5);
 
 DEFINE_PARAM_S(winningDepth, 6, 1);
 DEFINE_PARAM_S(winningEvalSub, 97, 20);
@@ -64,7 +65,7 @@ DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 240, 1, 700);
 DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
-DEFINE_PARAM_S(lmrCutNodeMul, 2, 15);
+DEFINE_PARAM_B(lmrCutNodeMul, 2, 1, 5);
 
 DEFINE_PARAM_S(iirReduction, 2, 1);
 DEFINE_PARAM_S(fpCutoff, 2, 1);
@@ -270,7 +271,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // Reverse futility pruning
     if (!isSingularSearch && !inCheck && depth <= rfpDepth && staticEval - rfpEvalSub * (depth - improving) >= beta)
     {
-        return (staticEval + beta) / 2;
+        return (staticEval + beta) / rfpDiv;
     }
 
     // Razoring
