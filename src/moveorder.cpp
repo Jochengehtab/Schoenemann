@@ -19,7 +19,7 @@
 
 #include "moveorder.h"
 
-DEFINE_PARAM_S(mvaLvvMultiplyer, 103, 20);
+DEFINE_PARAM_B(mvaLvvMultiplyer, 103, 65, 170);
 
 void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int ply)
 {
