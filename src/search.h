@@ -33,7 +33,7 @@ struct SearchStack
 	int staticEval;
 	int pvLength;
 	bool inCheck;
-	std::array<Move, 150> pvLine;
+	std::array<Move, 256> pvLine;
 	Move killerMove = Move::NULL_MOVE;
 	PieceType previousMovedPiece = PieceType::NONE;
 	Move previousMove = Move::NULL_MOVE;
@@ -45,7 +45,7 @@ class Search
 public:
 	const int infinity = 32767;
 	const int CORRHIST_LIMIT = 1024;
-	const int MAX_PLY = 150;
+	const int MAX_PLY = 256;
 
 	Move rootBestMove = Move::NULL_MOVE;
 
@@ -66,8 +66,8 @@ public:
 	std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
 	std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
 	std::array<std::array<int, 2>, 16384> pawnCorrectionHistory;
-	std::array<std::array<std::uint8_t, 218>, 150> reductions;
-	std::array<SearchStack, 150> stack;
+	std::array<std::array<std::uint8_t, 218>, 256> reductions;
+	std::array<SearchStack, 256> stack;
 
 	const int pawnCorrectionHistorySize = 16384;
 
