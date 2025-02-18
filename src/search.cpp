@@ -62,7 +62,7 @@ DEFINE_PARAM_S(aspDelta, 26, 6);
 DEFINE_PARAM_B(aspMul, 134, 1, 450);
 DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 
-// Late Move Reductions
+// Late Move Reductions 
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 240, 1, 700);
 DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
