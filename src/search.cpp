@@ -25,8 +25,8 @@ DEFINE_PARAM_B(probeCutBetaAdd, 454, 250, 800);
 DEFINE_PARAM_B(probeCutSub, 4, 1, 8);
 DEFINE_PARAM_B(probeCutMarginAdd, 76, 40, 120);
 
-DEFINE_PARAM_B(iidDepth, 5, 1, 8);
-DEFINE_PARAM_B(iirReduction, 4, 1, 4);
+DEFINE_PARAM_B(iidDepth, 4, 1, 8);
+DEFINE_PARAM_B(iirReduction, 2, 1, 4);
 
 DEFINE_PARAM_B(rfpDepth, 6, 1, 9);
 DEFINE_PARAM_B(rfpEvalSub, 116, 25, 160);
@@ -46,7 +46,7 @@ DEFINE_PARAM_B(nmpDepthDiv, 6, 1, 10);
 DEFINE_PARAM_B(nmpTweak, 1, 1, 12);
 
 // Razoring
-DEFINE_PARAM_B(razorDepth, 4, 1, 10);
+DEFINE_PARAM_B(razorDepth, 2, 1, 10);
 DEFINE_PARAM_B(razorAlpha, 140, 100, 425);
 DEFINE_PARAM_B(razorDepthMul, 36, 9, 100);
 
@@ -88,10 +88,10 @@ DEFINE_PARAM_B(continuationHistoryDepthMul, 189, 90, 400);
 DEFINE_PARAM_B(continuationHistoryBonusCap, 1643, 1000, 3200);
 
 // Material Scaling
-DEFINE_PARAM_B(materialScaleKnight, 14, 1, 30);
+DEFINE_PARAM_B(materialScaleKnight, 4, 1, 30);
 DEFINE_PARAM_B(materialScaleBishop, 5, 1, 33);
-DEFINE_PARAM_B(materialScaleRook, 6, 2, 40);
-DEFINE_PARAM_B(materialScaleQueen, 42, 8, 60);
+DEFINE_PARAM_B(materialScaleRook, 7, 2, 40);
+DEFINE_PARAM_B(materialScaleQueen, 16, 8, 60);
 DEFINE_PARAM_B(materialScaleGamePhaseAdd, 210, 50, 350);
 DEFINE_PARAM_B(materialScaleGamePhaseDiv, 285, 100, 600);
 

@@ -12,6 +12,6 @@ DEFINE_PARAM_B(piecePawn, 71, 40, 175);
 DEFINE_PARAM_B(pieceKnight, 200, 170, 450);
 DEFINE_PARAM_B(pieceBishop, 214, 185, 500);
 DEFINE_PARAM_B(pieceRook, 626, 350, 875);
-DEFINE_PARAM_B(pieceQueen, 585, 400, 1000);
+DEFINE_PARAM_B(pieceQueen, 858, 400, 1000);
 
 int PIECE_VALUES[7] = {piecePawn, pieceKnight, pieceBishop, pieceRook, pieceQueen, 15000, 0};
