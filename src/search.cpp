@@ -884,14 +884,21 @@ int Search::getContinuationHistory(PieceType piece, Move move, int ply)
 void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply)
 {
     // Continuation History is indexed as follows
-    // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
-    int scaledBonus = (bonus - getContinuationHistory(piece, move, ply - 1) * std::abs(bonus) / continuationHistoryDiv);
+    // | Ply  Moved Piece From | Ply Move To Index | Moved Piece From | Move To Index |
+    int scaledBonus = (bonus - (getContinuationHistory(piece, move, ply - 1) + getContinuationHistory(piece, move, ply - 2)) * std::abs(bonus) / continuationHistoryDiv);
 
     if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
     {
         // Continuation History is indexed as follows
         // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
         continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
+    }
+
+    if (stack[ply - 2].previousMovedPiece != PieceType::NONE)
+    {
+        // Continuation History is indexed as follows
+        // | Ply - 2 Moved Piece From | Ply - 2 Move To Index | Moved Piece From | Move To Index |
+        continuationHistory[stack[ply - 2].previousMovedPiece][stack[ply - 2].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
     }
 }
 

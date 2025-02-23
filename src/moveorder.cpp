@@ -65,6 +65,11 @@ void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int
 			{
 				scores[i] += searcher.getContinuationHistory(board.at(move.from()).type(), move, ply - 1);
 			}
+
+			if (searcher.stack[ply - 2].previousMovedPiece != PieceType::NONE)
+			{
+				scores[i] += searcher.getContinuationHistory(board.at(move.from()).type(), move, ply - 2);
+			}
 		}
 	}
 }
