@@ -62,7 +62,7 @@ DEFINE_PARAM_S(aspDelta, 26, 6);
 DEFINE_PARAM_B(aspMul, 134, 1, 450);
 DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
 
-// Late Move Reductions 
+// Late Move Reductions
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
 DEFINE_PARAM_B(lmrDivisor, 240, 1, 700);
 DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
@@ -777,7 +777,6 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     Move bestMoveThisIteration = Move::NULL_MOVE;
 
     isNormalSearch = false;
-    bool hasOneLegalMove = Move::NULL_MOVE;
 
     if (isInfinite)
     {
@@ -790,11 +789,23 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     {
         scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
+        if (i > 6)
+        {
+            // Update the previous best move
+            previousBestMove = bestMoveThisIteration;
+        }
+        
+        // Get the new best move
         bestMoveThisIteration = rootBestMove;
-        hasOneLegalMove = bestMoveThisIteration != Move::NULL_MOVE && bestMoveThisIteration != Move::NO_MOVE;
 
-        // This is ugly but whitout it i get time losses etc
-        if (!hasOneLegalMove)
+        if (i > 6)
+        {
+            updateBestMoveStability(bestMoveThisIteration, previousBestMove);
+        }
+        
+
+        // Perform a depth 1 search if we don't have enough time
+        if (bestMoveThisIteration == Move::NULL_MOVE)
         {
             searcher.hardLimit = 10000;
             searcher.softLimit = 10000;
@@ -805,6 +816,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
             break;
         }
 
+        // Only report statistic if we are not in a fixed node search beacuse of datagen
         if (!hasNodeLimit)
         {
             std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
@@ -820,7 +832,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
 
-        if ((hasOneLegalMove && (shouldStopID(start) && !isInfinite)) || i == 255)
+        if ((shouldStopID(start) && !isInfinite) || i == 255)
         {
             if (!hasNodeLimit)
             {

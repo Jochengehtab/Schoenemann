@@ -23,6 +23,8 @@
 
 void getTimeForMove();
 
+void updateBestMoveStability(Move bestMove, Move previousBestMove);
+
 bool shouldStopSoft(std::chrono::steady_clock::time_point start);
 
 bool shouldStopID(std::chrono::steady_clock::time_point start);

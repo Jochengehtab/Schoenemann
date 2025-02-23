@@ -48,6 +48,7 @@ public:
 	const int MAX_PLY = 256;
 
 	Move rootBestMove = Move::NULL_MOVE;
+	Move previousBestMove = Move::NULL_MOVE;
 
 	bool shouldStop = false;
 	bool isNormalSearch = true;
