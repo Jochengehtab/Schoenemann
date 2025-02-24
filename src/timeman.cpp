@@ -36,7 +36,7 @@ void getTimeForMove()
 
 void updateBestMoveStability(Move bestMove, Move previousBestMove)
 {
-  if (bestMove == previousBestMove)
+  if (bestMove == previousBestMove && bestMoveStabilityCount < 10)
   {
     bestMoveStabilityCount++;
   }
