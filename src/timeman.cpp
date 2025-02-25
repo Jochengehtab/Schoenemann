@@ -30,7 +30,7 @@ void getTimeForMove()
   int maxTime = (int)(searcher.timeLeft * 0.76);
 
   searcher.hardLimit = std::min(maxTime, (int)(baseTime * 3.04));
-  double bmFactor = 1.0 - 0.05 * bestMoveStabilityCount;
+  double bmFactor = 1.3 - 0.05 * bestMoveStabilityCount;
   searcher.softLimit = std::min(maxTime, (int)((baseTime * 0.76 * bmFactor)));
 }
 
