@@ -223,7 +223,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // Initial Iterative Deepening
-    if ((ply > 0) && (pvNode || isCutNode) && (!isNullptr || hashedMove == Move::NULL_MOVE || hashedDepth < depth - iidDepth) && depth >= iidDepth)
+    if ((ply > 0) && (pvNode || isCutNode) && (!isNullptr || hashedMove == Move::NULL_MOVE || hashedDepth < depth - 4) && depth >= 4)
     {
         depth -= 1;
     }
