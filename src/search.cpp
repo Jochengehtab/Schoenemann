@@ -464,6 +464,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
                 lmr += isCutNode * lmrCutNodeMul;
+                lmr += (improving && pvNode);
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
