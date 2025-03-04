@@ -613,7 +613,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     const bool isNullptr = entry == nullptr ? true : false;
     const bool inCheck = board.inCheck();
 
-    int hashedScore = 0;
+    int hashedScore = NO_VALUE;
     int standPat = NO_VALUE;
     short hashedType = 0;
 
@@ -631,7 +631,10 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             return hashedScore;
         }
     }
-    standPat = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
+    if (standPat == NO_VALUE)
+    {
+        standPat = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
+    }
 
     int rawEval = standPat;
     standPat = std::clamp(correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
@@ -714,7 +717,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     {
         transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, standPat);
     }
-    transpositionTabel.storeEvaluation(zobristKey, 0, bestScore >= beta ? LOWER_BOUND : UPPER_BOUND, transpositionTabel.scoreToTT(bestScore, ply), bestMoveInQs, rawEval);
 
     return bestScore;
 }
