@@ -626,25 +626,12 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode && hashedScore != NO_VALUE && ((hashedType == EXACT) ||
-            (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-            (hashedType == LOWER_BOUND && hashedScore >= beta)))
+        if (!pvNode && hashedScore != NO_VALUE && ((hashedType == EXACT) || (hashedType == UPPER_BOUND && hashedScore <= alpha) || (hashedType == LOWER_BOUND && hashedScore >= beta)))
         {
             return hashedScore;
         }
     }
-
-    if (!inCheck && ((hashedType == EXACT) ||
-    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-    (hashedType == LOWER_BOUND && hashedScore >= beta)))
-    {
-        standPat = hashedScore;
-    }
-
-    if (standPat == NO_VALUE)
-    {
-        standPat = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
-    }
+    standPat = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
 
     int rawEval = standPat;
     standPat = std::clamp(correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
