@@ -626,18 +626,17 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
             standPat = entry->eval;
         }
 
-        if (!pvNode)
+        if (!pvNode && hashedScore != NO_VALUE && ((hashedType == EXACT) ||
+            (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+            (hashedType == LOWER_BOUND && hashedScore >= beta)))
         {
-            if ((hashedType == EXACT) ||
-                (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                (hashedType == LOWER_BOUND && hashedScore >= beta))
-            {
-                return hashedScore;
-            }
+            return hashedScore;
         }
     }
 
-    if (!inCheck)
+    if (!inCheck && ((hashedType == EXACT) ||
+    (hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+    (hashedType == LOWER_BOUND && hashedScore >= beta)))
     {
         standPat = hashedScore;
     }
