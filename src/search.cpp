@@ -802,19 +802,6 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         {
             updateBestMoveStability(bestMoveThisIteration, previousBestMove);
         }
-        
-
-        // Perform a depth 1 search if we don't have enough time
-        if (bestMoveThisIteration == Move::NULL_MOVE)
-        {
-            searcher.hardLimit = 10000;
-            searcher.softLimit = 10000;
-            isNormalSearch = true;
-            shouldStop = false;
-            pvs(-infinity, infinity, 1, 0, board, false);
-            std::cout << "bestmove " << uci::moveToUci(rootBestMove) << std::endl;
-            break;
-        }
 
         // Only report statistic if we are not in a fixed node search beacuse of datagen
         if (!hasNodeLimit)
