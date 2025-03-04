@@ -60,7 +60,7 @@ DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 18, 10);
 DEFINE_PARAM_S(aspDelta, 26, 6);
 // DEFINE_PARAM_B(aspDivisor, 2, 2, 8); When tuned this triggers crashes for some reason :(
 DEFINE_PARAM_B(aspMul, 134, 1, 450);
-DEFINE_PARAM_B(aspEntryDepth, 7, 6, 12);
+DEFINE_PARAM_B(aspDepth, 7, 6, 12);
 
 // Late Move Reductions
 DEFINE_PARAM_B(lmrBase, 78, 1, 300);
@@ -75,7 +75,7 @@ DEFINE_PARAM_S(fpCutoff, 2, 1);
 DEFINE_PARAM_S(quietHistoryGravityBase, 31, 5);
 DEFINE_PARAM_S(quietHistoryDepthMul, 204, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 1734, 200);
-DEFINE_PARAM_B(quietHistoryDivisor, 28711, 10000, 50000);
+DEFINE_PARAM_B(quietHistoryDiv, 28711, 10000, 50000);
 DEFINE_PARAM_S(quietHistoryMalusBase, 15, 6);
 DEFINE_PARAM_S(quietHistoryMalusMax, 1900, 150);
 DEFINE_PARAM_S(quietHistoryMalusDepthMul, 171, 25);
@@ -787,14 +787,14 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
     for (int i = 1; i <= 256; i++)
     {
-        scoreData = i >= aspEntryDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
+        scoreData = i >= aspDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         if (i > 6)
         {
             // Update the previous best move
             previousBestMove = bestMoveThisIteration;
         }
-        
+
         // Get the new best move
         bestMoveThisIteration = rootBestMove;
 
@@ -847,7 +847,11 @@ void Search::initLMR()
 
 int Search::scaleOutput(int rawEval, Board &board)
 {
-    int gamePhase = materialScaleKnight * board.pieces(PieceType::KNIGHT).count() + materialScaleBishop * board.pieces(PieceType::BISHOP).count() + materialScaleRook * board.pieces(PieceType::ROOK).count() + materialScaleQueen * board.pieces(PieceType::QUEEN).count();
+    int gamePhase = materialScaleKnight * board.pieces(PieceType::KNIGHT).count() +
+                    materialScaleBishop * board.pieces(PieceType::BISHOP).count() +
+                    materialScaleRook * board.pieces(PieceType::ROOK).count() +
+                    materialScaleQueen * board.pieces(PieceType::QUEEN).count();
+
     return rawEval * (materialScaleGamePhaseAdd + gamePhase) / materialScaleGamePhaseDiv;
 }
 
@@ -872,7 +876,7 @@ void Search::updateQuietHistory(Board &board, Move move, int bonus)
         [board.sideToMove()]
         [board.at(move.from()).type()]
         [move.to().index()] +=
-        (bonus - getQuietHistory(board, move) * std::abs(bonus) / quietHistoryDivisor);
+        (bonus - getQuietHistory(board, move) * std::abs(bonus) / quietHistoryDiv);
 }
 
 int Search::getContinuationHistory(PieceType piece, Move move, int ply)
