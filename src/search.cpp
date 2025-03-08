@@ -357,7 +357,16 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         board.unmakeNullMove();
         if (score >= beta)
         {
-            return score;
+            if (depth < 12)
+            {
+                return score;
+            }
+            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, false);
+
+            if (score >= beta)
+            {
+                return score;
+            }
         }
     }
 
