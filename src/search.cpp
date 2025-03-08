@@ -276,7 +276,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     // Probecut
-    int probeCutBeta = beta + 200;
+    int probeCutBeta = beta + 250;
     if (!pvNode && !isSingularSearch && depth > 3 && beta < infinity && !isNullptr && !(hashedDepth >= depth - 3 && hashedScore < probeCutBeta))
     {
         Movelist moveList;
