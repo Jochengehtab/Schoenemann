@@ -275,6 +275,40 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         return (staticEval + beta) / rfpDivisory;
     }
 
+    // Probecut
+    int probeCutBeta = beta + 200;
+    if (!pvNode && !isSingularSearch && depth > 3 && beta < infinity && !(hashedDepth >= depth - 3 && hashedScore < probeCutBeta))
+    {
+        Movelist moveList;
+        movegen::legalmoves(moveList, board);
+        for (int i = 0; i < moveList.size(); i++)
+        {
+            Move move = moveList[i];
+            // Update the the piece and the move for continuationHistory
+            stack[ply].previousMovedPiece = board.at(move.from()).type();
+            stack[ply].previousMove = move; 
+
+            board.makeMove(move);
+
+            // First make a verfication qSearch
+            int score = -qs(-probeCutBeta, -probeCutBeta + 1, board, ply);
+
+            if (score >= probeCutBeta)
+            {
+                score = -pvs(-probeCutBeta, -probeCutBeta + 1, depth - 4, ply + 1, board, !isCutNode);
+            }
+            
+
+            board.unmakeMove(move);
+
+            if (score >= probeCutBeta)
+            {
+                return score;
+            }
+            
+        }
+    }
+
     // Razoring
     if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= razorDepth)
     {
