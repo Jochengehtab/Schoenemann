@@ -277,7 +277,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     // Probecut
     int probeCutBeta = beta + 200;
-    if (!pvNode && !isSingularSearch && depth > 3 && beta < infinity && !(hashedDepth >= depth - 3 && hashedScore < probeCutBeta))
+    if (!pvNode && !isSingularSearch && depth > 3 && beta < infinity && !isNullptr && !(hashedDepth >= depth - 3 && hashedScore < probeCutBeta))
     {
         Movelist moveList;
         movegen::legalmoves(moveList, board);
@@ -328,6 +328,49 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             if (qscore <= ralpha)
             {
                 return qscore;
+            }
+        }
+    }
+
+    // Idea by Laser
+    // If we can make a winning move and can confirm that when we do a lower depth search
+    // it causes a beta cutoff we can make that beta cutoff
+    if (!isSingularSearch && !pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSub - winningDepthMul * depth && std::abs(beta) < infinity)
+    {
+        int probCutMargin = beta + probeCutMarginAdd;
+        int probCutCount = 0;
+
+        Movelist moveList;
+        movegen::legalmoves(moveList, board);
+
+        int scoreMoves[218] = {0};
+        // Sort the list
+        orderMoves(moveList, entry, board, scoreMoves, ply);
+
+        for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
+        {
+            probCutCount++;
+            Move move = sortByScore(moveList, scoreMoves, i);
+
+            // We don't want to prune the hashed move
+            if (move == hashedMove)
+            {
+                continue;
+            }
+
+            // Update the the piece and the move for continuationHistory
+            stack[ply].previousMovedPiece = board.at(move.from()).type();
+            stack[ply].previousMove = move;
+
+            board.makeMove(move);
+
+            int score = -pvs(-probCutMargin, -probCutMargin + 1, depth - depth / winningDepthDiv - winningDepthSub, ply + 1, board, false);
+
+            board.unmakeMove(move);
+
+            if (score >= probCutMargin)
+            {
+                return score;
             }
         }
     }
