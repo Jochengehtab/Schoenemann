@@ -361,7 +361,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             {
                 return score;
             }
-            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, false);
+            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, !isCutNode);
 
             if (score >= beta)
             {
