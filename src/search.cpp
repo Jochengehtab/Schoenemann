@@ -435,11 +435,15 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             {
                 return singularBeta;
             }
-
             else if (hashedScore >= beta)
             {
                 extensions -= singularTTSub;
             }
+            else if (isCutNode)
+            {
+                extensions -= 1;
+            }
+            
         }
 
         // Update the the piece and the move for continuationHistory
