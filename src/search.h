@@ -60,6 +60,7 @@ public:
 	int timeLeft = 0;
 	int increment = 0;
 	int nodes = 0;
+	int previousBestScore = 0;
 
 	long hardLimit = 0;
 	long softLimit = 0;

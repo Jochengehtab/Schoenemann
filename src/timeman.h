@@ -24,6 +24,8 @@
 void getTimeForMove();
 
 void updateBestMoveStability(Move bestMove, Move previousBestMove);
+void updateEvalStability(int score, int previousScore);
+
 
 bool shouldStopSoft(std::chrono::steady_clock::time_point start);
 
