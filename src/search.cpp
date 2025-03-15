@@ -832,6 +832,12 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
             updateBestMoveStability(bestMoveThisIteration, previousBestMove);
         }
 
+        if (i > 7)
+        {
+            updateEvalStability(scoreData, previousBestScore);
+        }
+        
+
         // Only report statistic if we are not in a fixed node search beacuse of datagen
         if (!hasNodeLimit)
         {
