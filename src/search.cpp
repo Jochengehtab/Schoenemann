@@ -409,6 +409,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
             continue;
         }
 
+        // Late move prunning
+        if (!pvNode && isQuiet && bestScore > -infinity && moveCounter > (6 + 2 * depth * depth) && depth <= 3)
+        {
+            break;
+        }
+
         int extensions = 0;
 
         if (!isSingularSearch && hashedMove == move && depth >= singularMinDepth && hashedDepth >= depth - singularHashDepthReuction && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
