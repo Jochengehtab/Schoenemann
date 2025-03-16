@@ -41,17 +41,17 @@ jobs:
 
       - name: Check for Bench number in commit message
         id: bench-check
-        shell: bash
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           echo "Commit message: $COMMIT_MSG"
           if [[ $COMMIT_MSG =~ Bench[[:space:]]+([0-9]+) ]]; then
             BENCH_NUM="${BASH_REMATCH[1]}"
             echo "Found bench number: $BENCH_NUM"
-            echo "BENCH_NUM=$BENCH_NUM" >> "$GITHUB_OUTPUT"
+            echo "BENCH_NUM=$BENCH_NUM" >> $GITHUB_ENV
           else
             echo "No bench number found in commit message"
           fi
+        shell: bash
 
       - name: Run benchmark test
         if: env.BENCH_NUM
