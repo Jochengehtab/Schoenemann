@@ -18,7 +18,7 @@ all:
 
 test:
 # Possible santizier: address, undefined, leak, thread, memory
-	$(CXX) $(FLAGS) -fsanitize=undefined -g3 -fno-omit-frame-pointer -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+	$(CXX) $(FLAGS) -fsanitize=memory -g3 -fno-omit-frame-pointer -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 release:
 	$(CXX) $(FLAGS) -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)

@@ -1,0 +1,35 @@
+name: Test with Undefined Sanitizer
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install clang++ and make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang++ make
+
+      - name: Modify Makefile for Undefined Sanitizer
+        # Replace "-fsanitize=memory" with "-fsanitize=undefined" in the Makefile test target.
+        run: sed -i 's/-fsanitize=memory/-fsanitize=undefined/g' Makefile
+
+      - name: Build with make test
+        run: |
+          # Clean up if necessary
+          make clean || true
+          # Build with the modified test target
+          make test
+
+      - name: Run the test binary
+        run: |
+          # Run the binary. If any sanitizer errors occur, they should cause the process to exit non-zero.
+          ./null
