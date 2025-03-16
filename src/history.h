@@ -23,6 +23,8 @@ using namespace chess;
 
 #include "search.h"
 
+struct SearchStack;
+
 class History
 {
     std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
