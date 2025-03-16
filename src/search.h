@@ -66,7 +66,7 @@ public:
 	long softLimit = 0;
 
 	std::array<std::array<std::uint8_t, 218>, 256> reductions;
-	std::array<SearchStack, 256> stack;
+	SearchStack stack[256];
 
 	int pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode);
 	int qs(int alpha, int beta, Board &board, int ply);
