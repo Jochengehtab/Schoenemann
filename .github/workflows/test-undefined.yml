@@ -19,11 +19,14 @@ jobs:
           sudo apt-get install -y --no-install-recommends clang++ make
 
       - name: Modify Makefile for Undefined Sanitizer
-        # Update the sanitizer flag in the Makefile located in the src directory
         run: sed -i 's/-fsanitize=memory/-fsanitize=undefined/g' src/Makefile
 
       - name: Build with make test
-        run: make -C src test
+        run: |
+          cd src
+          make test
 
       - name: Run the test binary
-        run: ./src/null
+        run: |
+          cd src
+          ./null bench
