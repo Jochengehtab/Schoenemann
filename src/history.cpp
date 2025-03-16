@@ -38,12 +38,12 @@ void History::updateQuietHistory(Board &board, Move move, int bonus)
         (bonus - getQuietHistory(board, move) * std::abs(bonus) / quietHistoryDiv);
 }
 
-int History::getContinuationHistory(PieceType piece, Move move, int ply, SearchStack* stack)
+int History::getContinuationHistory(PieceType piece, Move move, int ply, SearchStack *stack)
 {
     return continuationHistory[stack[ply].previousMovedPiece][stack[ply].previousMove.to().index()][piece][move.to().index()];
 }
 
-void History::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack* stack)
+void History::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack *stack)
 {
     // Continuation History is indexed as follows
     // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |

@@ -28,17 +28,18 @@ struct SearchStack;
 class History
 {
     std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
-	std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
-	std::array<std::array<int, 2>, 16384> pawnCorrectionHistory;
+    std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
+    std::array<std::array<int, 2>, 16384> pawnCorrectionHistory;
+
 private:
     std::uint64_t getPieceKey(PieceType piece, const Board &board);
     const int pawnCorrectionHistorySize = 16384;
+
 public:
     int getQuietHistory(Board &board, Move move);
-    int getContinuationHistory(PieceType piece, Move move, int ply, SearchStack* stack);
+    int getContinuationHistory(PieceType piece, Move move, int ply, SearchStack *stack);
     int correctEval(int rawEval, Board &board);
     void updateQuietHistory(Board &board, Move move, int bonus);
     void updatePawnCorrectionHistory(int bonus, Board &board, int div);
-    void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack* stack);
-    
+    void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack *stack);
 };
