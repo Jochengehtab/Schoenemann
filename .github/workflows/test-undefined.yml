@@ -75,3 +75,4 @@ jobs:
             echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
             exit 1
           fi
+        shell: bash
