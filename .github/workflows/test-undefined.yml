@@ -29,7 +29,6 @@ jobs:
           else
             choco install llvm -y
             choco install make -y
-            # Optionally adjust PATH if needed (this example uses the default installation path)
             export PATH="/c/Program Files/LLVM/bin:$PATH"
           fi
 
