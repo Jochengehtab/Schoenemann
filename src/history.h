@@ -22,7 +22,9 @@
 using namespace chess;
 
 #include "search.h"
-#include "consts.h"
+
+struct SearchStack;
+
 class History
 {
     std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
@@ -33,10 +35,10 @@ private:
     const int pawnCorrectionHistorySize = 16384;
 public:
     int getQuietHistory(Board &board, Move move);
-    int getContinuationHistory(PieceType piece, Move move, int ply);
+    int getContinuationHistory(PieceType piece, Move move, int ply, SearchStack* stack);
     int correctEval(int rawEval, Board &board);
     void updateQuietHistory(Board &board, Move move, int bonus);
     void updatePawnCorrectionHistory(int bonus, Board &board, int div);
-    void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply);
+    void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack* stack);
     
 };
