@@ -528,7 +528,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
-                    history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, &stack[ply]);
+                    history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply);
 
                     int quietHistoryMalus = std::min(
                         static_cast<int>(quietHistoryMalusBase) + 
@@ -550,7 +550,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         }
 
                         history.updateQuietHistory(board, madeMove, -quietHistoryMalus);
-                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, &stack[ply]);
+                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply);
                     }
                 }
 
