@@ -1,43 +1,42 @@
-name: Build and Test on Windows and Linux with Bench Check
+name: Build and Benchmark
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-and-test:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-latest]
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-latest, windows-latest]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup environment
-        shell: bash
+      - name: Set up ${{ matrix.os }} environment
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            sudo apt-get update
-            sudo apt-get install -y --no-install-recommends clang++-18 make wget gnupg lsb-release
-            wget https://apt.llvm.org/llvm.sh
-            chmod +x llvm.sh
-            sudo ./llvm.sh 18
-            sudo ln -sf /usr/bin/clang++-18 /usr/bin/clang++
-          else
-            choco install llvm -y
-            choco install make -y
-            # Optionally adjust PATH if needed (this example uses the default installation path)
-            export PATH="/c/Program Files/LLVM/bin:$PATH"
-          fi
-
-      - name: Build with make all
+          sudo apt-get update
+          sudo apt-get install -y clang make
         shell: bash
+
+      - name: Set up ${{ matrix.os }} environment
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install llvm
+        shell: powershell
+
+      - name: Build project
         run: |
           cd src
           make all
+        shell: bash
 
       - name: Check for Bench number in commit message
         id: bench-check
