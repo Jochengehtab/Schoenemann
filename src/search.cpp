@@ -75,13 +75,11 @@ DEFINE_PARAM_S(fpCutoff, 2, 1);
 DEFINE_PARAM_S(quietHistoryGravityBase, 31, 5);
 DEFINE_PARAM_S(quietHistoryDepthMul, 204, 25);
 DEFINE_PARAM_S(quietHistoryBonusCap, 1734, 200);
-DEFINE_PARAM_B(quietHistoryDiv, 28711, 10000, 50000);
 DEFINE_PARAM_S(quietHistoryMalusBase, 15, 6);
 DEFINE_PARAM_S(quietHistoryMalusMax, 1900, 150);
 DEFINE_PARAM_S(quietHistoryMalusDepthMul, 171, 25);
 
 // Continuation Hisotry
-DEFINE_PARAM_B(continuationHistoryDiv, 28156, 10000, 50000);
 DEFINE_PARAM_S(continuationHistoryMalusBase, 25, 6);
 DEFINE_PARAM_S(continuationHistoryMalusMax, 2172, 150);
 DEFINE_PARAM_S(continuationHistoryMalusDepthMul, 185, 25);
@@ -98,10 +96,8 @@ DEFINE_PARAM_S(materialScaleGamePhaseAdd, 169, 25);
 DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 700);
 
 // Pawn CorrectionHistory
-DEFINE_PARAM_B(correctionValueDiv, 30, 1, 600);
 DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdd, 180, 20);
 DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
-DEFINE_PARAM_B(pawnCorrectionHistoryGravityDiv, 768, 1, 4000);
 
 // Singular Extension
 DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
@@ -245,7 +241,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     int rawEval = staticEval;
-    staticEval = std::clamp(correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
+    staticEval = std::clamp(history.correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
@@ -524,7 +520,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(quietHistoryDepthMul) * depth, 
                         static_cast<int>(quietHistoryBonusCap));
 
-                    updateQuietHistory(board, move, quietHistoryBonus);
+                        history.updateQuietHistory(board, move, quietHistoryBonus);
 
                     int continuationHistoryBonus = std::min(
                         static_cast<int>(continuationHistoryGravityBase) + 
@@ -532,7 +528,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
-                    updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply);
+                    history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, &stack[ply]);
 
                     int quietHistoryMalus = std::min(
                         static_cast<int>(quietHistoryMalusBase) + 
@@ -553,8 +549,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                             continue;
                         }
 
-                        updateQuietHistory(board, madeMove, -quietHistoryMalus);
-                        updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply);
+                        history.updateQuietHistory(board, madeMove, -quietHistoryMalus);
+                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, &stack[ply]);
                     }
                 }
 
@@ -586,7 +582,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
         int bonus = std::clamp((int)(bestScore - staticEval) * depth * pawnCorrectionHistoryDepthAdd / pawnCorrectionHistoryDepthDiv, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
-        updatePawnCorrectionHistory(bonus, board);
+        history.updatePawnCorrectionHistory(bonus, board, pawnCorrectionHistoryDepthDiv);
     }
 
     return bestScore;
@@ -672,7 +668,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     }
 
     int rawEval = standPat;
-    standPat = std::clamp(correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
+    standPat = std::clamp(history.correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     if (standPat >= beta)
     {
@@ -898,67 +894,4 @@ std::string Search::getPVLine()
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
     return pvLine;
-}
-
-int Search::getQuietHistory(Board &board, Move move)
-{
-    return quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()];
-}
-
-void Search::updateQuietHistory(Board &board, Move move, int bonus)
-{
-    quietHistory
-        [board.sideToMove()]
-        [board.at(move.from()).type()]
-        [move.to().index()] +=
-        (bonus - getQuietHistory(board, move) * std::abs(bonus) / quietHistoryDiv);
-}
-
-int Search::getContinuationHistory(PieceType piece, Move move, int ply)
-{
-    return continuationHistory[stack[ply].previousMovedPiece][stack[ply].previousMove.to().index()][piece][move.to().index()];
-}
-
-void Search::updateContinuationHistory(PieceType piece, Move move, int bonus, int ply)
-{
-    // Continuation History is indexed as follows
-    // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
-    int gravity = (bonus - getContinuationHistory(piece, move, ply - 1));
-    int scaledBonus = (gravity * std::abs(bonus) / continuationHistoryDiv);
-
-    if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
-    {
-        // Continuation History is indexed as follows
-        // | Ply - 1 Moved Piece From | Ply - 1 Move To Index | Moved Piece From | Move To Index |
-        continuationHistory[stack[ply - 1].previousMovedPiece][stack[ply - 1].previousMove.to().index()][piece][move.to().index()] += scaledBonus;
-    }
-}
-
-void Search::updatePawnCorrectionHistory(int bonus, Board &board)
-{
-    int pawnHash = getPieceKey(PieceType::PAWN, board);
-    // Gravity
-    int scaledBonus = bonus - pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] * std::abs(bonus) / pawnCorrectionHistoryGravityDiv;
-    pawnCorrectionHistory[board.sideToMove()][pawnHash & (pawnCorrectionHistorySize - 1)] += scaledBonus;
-}
-
-int Search::correctEval(int rawEval, Board &board)
-{
-    int pawnEntry = pawnCorrectionHistory[board.sideToMove()][getPieceKey(PieceType::PAWN, board) & (pawnCorrectionHistorySize - 1)];
-
-    int corrHistoryBonus = pawnEntry; // Later here come minor Corr Hist all multipled
-
-    return rawEval + corrHistoryBonus / correctionValueDiv;
-}
-
-std::uint64_t Search::getPieceKey(PieceType piece, const Board &board)
-{
-    std::uint64_t key = 0;
-    Bitboard bitboard = board.pieces(piece);
-    while (bitboard)
-    {
-        const Square square = bitboard.pop();
-        key ^= Zobrist::piece(board.at(square), square);
-    }
-    return key;
 }

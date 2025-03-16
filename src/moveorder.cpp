@@ -60,10 +60,10 @@ void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int
 		}
 		else
 		{
-			scores[i] += searcher.getQuietHistory(board, move);
+			scores[i] += history.getQuietHistory(board, move);
 			if (ply > 0 && searcher.stack[ply - 1].previousMovedPiece != PieceType::NONE)
 			{
-				scores[i] += searcher.getContinuationHistory(board.at(move.from()).type(), move, ply - 1);
+				scores[i] += history.getContinuationHistory(board.at(move.from()).type(), move, ply - 1, &searcher.stack[ply - 1]);
 			}
 		}
 	}

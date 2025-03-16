@@ -24,6 +24,15 @@
 
 #include "tt.h"
 #include "search.h"
+#include "history.h"
+
+extern tt transpositionTabel;
+
+class Search;
+extern Search searcher;
+
+class History;
+extern History history;
 
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -51,7 +60,3 @@ const std::string testStrings[] = {
 	"2r2rk1/1p2npp1/1q1b1nbp/p2p4/P2N3P/BPN1P3/4BPP1/2RQ1RK1 w - -",
 	"8/2b3p1/4knNp/2p4P/1pPp1P2/1P1P1BPK/8/8 w - -"};
 
-extern tt transpositionTabel;
-
-class Search;
-extern Search searcher;
