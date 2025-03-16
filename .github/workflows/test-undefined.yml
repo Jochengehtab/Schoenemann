@@ -16,7 +16,9 @@ jobs:
       - name: Install clang++ and make
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang++ make
+          sudo apt-get install -y --no-install-recommends clang++-14 make
+          # Ensure that clang++ points to clang++-14
+          sudo ln -sf /usr/bin/clang++-14 /usr/bin/clang++
 
       - name: Modify Makefile for Undefined Sanitizer
         run: sed -i 's/-fsanitize=memory/-fsanitize=undefined/g' src/Makefile
