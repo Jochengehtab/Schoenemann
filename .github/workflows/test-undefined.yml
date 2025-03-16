@@ -53,27 +53,25 @@ jobs:
             echo "No bench number found in commit message"
           fi
 
-      - name: Run bench test if bench number exists
-        if: steps.bench-check.outputs.BENCH_NUM != ''
-        shell: bash
+      - name: Run benchmark test
+        if: env.BENCH_NUM
         run: |
           cd src
-          # Determine the correct binary name based on OS
-          if [ -f null.exe ]; then
+          if [[ -f null.exe ]]; then
             BINARY=./null.exe
           else
             BINARY=./null
           fi
           OUTPUT=$($BINARY bench)
           echo "Bench output: $OUTPUT"
-          if [[ $OUTPUT =~ ([0-9]+) ]]; then
-            OUTPUT_NUM="${BASH_REMATCH[1]}"
+          if [[ $OUTPUT =~ Nodes[[:space:]]*:[[:space:]]*([0-9]+) ]]; then
+            OUTPUT_NODES="${BASH_REMATCH[1]}"
           else
-            echo "Failed to extract bench number from output"
+            echo "Failed to extract nodes number from output"
             exit 1
           fi
-          echo "Commit bench number: ${{ steps.bench-check.outputs.BENCH_NUM }}"
-          if [ "$OUTPUT_NUM" -ne "${{ steps.bench-check.outputs.BENCH_NUM }}" ]; then
-            echo "Bench number mismatch: expected ${{ steps.bench-check.outputs.BENCH_NUM }}, got $OUTPUT_NUM"
+          echo "Commit bench number: ${{ env.BENCH_NUM }}"
+          if [ "$OUTPUT_NODES" -ne "${{ env.BENCH_NUM }}" ]; then
+            echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
             exit 1
           fi
