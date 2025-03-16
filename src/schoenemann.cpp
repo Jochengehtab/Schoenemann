@@ -21,6 +21,7 @@
 
 Search searcher;
 tt transpositionTabel(8);
+History history;
 
 network net;
 
