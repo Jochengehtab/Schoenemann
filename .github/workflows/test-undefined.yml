@@ -1,62 +1,65 @@
-name: Build and Benchmark
+name: Build and Test on Windows and Linux with Bench Check
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
 
 jobs:
   build-and-test:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up ${{ matrix.os }} environment
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang make
+      - name: Setup environment
         shell: bash
-
-      - name: Set up ${{ matrix.os }} environment
-        if: matrix.os == 'windows-latest'
         run: |
-          choco install llvm
-        shell: powershell
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends clang++-18 make wget gnupg lsb-release
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh 18
+            sudo ln -sf /usr/bin/clang++-18 /usr/bin/clang++
+          else
+            choco install llvm -y
+            choco install make -y
+            # Optionally adjust PATH if needed (this example uses the default installation path)
+            export PATH="/c/Program Files/LLVM/bin:$PATH"
+          fi
 
-      - name: Build project
+      - name: Build with make all
+        shell: bash
         run: |
           cd src
           make all
-        shell: bash
 
       - name: Check for Bench number in commit message
         id: bench-check
+        shell: bash
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           echo "Commit message: $COMMIT_MSG"
           if [[ $COMMIT_MSG =~ Bench[[:space:]]+([0-9]+) ]]; then
             BENCH_NUM="${BASH_REMATCH[1]}"
             echo "Found bench number: $BENCH_NUM"
-            echo "BENCH_NUM=$BENCH_NUM" >> $GITHUB_ENV
+            echo "BENCH_NUM=$BENCH_NUM" >> "$GITHUB_OUTPUT"
           else
             echo "No bench number found in commit message"
           fi
-        shell: bash
 
-      - name: Run benchmark test
-        if: env.BENCH_NUM
+      - name: Run bench test if bench number exists
+        if: steps.bench-check.outputs.BENCH_NUM != ''
+        shell: bash
         run: |
           cd src
-          if [[ -f null.exe ]]; then
+          # Determine the correct binary name based on OS
+          if [ -f null.exe ]; then
             BINARY=./null.exe
           else
             BINARY=./null
@@ -69,9 +72,8 @@ jobs:
             echo "Failed to extract bench number from output"
             exit 1
           fi
-          echo "Commit bench number: ${{ env.BENCH_NUM }}"
-          if [ "$OUTPUT_NUM" -ne "${{ env.BENCH_NUM }}" ]; then
-            echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NUM"
+          echo "Commit bench number: ${{ steps.bench-check.outputs.BENCH_NUM }}"
+          if [ "$OUTPUT_NUM" -ne "${{ steps.bench-check.outputs.BENCH_NUM }}" ]; then
+            echo "Bench number mismatch: expected ${{ steps.bench-check.outputs.BENCH_NUM }}, got $OUTPUT_NUM"
             exit 1
           fi
-        shell: bash
