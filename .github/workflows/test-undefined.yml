@@ -1,4 +1,4 @@
-name: Test with Undefined Sanitizer
+name: Build and Test on Windows and Linux with Bench Check
 
 on:
   push:
@@ -7,32 +7,77 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install clang++-18 and make
+      - name: Setup environment
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg lsb-release make
-          # Download and run the LLVM installer script to install LLVM 18
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 18
-          # Ensure that clang++ points to clang++-18
-          sudo ln -sf /usr/bin/clang++-18 /usr/bin/clang++
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends clang++-18 make wget gnupg lsb-release
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh 18
+            sudo ln -sf /usr/bin/clang++-18 /usr/bin/clang++
+          else
+            choco install llvm -y
+            choco install make -y
+            # Optionally adjust PATH if needed (this example uses the default installation path)
+            export PATH="/c/Program Files/LLVM/bin:$PATH"
+          fi
 
       - name: Modify Makefile for Undefined Sanitizer
+        shell: bash
         run: sed -i 's/-fsanitize=memory/-fsanitize=undefined/g' src/Makefile
 
       - name: Build with make test
+        shell: bash
         run: |
           cd src
           make test
 
-      - name: Run the test binary
+      - name: Check for Bench number in commit message
+        id: bench-check
+        shell: bash
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MSG"
+          if [[ $COMMIT_MSG =~ Bench[[:space:]]+([0-9]+) ]]; then
+            BENCH_NUM="${BASH_REMATCH[1]}"
+            echo "Found bench number: $BENCH_NUM"
+            echo "BENCH_NUM=$BENCH_NUM" >> "$GITHUB_OUTPUT"
+          else
+            echo "No bench number found in commit message"
+          fi
+
+      - name: Run bench test if bench number exists
+        if: steps.bench-check.outputs.BENCH_NUM != ''
+        shell: bash
         run: |
           cd src
-          ./null bench
+          # Use the correct binary name depending on OS
+          if [ -f null.exe ]; then
+            BINARY=./null.exe
+          else
+            BINARY=./null
+          fi
+          OUTPUT=$($BINARY bench)
+          echo "Bench output: $OUTPUT"
+          if [[ $OUTPUT =~ ([0-9]+) ]]; then
+            OUTPUT_NUM="${BASH_REMATCH[1]}"
+          else
+            echo "Failed to extract bench number from output"
+            exit 1
+          fi
+          echo "Commit bench number: ${{ steps.bench-check.outputs.BENCH_NUM }}"
+          if [ "$OUTPUT_NUM" -ne "${{ steps.bench-check.outputs.BENCH_NUM }}" ]; then
+            echo "Bench number mismatch: expected ${{ steps.bench-check.outputs.BENCH_NUM }}, got $OUTPUT_NUM"
+            exit 1
+          fi
