@@ -34,6 +34,13 @@ void getTimeForMove()
   double bmFactor = 1.3 - 0.05 * bestMoveStabilityCount;
   double evalFactor = 1.3 - 0.05 * bestEvalStabilityCount;
   searcher.softLimit = std::min(maxTime, (int)((baseTime * 0.76 * bmFactor * evalFactor)));
+
+  // Make sure that out time doesn't get below 1
+  searcher.softLimit = std::max(searcher.softLimit, static_cast<long>(1.0));
+  searcher.hardLimit = std::max(searcher.hardLimit, static_cast<long>(1.0));
+
+
+
 }
 
 void updateBestMoveStability(Move bestMove, Move previousBestMove)
