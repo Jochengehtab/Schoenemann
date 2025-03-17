@@ -39,8 +39,6 @@ void getTimeForMove()
   searcher.softLimit = std::max(searcher.softLimit, static_cast<long>(1.0));
   searcher.hardLimit = std::max(searcher.hardLimit, static_cast<long>(1.0));
 
-
-
 }
 
 void updateBestMoveStability(Move bestMove, Move previousBestMove)
