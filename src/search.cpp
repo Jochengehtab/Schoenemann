@@ -555,8 +555,10 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                             continue;
                         }
 
-                        history.updateQuietHistory(board, madeMove, -quietHistoryMalus);
-                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, stack);
+                        int maxMoves = std::max(8, moveCounter);
+
+                        history.updateQuietHistory(board, madeMove, -(quietHistoryMalus * maxMoves));
+                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -(continuationHistoryMalus * maxMoves), ply, stack);
                     }
                 }
 
