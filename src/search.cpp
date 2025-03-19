@@ -18,6 +18,9 @@
 */
 
 #include "search.h"
+#include "see.h"
+#include "tune.h"
+#include "moveorder.h"
 
 std::chrono::time_point start = std::chrono::steady_clock::now();
 

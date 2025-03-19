@@ -29,7 +29,7 @@ private:
     std::uint16_t bestEvalStabilityCount = 0;
 
     long hardLimit = 0;
-	long softLimit = 0;
+    long softLimit = 0;
 
 public:
     void calculateTimeForMove();
@@ -40,7 +40,7 @@ public:
     bool shouldStopID(std::chrono::steady_clock::time_point start);
 
     int timeLeft = 0;
-	int increment = 0;
+    int increment = 0;
 };
 
 #endif

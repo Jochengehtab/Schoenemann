@@ -23,10 +23,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "moveorder.h"
 #include "consts.h"
-#include "see.h"
-#include "tune.h"
 
 struct SearchStack
 {
