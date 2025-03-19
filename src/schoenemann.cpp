@@ -17,7 +17,15 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "schoenemann.h"
+#include <iostream>
+#include <chrono>
+#include <thread>
+
+#include "consts.h"
+#include "helper.h"
+#include "nnue.h"
+#include "datagen.h"
+#include "tune.h"
 
 Search searcher;
 tt transpositionTabel(8);
