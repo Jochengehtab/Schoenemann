@@ -22,6 +22,7 @@
 Search searcher;
 tt transpositionTabel(8);
 History history;
+Time timeManagement;
 
 network net;
 
@@ -60,9 +61,8 @@ int main(int argc, char *argv[])
         // Launch multiple threads
         for (int i = 0; i < 5; ++i)
         {
-            threads.emplace_back(std::thread([&board]() {
-    generate(board);
-}));
+            threads.emplace_back(std::thread([&board]()
+                                             { generate(board); }));
         }
 
         // Join threads to ensure they complete before exiting main
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
                 else if (token == "movetime")
                 {
                     is >> token;
-                    searcher.timeLeft = std::stoi(token);
+                    timeManagement.timeLeft = std::stoi(token);
                     std::thread t1(std::bind(&Search::iterativeDeepening, &searcher, board, false));
                     t1.detach();
                 }
@@ -247,13 +247,13 @@ int main(int argc, char *argv[])
             {
                 if (board.sideToMove() == Color::WHITE)
                 {
-                    searcher.timeLeft = number[0];
-                    searcher.increment = number[2];
+                    timeManagement.timeLeft = number[0];
+                    timeManagement.increment = number[2];
                 }
                 else
                 {
-                    searcher.timeLeft = number[1];
-                    searcher.increment = number[3];
+                    timeManagement.timeLeft = number[1];
+                    timeManagement.increment = number[3];
                 }
                 searcher.iterativeDeepening(board, false);
             }

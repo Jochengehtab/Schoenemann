@@ -11,7 +11,7 @@ ifeq ($(OS),Windows_NT)
 	EXE := $(EXE).exe
 endif
 
-SOURCES = schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp history.cpp
+SOURCES = schoenemann.cpp search.cpp time.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp history.cpp
 
 all:
 	$(CXX) $(FLAGS) -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)

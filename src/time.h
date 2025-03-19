@@ -17,16 +17,30 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TIME_H
+#define TIME_H
 
 #include "consts.h"
 
-void getTimeForMove();
+class Time
+{
+private:
+    std::uint16_t bestMoveStabilityCount = 0;
+    std::uint16_t bestEvalStabilityCount = 0;
 
-void updateBestMoveStability(Move bestMove, Move previousBestMove);
-void updateEvalStability(int score, int previousScore);
+    long hardLimit = 0;
+	long softLimit = 0;
 
+public:
+    void calculateTimeForMove();
+    void updateBestMoveStability(Move bestMove, Move previousBestMove);
+    void updateEvalStability(int score, int previousScore);
 
-bool shouldStopSoft(std::chrono::steady_clock::time_point start);
+    bool shouldStopSoft(std::chrono::steady_clock::time_point start);
+    bool shouldStopID(std::chrono::steady_clock::time_point start);
 
-bool shouldStopID(std::chrono::steady_clock::time_point start);
+    int timeLeft = 0;
+	int increment = 0;
+};
+
+#endif

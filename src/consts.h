@@ -25,6 +25,7 @@
 #include "tt.h"
 #include "search.h"
 #include "history.h"
+#include "time.h"
 
 extern tt transpositionTabel;
 
@@ -33,6 +34,9 @@ extern Search searcher;
 
 class History;
 extern History history;
+
+class Time;
+extern Time timeManagement;
 
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

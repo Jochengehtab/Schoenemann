@@ -117,7 +117,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     if (nodes % 128 == 0)
     {
-        if (shouldStopSoft(start) && !isNormalSearch)
+        if (timeManagement.shouldStopSoft(start) && !isNormalSearch)
         {
             shouldStop = true;
             return beta;
@@ -604,7 +604,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     if (nodes % 128 == 0)
     {
         // Check for a timeout
-        if (shouldStopSoft(start) && !isNormalSearch)
+        if (timeManagement.shouldStopSoft(start) && !isNormalSearch)
         {
             shouldStop = true;
             return beta;
@@ -769,7 +769,7 @@ int Search::aspiration(int depth, int score, Board &board)
     while (true)
     {
         score = pvs(alpha, beta, depth, 0, board, false);
-        if (shouldStopID(start))
+        if (timeManagement.shouldStopID(start))
         {
             shouldStop = true;
             return score;
@@ -798,7 +798,7 @@ int Search::aspiration(int depth, int score, Board &board)
 void Search::iterativeDeepening(Board &board, bool isInfinite)
 {
     start = std::chrono::steady_clock::now();
-    getTimeForMove();
+    timeManagement.calculateTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
 
@@ -831,14 +831,13 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         if (i > 6)
         {
-            updateBestMoveStability(bestMoveThisIteration, previousBestMove);
+            timeManagement.updateBestMoveStability(bestMoveThisIteration, previousBestMove);
         }
 
         if (i > 7)
         {
-            updateEvalStability(scoreData, previousBestScore);
+            timeManagement.updateEvalStability(scoreData, previousBestScore);
         }
-        
 
         // Only report statistic if we are not in a fixed node search beacuse of datagen
         if (!hasNodeLimit)
@@ -856,7 +855,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
 
-        if ((shouldStopID(start) && !isInfinite) || i == 255)
+        if ((timeManagement.shouldStopID(start) && !isInfinite) || i == 255)
         {
             if (!hasNodeLimit)
             {

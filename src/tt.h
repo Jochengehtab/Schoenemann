@@ -17,7 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TT_H
+#define TT_H
 
 #include <iostream>
 #include <cstring>
@@ -105,3 +106,5 @@ private:
     Hash *table;
     void init(std::uint64_t MB);
 };
+
+#endif

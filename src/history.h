@@ -16,7 +16,8 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#pragma once
+#ifndef HISTORY_H
+#define HISTORY_H
 
 #include "chess.hpp"
 using namespace chess;
@@ -43,3 +44,5 @@ public:
     void updatePawnCorrectionHistory(int bonus, Board &board, int div);
     void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack *stack);
 };
+
+#endif
