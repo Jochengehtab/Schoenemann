@@ -22,7 +22,7 @@
 
 DEFINE_PARAM_B(quietHistoryDiv, 28711, 10000, 50000);
 DEFINE_PARAM_B(continuationHistoryDiv, 28156, 10000, 50000);
-DEFINE_PARAM_B(correctionValueDiv, 60, 1, 600);
+DEFINE_PARAM_B(correctionValueDiv, 200, 1, 600);
 
 int History::getQuietHistory(Board &board, Move move)
 {
