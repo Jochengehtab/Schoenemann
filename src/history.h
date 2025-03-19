@@ -30,10 +30,11 @@ class History
     std::array<std::array<std::array<int, 64>, 6>, 2> quietHistory;
     std::array<std::array<std::array<std::array<int, 6>, 64>, 6>, 64> continuationHistory;
     std::array<std::array<int, 2>, 16384> pawnCorrectionHistory;
+    std::array<std::array<int, 2>, 16384> nonPawnCorrectionHistory;
 
 private:
     std::uint64_t getPieceKey(PieceType piece, const Board &board);
-    const int pawnCorrectionHistorySize = 16384;
+    const int correctionHistorySize = 16384;
 
 public:
     int getQuietHistory(Board &board, Move move);
@@ -41,5 +42,6 @@ public:
     int correctEval(int rawEval, Board &board);
     void updateQuietHistory(Board &board, Move move, int bonus);
     void updatePawnCorrectionHistory(int bonus, Board &board, int div);
+    void updateNonPawnCorrectionHistory(int bonus, Board &board, int div);
     void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack *stack);
 };

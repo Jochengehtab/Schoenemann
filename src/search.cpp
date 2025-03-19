@@ -589,6 +589,9 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     {
         int bonus = std::clamp((int)(bestScore - staticEval) * depth * pawnCorrectionHistoryDepthAdd / pawnCorrectionHistoryDepthDiv, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         history.updatePawnCorrectionHistory(bonus, board, pawnCorrectionHistoryDepthDiv);
+
+        // TODO Make a seperate bonus for non pawn history
+        history.updateNonPawnCorrectionHistory(bonus, board, 768);
     }
 
     return bestScore;
