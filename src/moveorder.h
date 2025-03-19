@@ -17,13 +17,17 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <iostream>
+#ifndef MOVEORDER_H
+#define MOVEORDER_H
 
 #include "consts.h"
-#include "see.h"
-#include "tune.h"
 
-void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int ply);
-Move sortByScore(Movelist &moveList, int scores[], int i);
+class MoveOrder
+{
+private:
+public:
+    void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int ply);
+    Move sortByScore(Movelist &moveList, int scores[], int i);
+};
+
+#endif

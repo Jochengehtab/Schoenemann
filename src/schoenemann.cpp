@@ -31,6 +31,7 @@ Search searcher;
 tt transpositionTabel(8);
 History history;
 Time timeManagement;
+MoveOrder moveOrder;
 
 network net;
 

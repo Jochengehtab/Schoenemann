@@ -18,10 +18,12 @@
 */
 
 #include "moveorder.h"
+#include "see.h"
+#include "tune.h"
 
 DEFINE_PARAM_S(mvaLvvMultiplyer, 103, 20);
 
-void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int ply)
+void MoveOrder::orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int ply)
 {
 	const bool isNullptr = entry == nullptr ? true : false;
 	const std::uint64_t key = board.zobrist();
@@ -69,7 +71,7 @@ void orderMoves(Movelist &moveList, Hash *entry, Board &board, int scores[], int
 	}
 }
 
-Move sortByScore(Movelist &moveList, int scores[], int i)
+Move MoveOrder::sortByScore(Movelist &moveList, int scores[], int i)
 {
 	for (int j = i + 1; j < moveList.size(); j++)
 	{

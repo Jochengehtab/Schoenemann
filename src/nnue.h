@@ -17,9 +17,12 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef NNUE_H
+#define NNUE_H
 
 #include <iostream>
 #include "NNUE/nnue.h"
 
 extern network net;
+
+#endif

@@ -19,9 +19,6 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
-#include "chess.hpp"
-using namespace chess;
-
 #include "search.h"
 
 struct SearchStack;

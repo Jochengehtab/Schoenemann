@@ -17,7 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef SEE_H
+#define SEE_H
 
 #include "consts.h"
 #include "tune.h"
@@ -25,3 +26,5 @@
 int getPieceValue(const Board &board, Move &move);
 bool see(const Board &board, Move &move, int cutoff);
 PieceType getLeastValuableAttacker(const Board &board, Bitboard &occ, Bitboard attackers, Color color);
+
+#endif

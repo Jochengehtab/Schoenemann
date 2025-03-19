@@ -20,7 +20,6 @@
 #include "search.h"
 #include "see.h"
 #include "tune.h"
-#include "moveorder.h"
 
 std::chrono::time_point start = std::chrono::steady_clock::now();
 
@@ -310,12 +309,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int scoreMoves[218] = {0};
         // Sort the list
-        orderMoves(moveList, entry, board, scoreMoves, ply);
+        moveOrder.orderMoves(moveList, entry, board, scoreMoves, ply);
 
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
             probCutCount++;
-            Move move = sortByScore(moveList, scoreMoves, i);
+            Move move = moveOrder.sortByScore(moveList, scoreMoves, i);
 
             // We don't want to prune the hashed move
             if (move == hashedMove)
@@ -379,7 +378,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     int scoreMoves[218] = {0};
     // Sort the list
-    orderMoves(moveList, entry, board, scoreMoves, ply);
+    moveOrder.orderMoves(moveList, entry, board, scoreMoves, ply);
 
     // Set up values for the search
     int score = 0;
@@ -394,7 +393,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     for (int i = 0; i < moveList.size(); i++)
     {
-        Move move = sortByScore(moveList, scoreMoves, i);
+        Move move = moveOrder.sortByScore(moveList, scoreMoves, i);
 
         if (move == stack[ply].exludedMove)
         {
