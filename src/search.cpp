@@ -850,7 +850,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
                 << i << " score cp "
                 << scoreData << " nodes "
                 << nodes << " nps "
-                << static_cast<int>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
+                << static_cast<std::uint64_t>(searcher.nodes / (elapsed.count() + 1) * 1000) << " pv "
                 << getPVLine()
                 << std::endl;
         }

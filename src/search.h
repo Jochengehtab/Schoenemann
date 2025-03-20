@@ -51,10 +51,11 @@ public:
 	bool isNormalSearch = true;
 	bool hasNodeLimit = false;
 
-	int nodeLimit = 0;
-	int timeForMove = 0;
+	std::uint64_t nodeLimit = 0;
+	std::uint64_t timeForMove = 0;
+	std::uint64_t nodes = 0;
+
 	int scoreData = 0;
-	int nodes = 0;
 	int previousBestScore = 0;
 
 	std::array<std::array<std::uint8_t, 218>, 256> reductions;
