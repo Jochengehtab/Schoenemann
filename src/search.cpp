@@ -226,7 +226,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         depth -= iirReduction;
     }
 
-    if (stack[ply - 1].reductionAmount > 4)
+    if (!pvNode && !isNullptr && stack[ply - 1].reductionAmount > 4)
     {
         depth--;
     }
