@@ -876,7 +876,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         }
     }
 
-    for (std::uint16_t i = 1; i < 260; i++)
+    for (std::uint16_t i = 1; i < 258; i++)
     {
         if (bestMoveList[i] == bestMoveThisIteration)
         {
@@ -884,7 +884,6 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         }
         
     }
-    
 
     shouldStop = false;
     isNormalSearch = true;

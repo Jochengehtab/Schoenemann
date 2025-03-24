@@ -42,8 +42,8 @@ public:
 
     int timeLeft = 0;
     int increment = 0;
-    std::uint64_t nodesCount = 0;
-    std::uint64_t bestMoveNodesCount = 0;
+    std::uint64_t nodesCount = 1;
+    std::uint64_t bestMoveNodesCount = 1;
 };
 
 #endif
