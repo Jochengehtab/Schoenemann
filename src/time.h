@@ -35,12 +35,15 @@ public:
     void calculateTimeForMove();
     void updateBestMoveStability(Move bestMove, Move previousBestMove);
     void updateEvalStability(int score, int previousScore);
+    void reset();
 
     bool shouldStopSoft(std::chrono::steady_clock::time_point start);
     bool shouldStopID(std::chrono::steady_clock::time_point start);
 
     int timeLeft = 0;
     int increment = 0;
+    std::uint64_t nodesCount = 0;
+    std::uint64_t bestMoveNodesCount = 0;
 };
 
 #endif

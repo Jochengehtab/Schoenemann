@@ -38,7 +38,10 @@ void Time::calculateTimeForMove()
     // Calculate our soft limit
     double bmFactor = 1.3 - 0.05 * bestMoveStabilityCount;
     double evalFactor = 1.3 - 0.05 * bestEvalStabilityCount;
-    softLimit = std::min(maxTime, (int)((baseTime * 0.76 * bmFactor * evalFactor)));
+
+    double nodesFactor = 1.3 - 0.05 * (bestMoveNodesCount / nodesCount);
+
+    softLimit = std::min(maxTime, (int)((baseTime * 0.76 * bmFactor * evalFactor * nodesFactor)));
 
     // Make sure that out time doesn't get below 1
     softLimit = std::max(softLimit, static_cast<long>(1.0));
@@ -67,6 +70,14 @@ void Time::updateEvalStability(int score, int previousScore)
     {
         bestMoveStabilityCount = 0;
     }
+}
+
+void Time::reset() 
+{
+    nodesCount = 0;
+    bestMoveNodesCount = 0;
+    bestEvalStabilityCount = 0;
+    bestMoveStabilityCount = 0;
 }
 
 bool Time::shouldStopSoft(std::chrono::steady_clock::time_point start)

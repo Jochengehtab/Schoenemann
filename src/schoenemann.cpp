@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
 
             // Clear the transposition table
             transpositionTabel.clear();
+            timeManagement.reset();
         }
         else if (token == "setoption")
         {

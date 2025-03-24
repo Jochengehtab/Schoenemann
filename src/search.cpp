@@ -471,13 +471,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
         else
         {
-            int lmr = 0;
+            std::uint8_t lmr = 0;
             if (depth > lmrDepth)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
                 lmr += isCutNode * lmrCutNodeMul;
-                lmr = std::clamp(lmr, 0, depth - 1);
+                lmr = std::clamp(lmr, static_cast<std::uint8_t>(0), static_cast<std::uint8_t>(depth - 1));
             }
 
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + extensions, ply + 1, board, true);
@@ -803,6 +803,9 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     timeManagement.calculateTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
+    std::uint64_t nodesForMove[260] = {0};
+    std::uint64_t tempNodes = 0;
+    Move bestMoveList[260] = {Move::NULL_MOVE};
 
     isNormalSearch = false;
 
@@ -813,7 +816,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
     nodes = 0;
 
-    for (int i = 1; i <= 256; i++)
+    for (int i = 1; i <= MAX_PLY; i++)
     {
         if (i > 7)
         {
@@ -821,6 +824,12 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         }
         
         scoreData = i >= aspDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
+
+        // Store and setup everything for node tm
+        nodesForMove[i] = tempNodes;
+        timeManagement.nodesCount += tempNodes;
+        tempNodes = 0;
+        bestMoveList[i] = bestMoveThisIteration;
 
         if (i > 6)
         {
@@ -866,6 +875,17 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
             break;
         }
     }
+
+    for (std::uint16_t i = 1; i < 260; i++)
+    {
+        if (bestMoveList[i] == bestMoveThisIteration)
+        {
+            timeManagement.bestMoveNodesCount += nodesForMove[i];
+        }
+        
+    }
+    
+
     shouldStop = false;
     isNormalSearch = true;
 }
