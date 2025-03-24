@@ -226,7 +226,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         depth -= iirReduction;
     }
 
-    if (!pvNode && !inCheck && staticEval >= beta && alpha > beta && stack[ply - 1].reductionAmount > 5 && depth > 7 && !isSingularSearch && ply > 0)
+    if (!pvNode && !inCheck && staticEval >= beta && stack[ply - 1].reductionAmount > 6 && depth > 7 && !isSingularSearch && ply > 0)
     {
         depth++;
     }
