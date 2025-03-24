@@ -30,6 +30,7 @@ struct SearchStack
 	int staticEval;
 	int pvLength;
 	bool inCheck;
+	int reductionAmount = 0;
 	std::array<Move, 256> pvLine;
 	Move killerMove = Move::NULL_MOVE;
 	PieceType previousMovedPiece = PieceType::NONE;

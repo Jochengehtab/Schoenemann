@@ -226,6 +226,12 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         depth -= iirReduction;
     }
 
+    if (stack[ply - 1].reductionAmount > 4)
+    {
+        depth--;
+    }
+    
+
     if (!isSingularSearch && !isNullptr)
     {
         int probCutBeta = beta + probeCutBetaAdd;
@@ -480,6 +486,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 lmr = std::clamp(lmr, 0, depth - 1);
             }
 
+            if (lmr > stack[ply].reductionAmount)
+            {
+                stack[ply].reductionAmount = lmr;
+            }
+            
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + extensions, ply + 1, board, true);
             if (score > alpha && (score < beta || lmr > 0))
             {
