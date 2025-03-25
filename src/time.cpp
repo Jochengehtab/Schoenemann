@@ -41,7 +41,7 @@ void Time::calculateTimeForMove()
 
     double nodesFactor = (bestMoveNodesCount / nodesCount);
 
-    double nodeMul = std::max(0.5, nodesFactor * 2.3 + 0.4);
+    double nodeMul = (1.62 - nodesFactor) * 162.0 / 100.0;
 
     softLimit = std::min(maxTime, (int)((baseTime * 0.76 * bmFactor * evalFactor * nodeMul)));
 
