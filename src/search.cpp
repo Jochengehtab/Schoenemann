@@ -878,7 +878,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
     for (std::uint16_t i = 1; i < 258; i++)
     {
-        if (bestMoveList[i] == rootBestMove)
+        if (bestMoveList[i] == bestMoveThisIteration && i > 5)
         {
             timeManagement.bestMoveNodesCount += nodesForMove[i];
         }
