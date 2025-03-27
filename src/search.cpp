@@ -803,6 +803,8 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
     timeManagement.calculateTimeForMove();
     rootBestMove = Move::NULL_MOVE;
     Move bestMoveThisIteration = Move::NULL_MOVE;
+    std::uint64_t nodesForMove[260] = {0};
+    std::uint64_t tempNodes = 0;
     Move bestMoveList[260] = {Move::NULL_MOVE};
 
     isNormalSearch = false;
@@ -822,6 +824,12 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         }
         
         scoreData = i >= aspDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
+
+        // Store and setup everything for node tm
+        nodesForMove[i] = tempNodes;
+        timeManagement.nodesCount += tempNodes;
+        tempNodes = 0;
+        bestMoveList[i] = bestMoveThisIteration;
 
         if (i > 6)
         {
@@ -866,6 +874,15 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
             }
             break;
         }
+    }
+
+    for (std::uint16_t i = 1; i < 258; i++)
+    {
+        if (bestMoveList[i] == rootBestMove && i > 3)
+        {
+            timeManagement.bestMoveNodesCount += nodesForMove[i];
+        }
+        
     }
 
     shouldStop = false;
