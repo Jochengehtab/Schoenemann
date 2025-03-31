@@ -49,7 +49,8 @@ VERSION: 0.6.76
 #include <intrin.h>
 #include <nmmintrin.h>
 #endif
-#include "nnue.h"
+
+#include "NNUE/nnue.h"
 
 #include <string_view>
 
@@ -2015,6 +2016,14 @@ namespace chess
             setFenInternal<true>(fen);
         }
 
+        explicit Board(network& net)
+        {
+            this->net = net;
+            prev_states_.reserve(256);
+            chess960_ = false;
+            setFenInternal<true>(constants::STARTPOS);
+        }
+
         virtual void setFen(std::string_view fen) { setFenInternal(fen); }
 
         static Board fromFen(std::string_view fen) { return Board(fen); }
@@ -3204,6 +3213,7 @@ namespace chess
         bool chess960_ = false;
 
     private:
+        network net;
         void removePieceInternal(Piece piece, Square sq)
         {
             assert(board_[sq.index()] == piece && piece != Piece::NONE);

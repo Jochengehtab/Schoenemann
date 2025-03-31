@@ -23,7 +23,7 @@
 
 #include "consts.h"
 #include "helper.h"
-#include "nnue.h"
+#include "NNUE/nnue.h"
 #include "datagen.h"
 #include "tune.h"
 #include "search.h"
@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
 
     std::uint32_t transpositionTableSize = 16;
 
-    Search searcher(timeManagement, transpositionTableSize, history, moveOrder);
+    Search searcher(timeManagement, transpositionTableSize, history, moveOrder, net);
 
     // The main board
-    Board board;
+    Board board(net);
 
     // UCI-Command stuff
     std::string token, cmd;
