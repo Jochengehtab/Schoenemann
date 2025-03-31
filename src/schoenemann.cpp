@@ -35,7 +35,7 @@
 int main(int argc, char *argv[])
 {
     tt transpositionTabel(8);
-    History* history = new History();
+    History *history = new History();
     Time timeManagement;
     MoveOrder moveOrder(*history);
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     std::uint32_t transpositionTableSize = 16;
 
-    Search* searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, net);
+    Search *searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, net);
 
     // The main board
     Board board(net);
@@ -65,6 +65,9 @@ int main(int argc, char *argv[])
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
         runBenchmark(*searcher);
+        delete searcher;
+        delete history;
+
         return 0;
     }
 
@@ -76,8 +79,8 @@ int main(int argc, char *argv[])
         // Launch multiple threads
         for (int i = 0; i < 5; ++i)
         {
-            //threads.emplace_back(std::thread([&board]()
-                                            // { generate(board, searcher, transpositionTabel); }));
+            // threads.emplace_back(std::thread([&board]()
+            //  { generate(board, searcher, transpositionTabel); }));
         }
 
         // Join threads to ensure they complete before exiting main
@@ -279,7 +282,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "datagen")
         {
-            //generate(board);
+            // generate(board);
         }
         else if (token == "bench")
         {
@@ -303,5 +306,8 @@ int main(int argc, char *argv[])
             searcher->shouldStop = true;
         }
     } while (token != "quit");
+    delete searcher;
+    delete history;
+
     return 0;
 }
