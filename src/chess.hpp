@@ -2016,7 +2016,7 @@ namespace chess
             setFenInternal<true>(fen);
         }
 
-        explicit Board(network& net)
+        explicit Board(network* net)
         {
             this->net = net;
             prev_states_.reserve(256);
@@ -3213,7 +3213,7 @@ namespace chess
         bool chess960_ = false;
 
     private:
-        network net;
+        network* net;
         void removePieceInternal(Piece piece, Square sq)
         {
             assert(board_[sq.index()] == piece && piece != Piece::NONE);
@@ -3229,7 +3229,7 @@ namespace chess
             pieces_bb_[type].clear(index);
             occ_bb_[color].clear(index);
             board_[index] = Piece::NONE;
-            net.updateAccumulator(type, color, sq.index(), false);
+            net->updateAccumulator(type, color, sq.index(), false);
         }
 
         void placePieceInternal(Piece piece, Square sq)
@@ -3247,7 +3247,7 @@ namespace chess
             pieces_bb_[type].set(index);
             occ_bb_[color].set(index);
             board_[index] = piece;
-            net.updateAccumulator((int)type, (int)color, sq.index(), true);
+            net->updateAccumulator((int)type, (int)color, sq.index(), true);
         }
 
         template <bool ctor = false>
@@ -3255,7 +3255,7 @@ namespace chess
         {
             original_fen_ = fen;
 
-            net.refreshAccumulator();
+            net->refreshAccumulator();
 
             occ_bb_.fill(0ULL);
             pieces_bb_.fill(0ULL);

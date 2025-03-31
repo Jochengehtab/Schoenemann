@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     Search *searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, net);
 
     // The main board
-    Board board(net);
+    Board board(&net);
 
     // UCI-Command stuff
     std::string token, cmd;
