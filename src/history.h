@@ -19,9 +19,7 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
-#include "search.h"
-
-struct SearchStack;
+#include "search_fwd.h"
 
 class History
 {

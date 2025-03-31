@@ -26,7 +26,6 @@
 #include "consts.h"
 #include "time.h"
 #include "tt.h"
-#include "history.h"
 #include "moveorder.h"
 #include "search_fwd.h"
 

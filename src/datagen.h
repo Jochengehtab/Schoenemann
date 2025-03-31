@@ -22,6 +22,8 @@
 
 #include "consts.h"
 #include "see.h"
+#include "search.h"
+#include "tt.h"
 #include <random>
 #include <chrono>
 #include <iostream>
@@ -30,6 +32,6 @@
 #include <string>
 #include <vector>
 
-void generate(Board &board);
+void generate(Board &board, Search& search, tt transpositionTable);
 
 #endif

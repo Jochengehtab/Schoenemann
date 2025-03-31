@@ -311,7 +311,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int scoreMoves[218] = {0};
         // Sort the list
-        moveOrder.orderMoves(moveList, entry, board, scoreMoves, ply);
+        moveOrder.orderMoves(moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
 
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
@@ -380,7 +380,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     int scoreMoves[218] = {0};
     // Sort the list
-    moveOrder.orderMoves(moveList, entry, board, scoreMoves, ply);
+    moveOrder.orderMoves(moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
 
     // Set up values for the search
     int score = 0;

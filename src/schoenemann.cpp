@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
         // Launch multiple threads
         for (int i = 0; i < 5; ++i)
         {
-            threads.emplace_back(std::thread([&board]()
-                                             { generate(board); }));
+            //threads.emplace_back(std::thread([&board]()
+                                            // { generate(board, searcher, transpositionTabel); }));
         }
 
         // Join threads to ensure they complete before exiting main
@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "datagen")
         {
-            generate(board);
+            //generate(board);
         }
         else if (token == "bench")
         {

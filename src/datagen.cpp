@@ -19,11 +19,11 @@
 
 #include "datagen.h"
 
-void generate(Board &board)
+void generate(Board &board, Search& search, tt transpositionTable)
 {
     // Set up the nodes limit
-    searcher.hasNodeLimit = true;
-    searcher.nodeLimit = 10000;
+    search.hasNodeLimit = true;
+    search.nodeLimit = 10000;
 
     // Initialize stuff for random moves
     std::random_device rd;
@@ -40,7 +40,7 @@ void generate(Board &board)
     }
 
     // Set TT-Size
-    transpositionTabel.setSize(16);
+    transpositionTable.setSize(16);
 
     // Needed for logging
     std::uint64_t counter = 0;
@@ -130,10 +130,10 @@ void generate(Board &board)
             }
 
             // Search for 5000 nodes
-            searcher.iterativeDeepening(board, true);
+            search.iterativeDeepening(board, true);
 
             // Get the best move
-            Move bestMove = searcher.rootBestMove;
+            Move bestMove = search.rootBestMove;
 
             // Check if the move is illegal the want to make
             if (board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
@@ -146,8 +146,8 @@ void generate(Board &board)
             if (bestMove.typeOf() == Move::PROMOTION ||
                 board.inCheck() ||
                 board.isCapture(bestMove) ||
-                (board.sideToMove() == Color::WHITE && searcher.scoreData >= 10000) ||
-                (board.sideToMove() == Color::BLACK && searcher.scoreData <= 10000))
+                (board.sideToMove() == Color::WHITE && search.scoreData >= 10000) ||
+                (board.sideToMove() == Color::BLACK && search.scoreData <= 10000))
             {
                 board.makeMove(bestMove);
                 continue;
@@ -156,11 +156,11 @@ void generate(Board &board)
             // We create the output string based on whites perspective
             if (board.sideToMove() == Color::WHITE)
             {
-                outputLine[i] = board.getFen() + " | " + std::to_string(searcher.scoreData) + " | ";
+                outputLine[i] = board.getFen() + " | " + std::to_string(search.scoreData) + " | ";
             }
             else if (board.sideToMove() == Color::WHITE)
             {
-                outputLine[i] = board.getFen() + " | " + std::to_string(-searcher.scoreData) + " | ";
+                outputLine[i] = board.getFen() + " | " + std::to_string(-search.scoreData) + " | ";
             }
 
             // Count up the position
@@ -203,7 +203,7 @@ void generate(Board &board)
     }
 
     // Reset everything
-    transpositionTabel.clear();
+    transpositionTable.clear();
     outputFile.close();
-    searcher.hasNodeLimit = false;
+    search.hasNodeLimit = false;
 }
