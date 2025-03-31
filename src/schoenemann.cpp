@@ -26,19 +26,25 @@
 #include "nnue.h"
 #include "datagen.h"
 #include "tune.h"
-
-Search searcher;
-tt transpositionTabel(8);
-History history;
-Time timeManagement;
-MoveOrder moveOrder;
-
-network net;
-
-int transpositionTableSize = 8;
+#include "search.h"
+#include "history.h"
+#include "tt.h"
+#include "time.h"
+#include "moveorder.h"
 
 int main(int argc, char *argv[])
 {
+    tt transpositionTabel(8);
+    History history;
+    Time timeManagement;
+    MoveOrder moveOrder(history);
+
+    network net;
+
+    std::uint32_t transpositionTableSize = 16;
+
+    Search searcher(timeManagement, transpositionTableSize, history, moveOrder);
+
     // The main board
     Board board;
 
@@ -58,7 +64,7 @@ int main(int argc, char *argv[])
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
-        runBenchmark();
+        runBenchmark(searcher);
         return 0;
     }
 
@@ -277,7 +283,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "bench")
         {
-            runBenchmark();
+            runBenchmark(searcher);
         }
         else if (token == "eval")
         {

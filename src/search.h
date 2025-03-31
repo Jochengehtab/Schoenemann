@@ -24,22 +24,17 @@
 #include <iostream>
 
 #include "consts.h"
-
-struct SearchStack
-{
-	int staticEval;
-	int pvLength;
-	bool inCheck;
-	std::array<Move, 256> pvLine;
-	Move killerMove = Move::NULL_MOVE;
-	PieceType previousMovedPiece = PieceType::NONE;
-	Move previousMove = Move::NULL_MOVE;
-	Move exludedMove = Move::NULL_MOVE;
-};
+#include "time.h"
+#include "tt.h"
+#include "history.h"
+#include "moveorder.h"
+#include "search_fwd.h"
 
 class Search
 {
 public:
+
+	Search(Time& time, int transpositionSize, History& history, MoveOrder& moveOrder) : timeManagement(time), transpositionTabel(transpositionSize), history(history), moveOrder(moveOrder){}
 	const int infinity = 32767;
 	const int CORRHIST_LIMIT = 1024;
 	const int MAX_PLY = 256;
@@ -72,6 +67,10 @@ public:
 private:
 	int aspiration(int maxDepth, int score, Board &board);
 	std::string getPVLine();
+	Time timeManagement;
+	tt transpositionTabel;
+	History history;
+	MoveOrder moveOrder;
 };
 
 #endif

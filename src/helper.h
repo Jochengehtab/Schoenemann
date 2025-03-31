@@ -17,11 +17,17 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef HELPER_H
+#define HELPER_H
 
-#include "consts.h"
+#include "search.h"
 
-void transpositionTableTest(Board &board);
+#include "chess.hpp"
+using namespace chess;
+
+//void transpositionTableTest(Board &board);
 void testCommand();
-void runBenchmark();
+void runBenchmark(Search& search);
 void uciPrint();
+
+#endif

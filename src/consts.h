@@ -17,31 +17,10 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef CONSTS_H
+#define CONSTS_H
 
 #include <iostream>
-#include <random>
-
-#include "tt.h"
-#include "search.h"
-#include "history.h"
-#include "time.h"
-#include "moveorder.h"
-
-extern tt transpositionTabel;
-
-class Search;
-extern Search searcher;
-
-class History;
-extern History history;
-
-class Time;
-extern Time timeManagement;
-
-class MoveOrder;
-extern MoveOrder moveOrder;
-
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 // Bench depth
@@ -68,3 +47,4 @@ const std::string testStrings[] = {
 	"2r2rk1/1p2npp1/1q1b1nbp/p2p4/P2N3P/BPN1P3/4BPP1/2RQ1RK1 w - -",
 	"8/2b3p1/4knNp/2p4P/1pPp1P2/1P1P1BPK/8/8 w - -"};
 
+#endif

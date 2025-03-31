@@ -20,6 +20,8 @@
 #ifndef SEE_H
 #define SEE_H
 
+#include "chess.hpp"
+using namespace chess;
 #include "consts.h"
 #include "tune.h"
 

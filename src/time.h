@@ -20,7 +20,8 @@
 #ifndef TIME_H
 #define TIME_H
 
-#include "consts.h"
+#include "chess.hpp"
+using namespace chess;
 
 class Time
 {

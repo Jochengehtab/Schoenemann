@@ -19,6 +19,7 @@
 
 #include "helper.h"
 
+/*
 void transpositionTableTest(Board &board)
 {
 	// Set up a unique position
@@ -90,6 +91,7 @@ void transpositionTableTest(Board &board)
 	}
 	board.setFen(STARTPOS);
 }
+	*/
 
 void testCommand()
 {
@@ -105,7 +107,7 @@ void uciPrint()
 			  << "option name Threads type spin default 1 min 1 max 1" << std::endl;
 }
 
-void runBenchmark()
+void runBenchmark(Search& search)
 {
 	// Setting up the bench Board
 	Board benchBoard;
@@ -114,13 +116,13 @@ void runBenchmark()
 	auto start = std::chrono::high_resolution_clock::now();
 
 	// Reseting the nodes
-	searcher.nodes = 0;
+	search.nodes = 0;
 
 	// Looping over all bench positions
 	for (const auto &test : testStrings)
 	{
 		benchBoard.setFen(test);
-		searcher.pvs(-infinity, infinity, benchDepth, 0, benchBoard, false);
+		search.pvs(-infinity, infinity, benchDepth, 0, benchBoard, false);
 	}
 
 	auto end = std::chrono::high_resolution_clock::now();
@@ -130,8 +132,8 @@ void runBenchmark()
 	int timeInMs = static_cast<int>(timeElapsed.count());
 
 	// calculates the Nodes per Second
-	int NPS = static_cast<int>(searcher.nodes / timeElapsed.count() * 1000);
+	int NPS = static_cast<int>(search.nodes / timeElapsed.count() * 1000);
 
 	// Prints out the final bench
-	std::cout << "Time  : " << timeInMs << " ms\nNodes : " << searcher.nodes << "\nNPS   : " << NPS << std::endl;
+	std::cout << "Time  : " << timeInMs << " ms\nNodes : " << search.nodes << "\nNPS   : " << NPS << std::endl;
 }
