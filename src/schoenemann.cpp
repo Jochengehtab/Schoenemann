@@ -35,15 +35,15 @@
 int main(int argc, char *argv[])
 {
     tt transpositionTabel(8);
-    History history;
+    History* history = new History();
     Time timeManagement;
-    MoveOrder moveOrder(history);
+    MoveOrder moveOrder(*history);
 
     network net;
 
     std::uint32_t transpositionTableSize = 16;
 
-    Search searcher(timeManagement, transpositionTableSize, history, moveOrder, net);
+    Search* searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, net);
 
     // The main board
     Board board(net);
@@ -58,13 +58,13 @@ int main(int argc, char *argv[])
     board.set960(false);
 
     // Init the LMR
-    searcher.initLMR();
+    searcher->initLMR();
 
     transpositionTabel.setSize(8);
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
-        runBenchmark(searcher);
+        runBenchmark(*searcher);
         return 0;
     }
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "stop")
         {
-            searcher.shouldStop = true;
+            searcher->shouldStop = true;
         }
         else if (token == "isready")
         {
@@ -202,12 +202,12 @@ int main(int argc, char *argv[])
         {
             int number[4];
             bool hasTime = false;
-            searcher.shouldStop = false;
+            searcher->shouldStop = false;
 
             is >> token;
             if (!is.good())
             {
-                searcher.iterativeDeepening(board, true);
+                searcher->iterativeDeepening(board, true);
             }
             while (is.good())
             {
@@ -236,21 +236,21 @@ int main(int argc, char *argv[])
                 else if (token == "depth")
                 {
                     is >> token;
-                    searcher.pvs(-infinity, infinity, std::stoi(token), 0, board, false);
-                    std::cout << "bestmove " << uci::moveToUci(searcher.rootBestMove) << std::endl;
+                    searcher->pvs(-infinity, infinity, std::stoi(token), 0, board, false);
+                    std::cout << "bestmove " << uci::moveToUci(searcher->rootBestMove) << std::endl;
                 }
                 else if (token == "nodes")
                 {
                     is >> token;
-                    searcher.hasNodeLimit = true;
-                    searcher.nodeLimit = std::stoi(token);
-                    searcher.iterativeDeepening(board, true);
+                    searcher->hasNodeLimit = true;
+                    searcher->nodeLimit = std::stoi(token);
+                    searcher->iterativeDeepening(board, true);
                 }
                 else if (token == "movetime")
                 {
                     is >> token;
                     timeManagement.timeLeft = std::stoi(token);
-                    std::thread t1(std::bind(&Search::iterativeDeepening, &searcher, board, false));
+                    std::thread t1(std::bind(&Search::iterativeDeepening, searcher, board, false));
                     t1.detach();
                 }
                 if (!(is >> token))
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
                     timeManagement.timeLeft = number[1];
                     timeManagement.increment = number[3];
                 }
-                searcher.iterativeDeepening(board, false);
+                searcher->iterativeDeepening(board, false);
             }
         }
         else if (token == "d")
@@ -283,12 +283,12 @@ int main(int argc, char *argv[])
         }
         else if (token == "bench")
         {
-            runBenchmark(searcher);
+            runBenchmark(*searcher);
         }
         else if (token == "eval")
         {
             std::cout << "The raw eval is: " << net.evaluate((int)board.sideToMove(), board.occ().count()) << std::endl;
-            std::cout << "The scaled evaluation is: " << searcher.scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board) << " cp" << std::endl;
+            std::cout << "The scaled evaluation is: " << searcher->scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board) << " cp" << std::endl;
         }
         else if (token == "test")
         {
@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "stop")
         {
-            searcher.shouldStop = true;
+            searcher->shouldStop = true;
         }
     } while (token != "quit");
     return 0;
