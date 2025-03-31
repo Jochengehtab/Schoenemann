@@ -2009,24 +2009,25 @@ namespace chess
         Board(PrivateCtor) {}
 
     public:
-        explicit Board(std::string_view fen = constants::STARTPOS, bool chess960 = false)
-        {
-            prev_states_.reserve(256);
-            chess960_ = chess960;
-            setFenInternal<true>(fen);
-        }
-
-        explicit Board(network* net)
-        {
+    explicit Board(network* net = nullptr, std::string_view fen = constants::STARTPOS, bool chess960 = false)
+    {
+        if (net) {
             this->net = net;
-            prev_states_.reserve(256);
-            chess960_ = false;
-            setFenInternal<true>(constants::STARTPOS);
+        } else {
+            // Optionally create a default network if none is provided.
+            this->net = new network();
+            // Consider storing a flag to know that you need to delete it later.
         }
+        prev_states_.reserve(256);
+        chess960_ = chess960;
+        setFenInternal<true>(fen);
+    }
 
         virtual void setFen(std::string_view fen) { setFenInternal(fen); }
 
-        static Board fromFen(std::string_view fen) { return Board(fen); }
+        static Board fromFen(std::string_view fen, network* net) {
+            return Board(net, fen);
+        }
         static Board fromEpd(std::string_view epd)
         {
             Board board;
@@ -2950,12 +2951,6 @@ namespace chess
 
             static PackedBoard encodeState(std::string_view fen, bool chess960 = false)
             {
-                // fallback to slower method
-                if (chess960)
-                {
-                    Board board = Board(fen, true);
-                    return encodeState(board);
-                }
 
                 PackedBoard packed{};
 
