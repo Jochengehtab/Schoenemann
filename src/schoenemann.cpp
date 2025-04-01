@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
     tt transpositionTabel(transpositionTableSize);
     History *history = new History();
     Time timeManagement;
-    MoveOrder moveOrder(*history);
+    MoveOrder moveOrder;
 
     network net;
 
-    Search *searcher = new Search(timeManagement, transpositionTabel, *history, moveOrder, net);
+    Search *searcher = new Search(timeManagement, transpositionTabel, history, moveOrder, net);
 
     // The main board
     Board board(&net);

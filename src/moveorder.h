@@ -27,10 +27,8 @@
 class MoveOrder
 {
 private:
-    History history;
 public:
-    MoveOrder(History& history) : history(history) {}
-    void orderMoves(Movelist &moveList, Hash *entry, Move& killer, SearchStack* stack, Board &board, int* scores, int ply);
+    void orderMoves(History* history, Movelist &moveList, Hash *entry, Move& killer, SearchStack* stack, Board &board, int* scores, int ply);
     Move sortByScore(Movelist &moveList, int scores[], int i);
 };
 

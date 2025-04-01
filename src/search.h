@@ -34,7 +34,7 @@ class Search
 public:
 	Search(Time &timeManagement,
 		   tt &transpositionTabel,
-		   History &history,
+		   History *history,
 		   MoveOrder &moveOrder,
 		   network &net) : timeManagement(timeManagement),
 						   transpositionTabel(transpositionTabel),
@@ -75,7 +75,7 @@ private:
 	std::string getPVLine();
 	Time &timeManagement;
 	tt &transpositionTabel;
-	History &history;
+	History *history;
 	MoveOrder &moveOrder;
 	network &net;
 };

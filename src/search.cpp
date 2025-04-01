@@ -245,7 +245,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     int rawEval = staticEval;
-    staticEval = std::clamp(history.correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
+    staticEval = std::clamp(history->correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
@@ -311,7 +311,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int scoreMoves[218] = {0};
         // Sort the list
-        moveOrder.orderMoves(moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
+        moveOrder.orderMoves(history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
 
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
@@ -380,7 +380,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     int scoreMoves[218] = {0};
     // Sort the list
-    moveOrder.orderMoves(moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
+    moveOrder.orderMoves(history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
 
     // Set up values for the search
     int score = 0;
@@ -530,7 +530,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(quietHistoryDepthMul) * depth, 
                         static_cast<int>(quietHistoryBonusCap));
 
-                        history.updateQuietHistory(board, move, quietHistoryBonus);
+                        history->updateQuietHistory(board, move, quietHistoryBonus);
 
                     int continuationHistoryBonus = std::min(
                         static_cast<int>(continuationHistoryGravityBase) + 
@@ -538,7 +538,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
-                    history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, stack);
+                    history->updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, stack);
 
                     int quietHistoryMalus = std::min(
                         static_cast<int>(quietHistoryMalusBase) + 
@@ -559,8 +559,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                             continue;
                         }
 
-                        history.updateQuietHistory(board, madeMove, -quietHistoryMalus);
-                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, stack);
+                        history->updateQuietHistory(board, madeMove, -quietHistoryMalus);
+                        history->updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, stack);
                     }
                 }
 
@@ -592,7 +592,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
         int bonus = std::clamp((int)(bestScore - staticEval) * depth * pawnCorrectionHistoryDepthAdd / pawnCorrectionHistoryDepthDiv, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
-        history.updatePawnCorrectionHistory(bonus, board, pawnCorrectionHistoryDepthDiv);
+        history->updatePawnCorrectionHistory(bonus, board, pawnCorrectionHistoryDepthDiv);
     }
 
     return bestScore;
@@ -678,7 +678,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     }
 
     int rawEval = standPat;
-    standPat = std::clamp(history.correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
+    standPat = std::clamp(history->correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     if (standPat >= beta)
     {
