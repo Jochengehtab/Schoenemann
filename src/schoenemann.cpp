@@ -34,16 +34,15 @@
 
 int main(int argc, char *argv[])
 {
-    tt transpositionTabel(8);
+    std::uint32_t transpositionTableSize = 16;
+    tt transpositionTabel(transpositionTableSize);
     History *history = new History();
     Time timeManagement;
     MoveOrder moveOrder(*history);
 
     network net;
 
-    std::uint32_t transpositionTableSize = 16;
-
-    Search *searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, &net);
+    Search *searcher = new Search(timeManagement, transpositionTabel, *history, moveOrder, &net);
 
     // The main board
     Board board(&net);
