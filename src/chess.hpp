@@ -1798,6 +1798,7 @@ namespace chess
     public:
         explicit Board(network* net = nullptr, std::string_view fen = constants::STARTPOS, bool chess960 = false)
         {
+            this->net = net;
             prev_states_.reserve(256);
             chess960_ = chess960;
             setFenInternal<true>(fen);
@@ -2283,7 +2284,7 @@ namespace chess
             return ss;
         }
 
-        [[nodiscard]] bool isRepetition(int count = 1) const
+        [[nodiscard]] bool isRepetition(int count = 2) const
         {
             uint8_t c = 0;
 
@@ -2485,9 +2486,9 @@ namespace chess
         bool chess960_ = false;
 
     private:
+        network* net;
         void removePieceInternal(Piece piece, Square sq)
         {
-
             auto type = piece.type();
             auto color = piece.color();
             auto index = sq.index();
@@ -2495,6 +2496,8 @@ namespace chess
             pieces_bb_[type].clear(index);
             occ_bb_[color].clear(index);
             board_[index] = Piece::NONE;
+
+            net->updateAccumulator(type, color, sq.index(), false);
         }
 
         void placePieceInternal(Piece piece, Square sq)
@@ -2506,12 +2509,15 @@ namespace chess
             pieces_bb_[type].set(index);
             occ_bb_[color].set(index);
             board_[index] = piece;
+            net->updateAccumulator((int)type, (int)color, sq.index(), true);
         }
 
         template <bool ctor = false>
         void setFenInternal(std::string_view fen)
         {
             original_fen_ = fen;
+
+            net->refreshAccumulator();
 
             occ_bb_.fill(0ULL);
             pieces_bb_.fill(0ULL);
