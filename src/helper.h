@@ -27,7 +27,7 @@ using namespace chess;
 
 //void transpositionTableTest(Board &board);
 void testCommand();
-void runBenchmark(Search& search);
+void runBenchmark(Search& search, Board& benchBoard);
 void uciPrint();
 
 #endif

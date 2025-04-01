@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
-        runBenchmark(*searcher);
+        runBenchmark(*searcher, board);
         delete searcher;
         delete history;
 
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
         }
         else if (token == "bench")
         {
-            runBenchmark(*searcher);
+            runBenchmark(*searcher, board);
         }
         else if (token == "eval")
         {

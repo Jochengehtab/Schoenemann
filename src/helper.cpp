@@ -107,11 +107,8 @@ void uciPrint()
 			  << "option name Threads type spin default 1 min 1 max 1" << std::endl;
 }
 
-void runBenchmark(Search& search)
+void runBenchmark(Search& search, Board& benchBoard)
 {
-	// Setting up the bench Board
-	Board benchBoard;
-
 	// Setting up the clock
 	auto start = std::chrono::high_resolution_clock::now();
 
