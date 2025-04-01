@@ -37,6 +37,7 @@ VERSION: 0.6.76
 #include <cstdint>
 
 #if __cplusplus >= 202002L
+#include <bit>
 #endif
 #include <algorithm>
 #include <bitset>
