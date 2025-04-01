@@ -23,7 +23,7 @@
 
 DEFINE_PARAM_S(mvaLvvMultiplyer, 103, 20);
 
-void MoveOrder::orderMoves(Movelist &moveList, Hash *entry, Move& killer, SearchStack* stack, Board &board, int scores[], int ply)
+void MoveOrder::orderMoves(Movelist &moveList, Hash *entry, Move& killer, SearchStack* stack, Board &board, int* scores, int ply)
 {
 	const bool isNullptr = entry == nullptr ? true : false;
 	const std::uint64_t key = board.zobrist();

@@ -241,7 +241,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     // we perform a static evaluation
     if (staticEval == NO_VALUE)
     {
-        staticEval = scaleOutput(net->evaluate((int)board.sideToMove(), board.occ().count()), board);
+        staticEval = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
     }
 
     int rawEval = staticEval;
@@ -674,7 +674,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
 
     if (standPat == NO_VALUE)
     {
-        standPat = scaleOutput(net->evaluate((int)board.sideToMove(), board.occ().count()), board);
+        standPat = scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board);
     }
 
     int rawEval = standPat;

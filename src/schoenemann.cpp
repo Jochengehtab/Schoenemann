@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     network net;
 
-    Search *searcher = new Search(timeManagement, transpositionTabel, *history, moveOrder, &net);
+    Search *searcher = new Search(timeManagement, transpositionTabel, *history, moveOrder, net);
 
     // The main board
     Board board(&net);
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     // Init the LMR
     searcher->initLMR();
 
-    transpositionTabel.setSize(transpositionTableSize);
+    transpositionTabel.setSize(8);
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {

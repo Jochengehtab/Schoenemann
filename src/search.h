@@ -36,7 +36,7 @@ public:
 		   tt &transpositionTabel,
 		   History &history,
 		   MoveOrder &moveOrder,
-		   network *net) : timeManagement(timeManagement),
+		   network &net) : timeManagement(timeManagement),
 						   transpositionTabel(transpositionTabel),
 						   history(history),
 						   moveOrder(moveOrder),
@@ -77,7 +77,7 @@ private:
 	tt &transpositionTabel;
 	History &history;
 	MoveOrder &moveOrder;
-	network *net;
+	network &net;
 };
 
 #endif
