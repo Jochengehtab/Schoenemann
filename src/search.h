@@ -32,14 +32,15 @@
 class Search
 {
 public:
-	Search(Time &time,
+	Search(Time &timeManagement,
 		   tt &transpositionTabel,
 		   History &history,
 		   MoveOrder &moveOrder,
-		   network *net) : timeManagement(time),
+		   network *net) : timeManagement(timeManagement),
 						   transpositionTabel(transpositionTabel),
 						   history(history),
-						   moveOrder(moveOrder), net(net) {}
+						   moveOrder(moveOrder),
+						   net(net) {}
 	const int infinity = 32767;
 	const int CORRHIST_LIMIT = 1024;
 	const int MAX_PLY = 256;
@@ -72,10 +73,10 @@ public:
 private:
 	int aspiration(int maxDepth, int score, Board &board);
 	std::string getPVLine();
-	Time timeManagement;
+	Time &timeManagement;
 	tt &transpositionTabel;
-	History history;
-	MoveOrder moveOrder;
+	History &history;
+	MoveOrder &moveOrder;
 	network *net;
 };
 
