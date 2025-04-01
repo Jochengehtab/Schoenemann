@@ -1806,11 +1806,6 @@ namespace chess
 
         virtual void setFen(std::string_view fen) { setFenInternal(fen); }
 
-        static Board fromFen(std::string_view fen, network* net = nullptr)
-        {
-            return Board(net, fen);
-        }
-
         [[nodiscard]] std::string getFen(bool move_counters = true) const
         {
             std::string ss;
