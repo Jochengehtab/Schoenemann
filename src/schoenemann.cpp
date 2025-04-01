@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     std::uint32_t transpositionTableSize = 16;
 
-    Search *searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, net);
+    Search *searcher = new Search(timeManagement, transpositionTableSize, *history, moveOrder, &net);
 
     // The main board
     Board board(&net);

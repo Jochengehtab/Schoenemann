@@ -33,7 +33,7 @@ class Search
 {
 public:
 
-	Search(Time& time, int transpositionSize, History& history, MoveOrder& moveOrder, network& net): timeManagement(time), transpositionTabel(transpositionSize), history(history), moveOrder(moveOrder), net(net){}
+	Search(Time& time, int transpositionSize, History& history, MoveOrder& moveOrder, network* net): timeManagement(time), transpositionTabel(transpositionSize), history(history), moveOrder(moveOrder), net(net){}
 	const int infinity = 32767;
 	const int CORRHIST_LIMIT = 1024;
 	const int MAX_PLY = 256;
@@ -70,7 +70,7 @@ private:
 	tt transpositionTabel;
 	History history;
 	MoveOrder moveOrder;
-	network net;
+	network* net;
 };
 
 #endif

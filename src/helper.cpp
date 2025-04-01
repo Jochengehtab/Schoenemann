@@ -133,4 +133,6 @@ void runBenchmark(Search& search, Board& benchBoard)
 
 	// Prints out the final bench
 	std::cout << "Time  : " << timeInMs << " ms\nNodes : " << search.nodes << "\nNPS   : " << NPS << std::endl;
+
+	benchBoard.setFen(STARTPOS);
 }
