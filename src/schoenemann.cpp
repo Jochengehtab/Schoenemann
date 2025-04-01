@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     // Init the LMR
     searcher->initLMR();
 
-    transpositionTabel.setSize(8);
+    transpositionTabel.setSize(transpositionTableSize);
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
