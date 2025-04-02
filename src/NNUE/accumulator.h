@@ -17,11 +17,12 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef ACCUMULATOR_H
+#define ACCUMULATOR_H
 
 #include <array>
 
-#include "nnueconstants.h"
+#include "nnueconsts.h"
 
 class accumulator
 {
@@ -46,3 +47,5 @@ public:
         std::fill(std::begin(black), std::end(black), 0);
     }
 };
+
+#endif

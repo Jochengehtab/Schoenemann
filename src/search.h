@@ -34,11 +34,9 @@ class Search
 public:
 	Search(Time &timeManagement,
 		   tt &transpositionTabel,
-		   History *history,
 		   MoveOrder &moveOrder,
 		   network &net) : timeManagement(timeManagement),
 						   transpositionTabel(transpositionTabel),
-						   history(history),
 						   moveOrder(moveOrder),
 						   net(net) {}
 	const int infinity = 32767;
@@ -62,20 +60,21 @@ public:
 	std::array<std::array<std::uint8_t, 218>, 256> reductions;
 	SearchStack stack[256];
 
-	int pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode);
-	int qs(int alpha, int beta, Board &board, int ply);
+	int pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::int16_t ply, Board &board, bool isCutNode);
+	int qs(std::int16_t alpha, std::int16_t beta, Board &board, std::int16_t ply);
 
 	int scaleOutput(int rawEval, Board &board);
 
 	void iterativeDeepening(Board &board, bool isInfinite);
 	void initLMR();
+	void resetHistory();
 
 private:
 	int aspiration(int maxDepth, int score, Board &board);
 	std::string getPVLine();
 	Time &timeManagement;
 	tt &transpositionTabel;
-	History *history;
+	History history;
 	MoveOrder &moveOrder;
 	network &net;
 };

@@ -35,14 +35,13 @@
 int main(int argc, char *argv[])
 {
     std::uint32_t transpositionTableSize = 16;
+
     tt transpositionTabel(transpositionTableSize);
-    History *history = new History();
     Time timeManagement;
     MoveOrder moveOrder;
-
     network net;
 
-    Search *searcher = new Search(timeManagement, transpositionTabel, history, moveOrder, net);
+    Search *searcher = new Search(timeManagement, transpositionTabel, moveOrder, net);
 
     // The main board
     Board board(&net);
@@ -60,13 +59,15 @@ int main(int argc, char *argv[])
     searcher->initLMR();
 
     transpositionTabel.setSize(transpositionTableSize);
+    timeManagement.reset();
+    searcher->resetHistory();
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
         runBenchmark(*searcher, board);
-        delete searcher;
-        delete history;
 
+        // Delete the search object that was previously allocated on the heap
+        delete searcher;
         return 0;
     }
 
@@ -128,6 +129,12 @@ int main(int argc, char *argv[])
 
             // Clear the transposition table
             transpositionTabel.clear();
+
+            // Reset the time mangement
+            timeManagement.reset();
+
+            // Also reset all the historys
+            searcher->resetHistory();
         }
         else if (token == "setoption")
         {
@@ -305,8 +312,9 @@ int main(int argc, char *argv[])
             searcher->shouldStop = true;
         }
     } while (token != "quit");
+
+    // Delete the search object that was previously allocated on the heap
     delete searcher;
-    delete history;
 
     return 0;
 }

@@ -112,7 +112,7 @@ DEFINE_PARAM_S(singularDepthSub, 1, 15);
 DEFINE_PARAM_B(singularDepthDiv, 2, 1, 20);
 DEFINE_PARAM_S(singularTTSub, 2, 10);
 
-int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCutNode)
+int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::int16_t ply, Board &board, bool isCutNode)
 {
     if (shouldStop)
     {
@@ -245,7 +245,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     }
 
     int rawEval = staticEval;
-    staticEval = std::clamp(history->correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
+    staticEval = std::clamp(history.correctEval(staticEval, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     // Update the static Eval on the stack
     stack[ply].staticEval = staticEval;
@@ -311,7 +311,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
         int scoreMoves[218] = {0};
         // Sort the list
-        moveOrder.orderMoves(history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
+        moveOrder.orderMoves(&history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
 
         for (int i = 0; i < moveList.size() && probCutCount < winningCount; i++)
         {
@@ -380,7 +380,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
 
     int scoreMoves[218] = {0};
     // Sort the list
-    moveOrder.orderMoves(history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
+    moveOrder.orderMoves(&history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
 
     // Set up values for the search
     int score = 0;
@@ -473,13 +473,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
         else
         {
-            int lmr = 0;
+            std::uint8_t lmr = 0;
             if (depth > lmrDepth)
             {
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
                 lmr += isCutNode * lmrCutNodeMul;
-                lmr = std::clamp(lmr, 0, depth - 1);
+                lmr = std::clamp(lmr, static_cast<std::uint8_t>(0), static_cast<std::uint8_t>(depth - 1));
             }
 
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + extensions, ply + 1, board, true);
@@ -512,7 +512,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                 {
                     stack[ply].pvLine[0] = move;
                     stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                    for (int x = 0; x < stack[ply + 1].pvLength; x++)
+                    for (std::uint16_t x = 0; x < stack[ply + 1].pvLength; x++)
                     {
                         stack[ply].pvLine[x + 1] = stack[ply + 1].pvLine[x];
                     }
@@ -530,7 +530,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(quietHistoryDepthMul) * depth, 
                         static_cast<int>(quietHistoryBonusCap));
 
-                        history->updateQuietHistory(board, move, quietHistoryBonus);
+                        history.updateQuietHistory(board, move, quietHistoryBonus);
 
                     int continuationHistoryBonus = std::min(
                         static_cast<int>(continuationHistoryGravityBase) + 
@@ -538,7 +538,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                         static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
-                    history->updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, stack);
+                    history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, stack);
 
                     int quietHistoryMalus = std::min(
                         static_cast<int>(quietHistoryMalusBase) + 
@@ -559,8 +559,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
                             continue;
                         }
 
-                        history->updateQuietHistory(board, madeMove, -quietHistoryMalus);
-                        history->updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, stack);
+                        history.updateQuietHistory(board, madeMove, -quietHistoryMalus);
+                        history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove, -continuationHistoryMalus, ply, stack);
                     }
                 }
 
@@ -569,7 +569,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
         }
     }
 
-    short finalType;
+    std::uint8_t finalType;
     // Calculate the node type
     if (bestScore >= beta)
     {
@@ -592,13 +592,13 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board, bool isCu
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (finalType == EXACT || (finalType == UPPER_BOUND && bestScore <= staticEval) || (finalType == LOWER_BOUND && bestScore > staticEval)))
     {
         int bonus = std::clamp((int)(bestScore - staticEval) * depth * pawnCorrectionHistoryDepthAdd / pawnCorrectionHistoryDepthDiv, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
-        history->updatePawnCorrectionHistory(bonus, board, pawnCorrectionHistoryDepthDiv);
+        history.updatePawnCorrectionHistory(bonus, board, pawnCorrectionHistoryDepthDiv);
     }
 
     return bestScore;
 }
 
-int Search::qs(int alpha, int beta, Board &board, int ply)
+int Search::qs(std::int16_t alpha, std::int16_t beta, Board &board, std::int16_t ply)
 {
     if (shouldStop)
     {
@@ -645,7 +645,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
 
     int hashedScore = 0;
     int standPat = NO_VALUE;
-    short hashedType = 0;
+    std::uint8_t hashedType = 0;
 
     if (!isNullptr)
     {
@@ -678,7 +678,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
     }
 
     int rawEval = standPat;
-    standPat = std::clamp(history->correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
+    standPat = std::clamp(history.correctEval(standPat, board), -infinity + MAX_PLY, infinity - MAX_PLY);
 
     if (standPat >= beta)
     {
@@ -732,7 +732,7 @@ int Search::qs(int alpha, int beta, Board &board, int ply)
                 // Update pvLine
                 stack[ply].pvLine[0] = move;
                 stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                for (int i = 0; i < stack[ply + 1].pvLength; i++)
+                for (std::uint16_t i = 0; i < stack[ply + 1].pvLength; i++)
                 {
                     stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
                 }
@@ -815,7 +815,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
     nodes = 0;
 
-    for (int i = 1; i <= 256; i++)
+    for (std::uint8_t i = 1; i < 255; i++)
     {
         if (i > 7)
         {
@@ -849,7 +849,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
             std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
             std::cout
                 << "info depth "
-                << i << " score cp "
+                << static_cast<int>(i) << " score cp "
                 << scoreData << " nodes "
                 << nodes << " nps "
                 << static_cast<std::uint64_t>(nodes / (elapsed.count() + 1) * 1000) << " pv "
@@ -859,7 +859,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
 
-        if ((timeManagement.shouldStopID(start) && !isInfinite) || i == 255)
+        if ((timeManagement.shouldStopID(start) && !isInfinite) || i == 254)
         {
             if (!hasNodeLimit)
             {
@@ -898,9 +898,14 @@ int Search::scaleOutput(int rawEval, Board &board)
 std::string Search::getPVLine()
 {
     std::string pvLine;
-    for (int i = 0; i < stack[0].pvLength; i++)
+    for (std::uint16_t i = 0; i < stack[0].pvLength; i++)
     {
         pvLine += uci::moveToUci(stack[0].pvLine[i]) + " ";
     }
     return pvLine;
+}
+
+void Search::resetHistory()
+{
+    history.resetHistorys();
 }

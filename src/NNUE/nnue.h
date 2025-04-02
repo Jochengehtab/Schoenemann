@@ -17,7 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef NNUE_H
+#define NNUE_H
 
 #include <array>
 #include <cstdint>
@@ -135,3 +136,5 @@ public:
         return eval;
     }
 };
+
+#endif

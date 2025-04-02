@@ -26,7 +26,7 @@ void Time::calculateTimeForMove()
 {
     // Only use half of out time as maximum
     timeLeft -= timeLeft / 2;
-    // TODO need check
+    
     hardLimit = softLimit = timeLeft;
 
     // Calculate the base and the max time
@@ -42,8 +42,8 @@ void Time::calculateTimeForMove()
     softLimit = std::min(maxTime, (int)((baseTime * 0.76 * bmFactor * evalFactor)));
 
     // Make sure that out time doesn't get below 1
-    softLimit = std::max(softLimit, static_cast<long>(1.0));
-    hardLimit = std::max(hardLimit, static_cast<long>(1.0));
+    softLimit = std::max(softLimit, 1.0);
+    hardLimit = std::max(hardLimit, 1.0);
 }
 
 void Time::updateBestMoveStability(Move bestMove, Move previousBestMove)
@@ -68,6 +68,15 @@ void Time::updateEvalStability(int score, int previousScore)
     {
         bestMoveStabilityCount = 0;
     }
+}
+
+void Time::reset()
+{
+    bestMoveStabilityCount = 0;
+    bestEvalStabilityCount = 0;
+
+    hardLimit = 0;
+    softLimit = 0;
 }
 
 bool Time::shouldStopSoft(std::chrono::steady_clock::time_point start)

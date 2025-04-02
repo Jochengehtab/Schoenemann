@@ -38,6 +38,7 @@ public:
     void updateQuietHistory(Board &board, Move move, int bonus);
     void updatePawnCorrectionHistory(int bonus, Board &board, int div);
     void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack *stack);
+    void resetHistorys();
 };
 
 #endif

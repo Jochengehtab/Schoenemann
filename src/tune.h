@@ -17,7 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TUNE_H
+#define TUNE_H
 
 #include <iostream>
 #include <vector>
@@ -91,5 +92,7 @@ extern int PIECE_VALUES[7];
 #define DEFINE_PARAM_S(parameterName, startValue, step) constexpr int parameterName = startValue
 
 #define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) constexpr int parameterName = startValue
+
+#endif
 
 #endif

@@ -7,7 +7,7 @@ using namespace chess;
 struct SearchStack
 {
 	int staticEval;
-	int pvLength;
+	std::uint16_t pvLength;
 	bool inCheck;
 	std::array<Move, 256> pvLine;
 	Move killerMove = Move::NULL_MOVE;

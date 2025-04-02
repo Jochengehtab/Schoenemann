@@ -19,9 +19,9 @@
 
 #include "tt.h"
 
-void tt::storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t type, int score, Move move, int eval)
+void tt::storeEvaluation(std::uint64_t key, std::int16_t depth, std::uint8_t type, int score, Move move, int eval) noexcept
 {
-	std::uint64_t index = key % size;
+	const std::uint64_t index = key % size;
 
 	// Get the HashNode
 	Hash *node = table + index;
@@ -30,10 +30,10 @@ void tt::storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t typ
 	node->setEntry(key, depth, type, score, move, eval);
 }
 
-Hash *tt::getHash(std::uint64_t zobristKey)
+Hash *tt::getHash(std::uint64_t zobristKey) noexcept
 {
 	// Gets the index based on the zobrist key
-	std::uint64_t index = zobristKey % size;
+	const std::uint64_t index = zobristKey % size;
 
 	// Getting the node by the index
 	Hash *node = table + index;
@@ -47,6 +47,7 @@ Hash *tt::getHash(std::uint64_t zobristKey)
 	// Returns a nullptr if nothing was found in the hash
 	return nullptr;
 }
+
 void tt::clear()
 {
 	memset(static_cast<void *>(table), 0, size * sizeof(Hash));
@@ -69,20 +70,20 @@ void tt::init(std::uint64_t MB)
 	clear();
 }
 
-std::uint64_t tt::getSize() const
-{
-	return size;
-}
-
 void tt::setSize(std::uint64_t MB)
 {
 	free(table);
 	init(MB);
 }
 
-int tt::estimateHashfull() const
+int tt::estimateHashfull() const noexcept
 {
 	int used = 0;
+
+	for (std::uint16_t i = 0; i < 1000; i++)
+	{
+		used += (table[i].move == Move::NO_MOVE);
+	}
 
 	return used;
 }

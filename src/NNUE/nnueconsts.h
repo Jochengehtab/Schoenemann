@@ -17,7 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef NNUECONSTS
+#define NNUECONSTS
 
 #include <iostream>
 
@@ -34,3 +35,5 @@ constexpr bool deactivate = false;
 
 constexpr std::uint16_t blackSqures = 64 * 6;
 constexpr std::uint8_t whiteSquares = 64;
+
+#endif

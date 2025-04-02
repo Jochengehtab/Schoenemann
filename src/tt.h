@@ -27,21 +27,21 @@
 
 using namespace chess;
 
-const short EXACT = 0;       // Exact bound
-const short UPPER_BOUND = 1; // Upper bound
-const short LOWER_BOUND = 2; // Lower bound
-const short infinity = 32767;
+const std::uint8_t EXACT = 0;       // Exact bound
+const std::uint8_t UPPER_BOUND = 1; // Upper bound
+const std::uint8_t LOWER_BOUND = 2; // Lower bound
+const std::int16_t infinity = 32767;
 
 struct Hash
 {
-    std::uint64_t key; // The zobrist Key of the position
-    short depth;       // The current depth
-    short type;        // Ether EXACT, UPPER_BOUND or LOWER_BOUND
-    int score;         // The current score
-    Move move;         // The bestmove that we currently have
-    int eval;          // The static eval
+    std::uint64_t key;  // The zobrist Key of the position
+    std::int16_t depth; // The current depth
+    std::int8_t type;   // Ether EXACT, UPPER_BOUND or LOWER_BOUND
+    int score;          // The current score
+    int eval;           // The static eval
+    Move move = Move::NO_MOVE;          // The bestmove that we currently have
 
-    void setEntry(std::uint64_t _key, std::uint8_t _depth, std::uint8_t _type, int _score, Move _move, int _eval)
+    void setEntry(std::uint64_t _key, std::int16_t _depth, std::uint8_t _type, int _score, Move _move, int _eval)
     {
         key = _key;
         depth = _depth;
@@ -56,39 +56,32 @@ class tt
 {
 public:
     tt(std::uint64_t MB);
-    tt(const tt &other) = delete;
-    tt &operator=(const tt &other) = delete;
     ~tt();
 
-    void storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t type, int score, Move move, int eval);
-
-    Hash *getHash(std::uint64_t zobristKey);
-
-    std::uint64_t getSize() const;
+    Hash *getHash(std::uint64_t zobristKey) noexcept;
 
     void setSize(std::uint64_t MB);
-
     void clear();
+    void storeEvaluation(std::uint64_t key, std::int16_t depth, std::uint8_t type, int score, Move move, int eval) noexcept;
 
-    int estimateHashfull() const;
-
-    int scoreToTT(int score, int ply)
+    int estimateHashfull() const noexcept;
+    int scoreToTT(int score, std::int16_t ply)
     {
         return score >= infinity    ? score + ply
                : score <= -infinity ? score - ply
                                     : score;
     }
 
-    int scoreFromTT(int score, int ply)
+    int scoreFromTT(int score, std::int16_t ply)
     {
         return score >= infinity    ? score - ply
                : score <= -infinity ? score + ply
                                     : score;
     }
 
-    bool checkForMoreInformation(short type, int ttScore, int score)
+    bool checkForMoreInformation(std::uint8_t type, int ttScore, int score)
     {
-        short tempType;
+        std::uint8_t tempType;
         if (ttScore >= score)
         {
             tempType = LOWER_BOUND;

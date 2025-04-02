@@ -17,6 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <cstring>
+
 #include "history.h"
 #include "tune.h"
 
@@ -85,4 +87,11 @@ std::uint64_t History::getPieceKey(PieceType piece, const Board &board)
         key ^= Zobrist::piece(board.at(square), square);
     }
     return key;
+}
+
+void History::resetHistorys()
+{
+    std::memset(&quietHistory, 0, sizeof(quietHistory));
+    std::memset(&continuationHistory, 0, sizeof(continuationHistory));
+    std::memset(&pawnCorrectionHistory, 0, sizeof(pawnCorrectionHistory));
 }

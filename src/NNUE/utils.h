@@ -17,12 +17,13 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef UTILS_H
+#define UTILS_H
 
 #include <array>
 #include <immintrin.h>
 
-#include "nnueconstants.h"
+#include "nnueconsts.h"
 
 class util
 {
@@ -116,3 +117,5 @@ public:
         return eval;
     }
 };
+
+#endif
