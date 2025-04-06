@@ -410,7 +410,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         }
 
         // Idea
-        if (!pvNode && bestScore > -infinity && moveCounter >= 3 * depth && staticEval < alpha - 500)
+        if (!pvNode && bestScore > -infinity && moveCounter > 3 * depth && staticEval < alpha - (150 * depth) && depth > 2)
         {
             continue;
         }
