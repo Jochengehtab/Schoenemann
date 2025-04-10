@@ -303,7 +303,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     // it causes a beta cutoff we can make that beta cutoff
     if (!isSingularSearch && !pvNode && !inCheck && depth >= winningDepth && staticEval >= beta - winningEvalSub - winningDepthMul * depth && std::abs(beta) < infinity)
     {
-        int probCutMargin = beta + 100 * depth;
+        int probCutMargin = beta + 50 * depth;
         int probCutCount = 0;
 
         Movelist moveList;
