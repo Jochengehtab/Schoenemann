@@ -361,7 +361,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
             {
                 return score;
             }
-            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, !isCutNode);
+            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, false);
 
             if (score >= beta)
             {
@@ -385,13 +385,13 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     // Set up values for the search
     int score = 0;
     int bestScore = -infinity;
-    int movesMadeCounter = 0;
+    int quietMoveCount = 0;
     int moveCounter = 0;
 
     short type = LOWER_BOUND;
 
     Move bestMoveInPVS = Move::NULL_MOVE;
-    std::array<Move, 218> movesMade;
+    std::array<Move, 218> quietMoves;
 
     for (int i = 0; i < moveList.size(); i++)
     {
@@ -462,16 +462,13 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
 
         if (isQuiet)
         {
-            movesMade[movesMadeCounter] = move;
-            movesMadeCounter++;
+            quietMoves[quietMoveCount] = move;
+            quietMoveCount++;
         }
 
         moveCounter++;
 
-        if (board.inCheck())
-        {
-            extensions++;
-        }
+        extensions += board.inCheck();
 
         if (moveCounter == 1)
         {
@@ -557,9 +554,9 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                         static_cast<int>(continuationHistoryMalusMax));
  
                     // History malus
-                    for (int x = 0; x < movesMadeCounter; x++)
+                    for (int x = 0; x < quietMoveCount; x++)
                     {
-                        Move madeMove = movesMade[x];
+                        Move madeMove = quietMoves[x];
                         if (madeMove == bestMoveInPVS)
                         {
                             continue;
