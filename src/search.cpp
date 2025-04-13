@@ -228,9 +228,9 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         depth -= iirReduction;
     }
 
-    if (!pvNode && ply > 1 && (stack[ply].lmrReductionCount * depth) > (2500 * depth) && depth > 5)
+    if (!pvNode && ply > 1 && (stack[ply].lmrReductionCount * depth) > (2500 * depth) && depth > 5 && !isSingularSearch && !inCheck && isNullptr)
     {
-        depth--;
+        depth++;
     }
 
     if (!isSingularSearch && !isNullptr)
