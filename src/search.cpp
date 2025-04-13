@@ -228,6 +228,11 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         depth -= iirReduction;
     }
 
+    if (!pvNode && ply > 1 && (stack[ply].lmrReductionCount * depth) > (2500 * depth) && depth > 5)
+    {
+        depth--;
+    }
+
     if (!isSingularSearch && !isNullptr)
     {
         int probCutBeta = beta + probeCutBetaAdd;
@@ -485,6 +490,8 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 lmr = std::clamp(lmr, static_cast<std::uint8_t>(0), static_cast<std::uint8_t>(depth - 1));
             }
 
+            stack[ply].lmrReductionCount += lmr;
+
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + extensions, ply + 1, board, true);
             if (score > alpha && (score < beta || lmr > 0))
             {
@@ -529,30 +536,30 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 {
                     stack[ply].killerMove = move;
                     int quietHistoryBonus = std::min(
-                        static_cast<int>(quietHistoryGravityBase) + 
-                        static_cast<int>(quietHistoryDepthMul) * depth, 
+                        static_cast<int>(quietHistoryGravityBase) +
+                            static_cast<int>(quietHistoryDepthMul) * depth,
                         static_cast<int>(quietHistoryBonusCap));
 
-                        history.updateQuietHistory(board, move, quietHistoryBonus);
+                    history.updateQuietHistory(board, move, quietHistoryBonus);
 
                     int continuationHistoryBonus = std::min(
-                        static_cast<int>(continuationHistoryGravityBase) + 
-                        static_cast<int>(continuationHistoryDepthMul) * depth, 
+                        static_cast<int>(continuationHistoryGravityBase) +
+                            static_cast<int>(continuationHistoryDepthMul) * depth,
                         static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, stack);
 
                     int quietHistoryMalus = std::min(
-                        static_cast<int>(quietHistoryMalusBase) + 
-                        static_cast<int>(quietHistoryMalusDepthMul) * depth, 
+                        static_cast<int>(quietHistoryMalusBase) +
+                            static_cast<int>(quietHistoryMalusDepthMul) * depth,
                         static_cast<int>(quietHistoryMalusMax));
 
                     int continuationHistoryMalus = std::min(
-                        static_cast<int>(continuationHistoryMalusBase) + 
-                        static_cast<int>(continuationHistoryMalusDepthMul) * depth, 
+                        static_cast<int>(continuationHistoryMalusBase) +
+                            static_cast<int>(continuationHistoryMalusDepthMul) * depth,
                         static_cast<int>(continuationHistoryMalusMax));
- 
+
                     // History malus
                     for (int x = 0; x < quietMoveCount; x++)
                     {
@@ -824,7 +831,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         {
             previousBestScore = scoreData;
         }
-        
+
         scoreData = i >= aspDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         if (i > 6)

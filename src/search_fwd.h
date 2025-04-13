@@ -7,6 +7,7 @@ using namespace chess;
 struct SearchStack
 {
 	int staticEval;
+	int lmrReductionCount = 0;
 	std::uint16_t pvLength;
 	bool inCheck;
 	std::array<Move, 256> pvLine;
