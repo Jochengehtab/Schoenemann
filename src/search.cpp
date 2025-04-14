@@ -228,7 +228,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         depth -= iirReduction;
     }
 
-    if (!pvNode && ply > 1 && (stack[ply].lmrReductionCount * depth) > (2500 * depth) && depth > 5 && !isSingularSearch && !inCheck)
+    if (!pvNode && (stack[depth].lmrReductionCount * depth) > (2500 * depth) && depth > 5 && !isSingularSearch && !inCheck)
     {
         depth--;
     }
@@ -490,7 +490,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 lmr = std::clamp(lmr, static_cast<std::uint8_t>(0), static_cast<std::uint8_t>(depth - 1));
             }
 
-            stack[ply].lmrReductionCount += lmr;
+            stack[depth].lmrReductionCount += lmr;
 
             score = -pvs(-alpha - 1, -alpha, depth - lmr - 1 + extensions, ply + 1, board, true);
             if (score > alpha && (score < beta || lmr > 0))
