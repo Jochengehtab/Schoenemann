@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cstring>
 
+#include "consts.h"
 #include "chess.hpp"
 
 using namespace chess;
@@ -30,16 +31,15 @@ using namespace chess;
 const std::uint8_t EXACT = 0;       // Exact bound
 const std::uint8_t UPPER_BOUND = 1; // Upper bound
 const std::uint8_t LOWER_BOUND = 2; // Lower bound
-const std::int16_t infinity = 32767;
 
 struct Hash
 {
-    std::uint64_t key;  // The zobrist Key of the position
-    std::int16_t depth; // The current depth
-    std::int8_t type;   // Ether EXACT, UPPER_BOUND or LOWER_BOUND
-    int score;          // The current score
-    int eval;           // The static eval
-    Move move = Move::NO_MOVE;          // The bestmove that we currently have
+    std::uint64_t key;         // The zobrist Key of the position
+    std::int16_t depth;        // The current depth
+    std::int8_t type;          // Ether EXACT, UPPER_BOUND or LOWER_BOUND
+    int score;                 // The current score
+    int eval;                  // The static eval
+    Move move = Move::NO_MOVE; // The bestmove that we currently have
 
     void setEntry(std::uint64_t _key, std::int16_t _depth, std::uint8_t _type, int _score, Move _move, int _eval)
     {

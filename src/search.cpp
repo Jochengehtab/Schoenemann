@@ -18,6 +18,7 @@
 */
 
 #include <cmath>
+#include <chrono>
 
 #include "search.h"
 #include "see.h"
@@ -361,7 +362,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
             {
                 return score;
             }
-            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, !isCutNode);
+            score = pvs(beta - 1, beta, depth - depthReduction, ply, board, false);
 
             if (score >= beta)
             {
@@ -769,11 +770,11 @@ int Search::qs(std::int16_t alpha, std::int16_t beta, Board &board, std::int16_t
     return bestScore;
 }
 
-int Search::aspiration(int depth, int score, Board &board)
+int Search::aspiration(std::int16_t depth, std::int16_t score, Board &board)
 {
-    int delta = aspDelta;
-    int alpha = std::max(-infinity, score - delta);
-    int beta = std::min(infinity, score + delta);
+    std::int16_t delta = aspDelta;
+    std::int16_t alpha = std::max(static_cast<int>(-infinity), score - delta);
+    std::int16_t beta = std::min(static_cast<int>(infinity), score + delta);
     double finalASPMultiplier = aspMul / 100.0;
 
     while (true)
@@ -787,12 +788,12 @@ int Search::aspiration(int depth, int score, Board &board)
 
         if (score >= beta)
         {
-            beta = std::min(beta + delta, infinity);
+            beta = std::min(beta + delta, static_cast<int>(infinity));
         }
         else if (score <= alpha)
         {
             beta = (alpha + beta) / 2;
-            alpha = std::max(alpha - delta, -infinity);
+            alpha = std::max(alpha - delta, static_cast<int>(-infinity));
         }
         else
         {

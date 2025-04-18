@@ -20,6 +20,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <memory>
 
 #include "consts.h"
 #include "helper.h"
@@ -36,12 +37,13 @@ int main(int argc, char *argv[])
 {
     std::uint32_t transpositionTableSize = 16;
 
-    tt transpositionTabel(transpositionTableSize);
+    tt transpositionTable(transpositionTableSize);
     Time timeManagement;
     MoveOrder moveOrder;
     network net;
+    Helper helper;
 
-    Search *searcher = new Search(timeManagement, transpositionTabel, moveOrder, net);
+    std::unique_ptr<Search> searcher = std::make_unique<Search>(timeManagement, transpositionTable, moveOrder, net);
 
     // The main board
     Board board(&net);
@@ -58,16 +60,13 @@ int main(int argc, char *argv[])
     // Init the LMR
     searcher->initLMR();
 
-    transpositionTabel.setSize(transpositionTableSize);
+    transpositionTable.setSize(transpositionTableSize);
     timeManagement.reset();
     searcher->resetHistory();
 
     if (argc > 1 && strcmp(argv[1], "bench") == 0)
     {
-        runBenchmark(*searcher, board);
-
-        // Delete the search object that was previously allocated on the heap
-        delete searcher;
+        helper.runBenchmark(*searcher, board);
         return 0;
     }
 
@@ -80,7 +79,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < 5; ++i)
         {
             // threads.emplace_back(std::thread([&board]()
-            //  { generate(board, searcher, transpositionTabel); }));
+            //  { generate(board, searcher, transpositionTable); }));
         }
 
         // Join threads to ensure they complete before exiting main
@@ -107,7 +106,7 @@ int main(int argc, char *argv[])
 
         if (token == "uci")
         {
-            uciPrint();
+            helper.uciPrint();
 
 #ifdef DO_TUNING
             std::cout << engineParameterToUCI();
@@ -128,7 +127,7 @@ int main(int argc, char *argv[])
             board.setFen(STARTPOS);
 
             // Clear the transposition table
-            transpositionTabel.clear();
+            transpositionTable.clear();
 
             // Reset the time mangement
             timeManagement.reset();
@@ -167,8 +166,8 @@ int main(int argc, char *argv[])
                     {
                         is >> token;
                         transpositionTableSize = std::stoi(token);
-                        transpositionTabel.clear();
-                        transpositionTabel.setSize(transpositionTableSize);
+                        transpositionTable.clear();
+                        transpositionTable.setSize(transpositionTableSize);
                     }
                 }
             }
@@ -202,7 +201,7 @@ int main(int argc, char *argv[])
                 }
             }
 
-            for (const auto &move : moves)
+            for (const std::string &move : moves)
             {
                 board.makeMove(uci::uciToMove(board, move));
             }
@@ -216,7 +215,8 @@ int main(int argc, char *argv[])
             is >> token;
             if (!is.good())
             {
-                searcher->iterativeDeepening(board, true);
+                std::thread t1([&] { searcher->iterativeDeepening(board, true); });
+                    t1.detach();
             }
             while (is.good())
             {
@@ -245,7 +245,9 @@ int main(int argc, char *argv[])
                 else if (token == "depth")
                 {
                     is >> token;
-                    searcher->pvs(-infinity, infinity, std::stoi(token), 0, board, false);
+                    std::thread t1([&] { searcher->pvs(-infinity, infinity, std::stoi(token), 0, board, false); });
+                    t1.detach();
+                    
                     std::cout << "bestmove " << uci::moveToUci(searcher->rootBestMove) << std::endl;
                 }
                 else if (token == "nodes")
@@ -253,13 +255,16 @@ int main(int argc, char *argv[])
                     is >> token;
                     searcher->hasNodeLimit = true;
                     searcher->nodeLimit = std::stoi(token);
-                    searcher->iterativeDeepening(board, true);
+                    std::thread t1([&]
+                                   { searcher->iterativeDeepening(board, true); });
+                    t1.detach();
                 }
                 else if (token == "movetime")
                 {
                     is >> token;
                     timeManagement.timeLeft = std::stoi(token);
-                    std::thread t1(std::bind(&Search::iterativeDeepening, searcher, board, false));
+                    std::thread t1([&]
+                                   { searcher->iterativeDeepening(board, false); });
                     t1.detach();
                 }
                 if (!(is >> token))
@@ -279,7 +284,10 @@ int main(int argc, char *argv[])
                     timeManagement.timeLeft = number[1];
                     timeManagement.increment = number[3];
                 }
-                searcher->iterativeDeepening(board, false);
+
+                std::thread t1([&]
+                               { searcher->iterativeDeepening(board, false); });
+                t1.detach();
             }
         }
         else if (token == "d")
@@ -292,16 +300,12 @@ int main(int argc, char *argv[])
         }
         else if (token == "bench")
         {
-            runBenchmark(*searcher, board);
+            helper.runBenchmark(*searcher, board);
         }
         else if (token == "eval")
         {
             std::cout << "The raw eval is: " << net.evaluate((int)board.sideToMove(), board.occ().count()) << std::endl;
             std::cout << "The scaled evaluation is: " << searcher->scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board) << " cp" << std::endl;
-        }
-        else if (token == "test")
-        {
-            testCommand();
         }
         else if (token == "spsa")
         {
@@ -311,10 +315,11 @@ int main(int argc, char *argv[])
         {
             searcher->shouldStop = true;
         }
+        else
+        {
+            std::cout << "No valid command: '" << token << "'!" << std::endl;
+        }
     } while (token != "quit");
-
-    // Delete the search object that was previously allocated on the heap
-    delete searcher;
 
     return 0;
 }

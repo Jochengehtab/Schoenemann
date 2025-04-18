@@ -29,15 +29,15 @@ class History
 
 private:
     std::uint64_t getPieceKey(PieceType piece, const Board &board);
-    const int pawnCorrectionHistorySize = 16384;
+    const std::uint16_t pawnCorrectionHistorySize = 16384;
 
 public:
     int getQuietHistory(Board &board, Move move);
-    int getContinuationHistory(PieceType piece, Move move, int ply, SearchStack *stack);
+    int getContinuationHistory(PieceType piece, Move move, std::int16_t ply, SearchStack *stack);
     int correctEval(int rawEval, Board &board);
     void updateQuietHistory(Board &board, Move move, int bonus);
     void updatePawnCorrectionHistory(int bonus, Board &board, int div);
-    void updateContinuationHistory(PieceType piece, Move move, int bonus, int ply, SearchStack *stack);
+    void updateContinuationHistory(PieceType piece, Move move, int bonus, std::int16_t ply, SearchStack *stack);
     void resetHistorys();
 };
 

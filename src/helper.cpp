@@ -19,24 +19,23 @@
 
 #include "helper.h"
 
-/*
-void transpositionTableTest(Board &board)
+#include <cassert>
+#include <chrono>
+
+void Helper::transpositionTableTest(Board &board, tt &transpositionTabel)
 {
 	// Set up a unique position
 	board.setFen("3N4/2p5/5K2/k1PB3p/3Pr3/1b5p/6p1/5nB1 w - - 0 1");
 	std::uint64_t key = board.hash();
 
-	// Store the information
+	// Store some placeholder information
 	transpositionTabel.storeEvaluation(key, 2, LOWER_BOUND, transpositionTabel.scoreToTT(200, 1), uci::uciToMove(board, "d5e4"), 1);
 
 	// Try to get the information out of the table
 	Hash *entry = transpositionTabel.getHash(key);
 
-	if (entry == nullptr)
-	{
-		std::cout << "The entry is a nullptr" << std::endl;
-		return;
-	}
+	assert(entry != nullptr);
+	
 	std::uint64_t hashedKey = entry->key;
 	short hashedDepth = entry->depth;
 	short hashedType = entry->type;
@@ -91,23 +90,16 @@ void transpositionTableTest(Board &board)
 	}
 	board.setFen(STARTPOS);
 }
-	*/
-
-void testCommand()
-{
-	Board testBoard;
-	testBoard.setFen("8/4p3/8/8/8/8/8/8 w - - 0 1");
-}
 
 // Print the uci info
-void uciPrint()
+void Helper::uciPrint()
 {
 	std::cout << "id name Schoenemann" << std::endl
 			  << "option name Hash type spin default 64 min 1 max 4096" << std::endl
 			  << "option name Threads type spin default 1 min 1 max 1" << std::endl;
 }
 
-void runBenchmark(Search& search, Board& benchBoard)
+void Helper::runBenchmark(Search &search, Board &benchBoard)
 {
 	// Setting up the clock
 	auto start = std::chrono::high_resolution_clock::now();

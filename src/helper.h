@@ -22,12 +22,13 @@
 
 #include "search.h"
 
-#include "chess.hpp"
-using namespace chess;
-
-//void transpositionTableTest(Board &board);
-void testCommand();
-void runBenchmark(Search& search, Board& benchBoard);
-void uciPrint();
+class Helper
+{
+private:
+public:
+    void transpositionTableTest(Board &board, tt &transpositionTable);
+    void runBenchmark(Search &search, Board &benchBoard);
+    void uciPrint();
+};
 
 #endif

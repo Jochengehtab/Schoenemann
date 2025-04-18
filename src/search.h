@@ -20,10 +20,8 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
-#include <chrono>
 #include <iostream>
 
-#include "consts.h"
 #include "time.h"
 #include "tt.h"
 #include "moveorder.h"
@@ -39,9 +37,6 @@ public:
 						   transpositionTabel(transpositionTabel),
 						   moveOrder(moveOrder),
 						   net(net) {}
-	const int infinity = 32767;
-	const int CORRHIST_LIMIT = 1024;
-	const int MAX_PLY = 256;
 
 	Move rootBestMove = Move::NULL_MOVE;
 	Move previousBestMove = Move::NULL_MOVE;
@@ -57,7 +52,7 @@ public:
 	int scoreData = 0;
 	int previousBestScore = 0;
 
-	std::array<std::array<std::uint8_t, 218>, 256> reductions;
+	std::array<std::array<std::uint8_t, 218>, 255> reductions;
 	SearchStack stack[256];
 
 	int pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::int16_t ply, Board &board, bool isCutNode);
@@ -70,7 +65,7 @@ public:
 	void resetHistory();
 
 private:
-	int aspiration(int maxDepth, int score, Board &board);
+	int aspiration(std::int16_t maxDepth, std::int16_t score, Board &board);
 	std::string getPVLine();
 	Time &timeManagement;
 	tt &transpositionTabel;
