@@ -33,7 +33,7 @@ public:
 	Search(Time &timeManagement,
 		   tt &transpositionTabel,
 		   MoveOrder &moveOrder,
-		   network &net) : timeManagement(timeManagement),
+		   Network &net) : timeManagement(timeManagement),
 						   transpositionTabel(transpositionTabel),
 						   moveOrder(moveOrder),
 						   net(net) {}
@@ -71,7 +71,7 @@ private:
 	tt &transpositionTabel;
 	History history;
 	MoveOrder &moveOrder;
-	network &net;
+	Network &net;
 };
 
 #endif

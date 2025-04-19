@@ -30,7 +30,7 @@
 #include "utils.h"
 #include "incbin.h"
 
-class network
+class Network
 {
 private:
     struct
@@ -45,7 +45,7 @@ private:
     accumulator acc;
 
 public:
-    network()
+    Network()
     {
 
         // Open the NNUE file with the given path

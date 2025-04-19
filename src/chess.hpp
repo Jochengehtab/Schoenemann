@@ -1797,7 +1797,7 @@ namespace chess
         Board(PrivateCtor) {}
 
     public:
-        explicit Board(network* net = nullptr, std::string_view fen = constants::STARTPOS, bool chess960 = false)
+        explicit Board(Network* net = nullptr, std::string_view fen = constants::STARTPOS, bool chess960 = false)
         {
             this->net = net;
             prev_states_.reserve(256);
@@ -2482,7 +2482,7 @@ namespace chess
         bool chess960_ = false;
 
     private:
-        network* net;
+        Network* net;
         void removePieceInternal(Piece piece, Square sq)
         {
             auto type = piece.type();
