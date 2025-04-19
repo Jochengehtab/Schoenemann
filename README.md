@@ -2,9 +2,9 @@
 
 # Schönemann  
 <p align="center">
-  <img src="./logo.png" alt="Schönemann Logo" width="200"/>
+  <img src="./logo.png" alt="Schönemann Logo" width="200"/><br>
+  <em>A simple yet powerful chess engine written in C++.</em>
 </p>
-<br>A simple yet powerful chess engine written in C++.
 
 ---
 
