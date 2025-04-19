@@ -1,9 +1,9 @@
 ---
 
 # Schönemann  
-A simple yet powerful chess engine written in C++.
+A simple yet powerful chess engine written in C++.<br>
 <img src="./logo.png" alt="Schönemann Logo" width="200"/>
-<br>
+
 
 ---
 
