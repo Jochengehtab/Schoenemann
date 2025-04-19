@@ -1,7 +1,8 @@
 ---
 
 # Schönemann  
-A (former) simple yet powerful chess engine written in C++.
+A simple yet powerful chess engine written in C++.
+![Schönemann Logo](./logo.png)
 
 ---
 
@@ -34,6 +35,7 @@ Schönemann implemts this features (and some more that if forgot to include here
 - **Null Move Prunning (NMP)**
 - **RFP**
 - **Simple Probcut**
+- **(and many others)**
 
 ---
 
@@ -42,12 +44,12 @@ To compile Schönemann, simply run:
 ```bash  
 make all  
 ```  
-This will produce an executable named `null.exe`.  
+This will produce an executable named `null` (depending on your OS).  
 
 ---
 
 ## Performance Rating  
-Schönemann is rated approximately **3300 Elo** on the CCRL.  
+Schönemann is rated approximately **3329 Elo** (45/15) on the CCRL.  
 
 Lichess performance:  
 - **[Bullet](https://lichess.org/@/Schoenemann/perf/bullet):**  
@@ -62,7 +64,9 @@ Lichess performance:
 ## Acknowledgments  
 Special thanks to: 
 
-- Disservin for their [chess library](https://github.com/Disservin/chess-library/), which significantly streamlined development.  
-- Fury for granting access to their OB instance.  
+- Disservin for his [chess library](https://github.com/Disservin/chess-library/), which significantly speed up development.  
+- Fury for granting access to his OB instance.  
+- And all other Furybench members.
+- Logo was generated using ChatGPT
 
 --- 
