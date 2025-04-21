@@ -486,6 +486,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
                 lmr += isCutNode * lmrCutNodeMul;
+                lmr -= isSingularSearch;
                 lmr = std::clamp(lmr, static_cast<std::uint8_t>(0), static_cast<std::uint8_t>(depth - 1));
             }
 
