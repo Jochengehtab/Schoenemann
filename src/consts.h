@@ -26,15 +26,19 @@
 const std::string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 // Bench depth
-const int benchDepth = 10;
+constexpr std::uint8_t benchDepth = 10;
 
-const int NO_VALUE = 50000;
+constexpr std::uint16_t NO_VALUE = 50000;
 
-const int hashMoveScore = 500000, killerScore = 300000, promotion = 200000, goodCapture = 400000, badCapture = -500000;
+constexpr int hashMoveScore = 500000;
+constexpr int killerScore = 300000;
+constexpr int promotion = 200000;
+constexpr int goodCapture = 400000;
+constexpr int badCapture = -500000;
 
-const std::int16_t infinity = 32767;
-const std::uint16_t CORRHIST_LIMIT = 1024;
-const std::uint8_t MAX_PLY = 255;
+constexpr std::int16_t infinity = 32767;
+constexpr std::uint16_t CORRHIST_LIMIT = 1024;
+constexpr std::uint8_t MAX_PLY = 255;
 
 const std::string testStrings[] = {
 	STARTPOS,

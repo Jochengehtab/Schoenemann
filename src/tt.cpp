@@ -19,7 +19,7 @@
 
 #include "tt.h"
 
-void tt::storeEvaluation(std::uint64_t key, std::int8_t depth, std::uint8_t type, std::int16_t score, Move move, std::int16_t eval) noexcept
+void tt::storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t type, std::int16_t score, Move move, std::int16_t eval) noexcept
 {
 	const std::uint64_t index = key % size;
 

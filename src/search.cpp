@@ -120,6 +120,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         return beta;
     }
 
+    // Every 128 we check for a timeout
     if (nodes % 128 == 0)
     {
         if (timeManagement.shouldStopSoft(start) && !isNormalSearch)
@@ -144,6 +145,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     // Set the pvLength to zero
     stack[ply].pvLength = 0;
 
+    // Check for a draw
     if (board.isHalfMoveDraw() || board.isRepetition() || board.isInsufficientMaterial())
     {
         return 0;
@@ -178,6 +180,9 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         return qs(alpha, beta, board, ply);
     }
 
+    // Make at least zero to avoid wrong depths in the transposition table
+    depth = std::max(static_cast<std::int16_t>(0), depth);
+
     const std::uint64_t zobristKey = board.zobrist();
     int hashedScore = 0;
     short hashedType = 0;
@@ -189,6 +194,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     const bool pvNode = beta > alpha + 1;
     const bool inCheck = board.inCheck();
     const bool isSingularSearch = stack[ply].exludedMove != Move::NULL_MOVE;
+    
     stack[ply].inCheck = inCheck;
 
     // Get an potential hash entry

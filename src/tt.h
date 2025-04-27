@@ -39,9 +39,9 @@ struct alignas(16) Hash
     std::int16_t score;        // The current score                         (2 Byte)
     std::int16_t eval;         // The static eval                           (2 Byte)
     std::int8_t depth;         // The current depth                         (1 Byte)
-    std::int8_t type;          // Ether EXACT, UPPER_BOUND or LOWER_BOUND   (1 Byte)
+    std::uint8_t type;         // Ether EXACT, UPPER_BOUND or LOWER_BOUND   (1 Byte)
 
-    void setEntry(std::uint64_t _key, std::int8_t _depth, std::uint8_t _type, std::int16_t _score, Move _move, std::int16_t _eval)
+    void setEntry(std::uint64_t _key, std::uint8_t _depth, std::uint8_t _type, std::int16_t _score, Move _move, std::int16_t _eval)
     {
         key = _key;
         depth = _depth;
@@ -62,7 +62,7 @@ public:
 
     void setSize(std::uint64_t MB);
     void clear();
-    void storeEvaluation(std::uint64_t key, std::int8_t depth, std::uint8_t type, std::int16_t score, Move move, std::int16_t eval) noexcept;
+    void storeEvaluation(std::uint64_t key, std::uint8_t depth, std::uint8_t type, std::int16_t score, Move move, std::int16_t eval) noexcept;
 
     int estimateHashfull() const noexcept;
     int scoreToTT(int score, std::int16_t ply)
