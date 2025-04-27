@@ -36,7 +36,7 @@ constexpr int promotion = 200000;
 constexpr int goodCapture = 400000;
 constexpr int badCapture = -500000;
 
-constexpr std::int16_t infinity = 32767;
+constexpr std::int16_t infinity = 32000;
 constexpr std::uint16_t CORRHIST_LIMIT = 1024;
 constexpr std::uint8_t MAX_PLY = 255;
 
