@@ -517,11 +517,14 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 // Update the pvLine
                 if (pvNode)
                 {
-                    stack[ply].pvLine[0] = move;
-                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                    for (std::uint16_t x = 0; x < stack[ply + 1].pvLength; x++)
+                    if (stack[ply].pvLength < 245)
                     {
-                        stack[ply].pvLine[x + 1] = stack[ply + 1].pvLine[x];
+                        stack[ply].pvLine[0] = move;
+                        stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                        for (std::uint16_t x = 0; x < stack[ply + 1].pvLength; x++)
+                        {
+                            stack[ply].pvLine[x + 1] = stack[ply + 1].pvLine[x];
+                        }
                     }
                 }
             }
@@ -533,30 +536,30 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 {
                     stack[ply].killerMove = move;
                     int quietHistoryBonus = std::min(
-                        static_cast<int>(quietHistoryGravityBase) + 
-                        static_cast<int>(quietHistoryDepthMul) * depth, 
+                        static_cast<int>(quietHistoryGravityBase) +
+                            static_cast<int>(quietHistoryDepthMul) * depth,
                         static_cast<int>(quietHistoryBonusCap));
 
-                        history.updateQuietHistory(board, move, quietHistoryBonus);
+                    history.updateQuietHistory(board, move, quietHistoryBonus);
 
                     int continuationHistoryBonus = std::min(
-                        static_cast<int>(continuationHistoryGravityBase) + 
-                        static_cast<int>(continuationHistoryDepthMul) * depth, 
+                        static_cast<int>(continuationHistoryGravityBase) +
+                            static_cast<int>(continuationHistoryDepthMul) * depth,
                         static_cast<int>(continuationHistoryBonusCap));
 
                     // Update the continuation History
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply, stack);
 
                     int quietHistoryMalus = std::min(
-                        static_cast<int>(quietHistoryMalusBase) + 
-                        static_cast<int>(quietHistoryMalusDepthMul) * depth, 
+                        static_cast<int>(quietHistoryMalusBase) +
+                            static_cast<int>(quietHistoryMalusDepthMul) * depth,
                         static_cast<int>(quietHistoryMalusMax));
 
                     int continuationHistoryMalus = std::min(
-                        static_cast<int>(continuationHistoryMalusBase) + 
-                        static_cast<int>(continuationHistoryMalusDepthMul) * depth, 
+                        static_cast<int>(continuationHistoryMalusBase) +
+                            static_cast<int>(continuationHistoryMalusDepthMul) * depth,
                         static_cast<int>(continuationHistoryMalusMax));
- 
+
                     // History malus
                     for (int x = 0; x < movesMadeCounter; x++)
                     {
@@ -737,11 +740,14 @@ int Search::qs(std::int16_t alpha, std::int16_t beta, Board &board, std::int16_t
                 alpha = score;
 
                 // Update pvLine
-                stack[ply].pvLine[0] = move;
-                stack[ply].pvLength = stack[ply + 1].pvLength + 1;
-                for (std::uint16_t i = 0; i < stack[ply + 1].pvLength; i++)
+                if (stack[ply].pvLength < 245)
                 {
-                    stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                    stack[ply].pvLine[0] = move;
+                    stack[ply].pvLength = stack[ply + 1].pvLength + 1;
+                    for (std::uint16_t i = 0; i < stack[ply + 1].pvLength; i++)
+                    {
+                        stack[ply].pvLine[i + 1] = stack[ply + 1].pvLine[i];
+                    }
                 }
 
                 bestMoveInQs = move;
@@ -828,7 +834,7 @@ void Search::iterativeDeepening(Board &board, bool isInfinite)
         {
             previousBestScore = scoreData;
         }
-        
+
         scoreData = i >= aspDepth ? aspiration(i, scoreData, board) : pvs(-infinity, infinity, i, 0, board, false);
 
         if (i > 6)
