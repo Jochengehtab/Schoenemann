@@ -29,7 +29,7 @@ jobs:
           else
             choco install llvm -y
             choco install make -y
-            # Optionally adjust PATH if needed (this example uses the default installation path)
+            # Ensure LLVM bin is on PATH
             export PATH="/c/Program Files/LLVM/bin:$PATH"
           fi
 
@@ -39,8 +39,16 @@ jobs:
           cd src
           make all
 
+      - name: List built files
+        shell: bash
+        run: |
+          cd src
+          echo "----- files in src/ -----"
+          ls -l
+
       - name: Check for Bench number in commit message
         id: bench-check
+        shell: bash
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           echo "Commit message: $COMMIT_MSG"
@@ -51,28 +59,38 @@ jobs:
           else
             echo "No bench number found in commit message"
           fi
-        shell: bash
 
       - name: Run benchmark test
         if: env.BENCH_NUM
+        shell: bash
         run: |
           cd src
-          if [[ -f null.exe ]]; then
+
+          # Pick correct binary name per OS
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            [[ -f null.exe ]] || { echo "::error::null.exe not found in src/"; exit 1; }
             BINARY=./null.exe
           else
+            [[ -f null ]] || { echo "::error::null not found in src/"; exit 1; }
             BINARY=./null
           fi
+
+          echo "Running benchmark with $BINARY"
           OUTPUT=$($BINARY bench)
           echo "Bench output: $OUTPUT"
+
+          # Extract nodes count
           if [[ $OUTPUT =~ Nodes[[:space:]]*:[[:space:]]*([0-9]+) ]]; then
             OUTPUT_NODES="${BASH_REMATCH[1]}"
           else
-            echo "Failed to extract nodes number from output"
+            echo "::error::Failed to extract nodes number from output"
             exit 1
           fi
-          echo "Commit bench number: ${{ env.BENCH_NUM }}"
+
+          echo "Expected bench number: ${{ env.BENCH_NUM }}"
+          echo "Reported nodes: $OUTPUT_NODES"
+
           if [ "$OUTPUT_NODES" -ne "${{ env.BENCH_NUM }}" ]; then
-            echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
+            echo "::error::Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
             exit 1
           fi
-        shell: bash
