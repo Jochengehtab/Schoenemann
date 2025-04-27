@@ -409,7 +409,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
 
         givesCheck = calculateGivesCheck(board, move);
 
-        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (isQuiet && !givesCheck ? -pvsSSENonCaptureCutoff * depth : -pvsSSECaptureCutoff * depth)))
+        if (!pvNode && move != hashedMove && bestScore > -infinity && depth <= pvsSSEDepth && !see(board, move, (isQuiet ? -pvsSSENonCaptureCutoff : -pvsSSECaptureCutoff)))
         {
             continue;
         }
@@ -490,6 +490,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 lmr = reductions[depth][moveCounter];
                 lmr -= pvNode;
                 lmr += isCutNode * lmrCutNodeMul;
+                lmr -= givesCheck;
                 lmr = std::clamp(lmr, static_cast<std::uint8_t>(0), static_cast<std::uint8_t>(depth - 1));
             }
 
