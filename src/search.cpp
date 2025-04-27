@@ -173,7 +173,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     }
 
     // If depth is 0 we drop into qs to get a neutral position
-    if (depth == 0)
+    if (depth <= 0)
     {
         return qs(alpha, beta, board, ply);
     }
