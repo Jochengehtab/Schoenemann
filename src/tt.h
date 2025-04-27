@@ -32,16 +32,16 @@ const std::uint8_t EXACT = 0;       // Exact bound
 const std::uint8_t UPPER_BOUND = 1; // Upper bound
 const std::uint8_t LOWER_BOUND = 2; // Lower bound
 
-struct alignas(32) Hash
+struct alignas(16) Hash
 {
     std::uint64_t key;         // The zobrist Key of the position           (8 Byte)
-    std::int16_t depth;        // The current depth                         (2 Byte)
+    std::int8_t depth;         // The current depth                         (1 Byte)
     std::int8_t type;          // Ether EXACT, UPPER_BOUND or LOWER_BOUND   (1 Byte)
-    int score;                 // The current score                         (4 Byte)
-    int eval;                  // The static eval                           (4 Byte)
+    std::int16_t score;        // The current score                         (2 Byte)
+    std::int16_t eval;         // The static eval                           (2 Byte)
     Move move = Move::NO_MOVE; // The bestmove that we currently have       (4 Byte)
 
-    void setEntry(std::uint64_t _key, std::int16_t _depth, std::uint8_t _type, int _score, Move _move, int _eval)
+    void setEntry(std::uint64_t _key, std::int8_t _depth, std::uint8_t _type, std::int16_t _score, Move _move, std::int16_t _eval)
     {
         key = _key;
         depth = _depth;
@@ -62,7 +62,7 @@ public:
 
     void setSize(std::uint64_t MB);
     void clear();
-    void storeEvaluation(std::uint64_t key, std::int16_t depth, std::uint8_t type, int score, Move move, int eval) noexcept;
+    void storeEvaluation(std::uint64_t key, std::int8_t depth, std::uint8_t type, std::int16_t score, Move move, std::int16_t eval) noexcept;
 
     int estimateHashfull() const noexcept;
     int scoreToTT(int score, std::int16_t ply)

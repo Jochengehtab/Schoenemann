@@ -36,7 +36,7 @@
 int main(int argc, char *argv[])
 {
     std::uint32_t transpositionTableSize = 16;
-
+std::cout << sizeof(Hash) << std::endl;
     tt transpositionTable(transpositionTableSize);
     Time timeManagement;
     MoveOrder moveOrder;

@@ -1216,7 +1216,7 @@ namespace chess
     {
     public:
         Move() = default;
-        constexpr Move(std::uint16_t move) : move_(move), score_(0) {}
+        constexpr Move(std::uint16_t move) : move_(move) {}
 
         template <std::uint16_t MoveType = 0>
         [[nodiscard]] static constexpr Move make(Square source, Square target, PieceType pt = PieceType::KNIGHT) noexcept
@@ -1240,10 +1240,7 @@ namespace chess
             return static_cast<PieceType::underlying>(((move_ >> 12) & 3) + PieceType(PieceType::KNIGHT));
         }
 
-        constexpr void setScore(std::int16_t score) noexcept { score_ = score; }
-
         [[nodiscard]] constexpr std::uint16_t move() const noexcept { return move_; }
-        [[nodiscard]] constexpr std::int16_t score() const noexcept { return score_; }
 
         constexpr bool operator==(const Move &rhs) const noexcept { return move_ == rhs.move_; }
         constexpr bool operator!=(const Move &rhs) const noexcept { return move_ != rhs.move_; }
@@ -1257,7 +1254,6 @@ namespace chess
 
     private:
         std::uint16_t move_;
-        std::int16_t score_;
     };
 
     inline std::ostream &operator<<(std::ostream &os, const Move &move)
