@@ -4,16 +4,16 @@
 #include "chess.hpp"
 using namespace chess;
 
-struct SearchStack
+struct alignas(2048) SearchStack
 {
-	int staticEval;
-	std::uint16_t pvLength;
-	bool inCheck;
-	std::array<Move, 255> pvLine;
-	Move killerMove = Move::NULL_MOVE;
-	PieceType previousMovedPiece = PieceType::NONE;
-	Move previousMove = Move::NULL_MOVE;
-	Move exludedMove = Move::NULL_MOVE;
+	int staticEval;										// (4 Byte)
+	std::uint16_t pvLength;								// (2 Byte)				
+	bool inCheck;										// (1 Byte)
+	std::array<Move, 255> pvLine;						// (1020 Byte)
+	Move killerMove = Move::NULL_MOVE;					// (4 Byte)
+	PieceType previousMovedPiece = PieceType::NONE;		// (1 Byte)
+	Move previousMove = Move::NULL_MOVE;				// (4 Byte)
+	Move exludedMove = Move::NULL_MOVE;					// (4 Byte)
 };
 
 

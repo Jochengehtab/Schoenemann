@@ -32,14 +32,14 @@ const std::uint8_t EXACT = 0;       // Exact bound
 const std::uint8_t UPPER_BOUND = 1; // Upper bound
 const std::uint8_t LOWER_BOUND = 2; // Lower bound
 
-struct Hash
+struct alignas(32) Hash
 {
-    std::uint64_t key;         // The zobrist Key of the position
-    std::int16_t depth;        // The current depth
-    std::int8_t type;          // Ether EXACT, UPPER_BOUND or LOWER_BOUND
-    int score;                 // The current score
-    int eval;                  // The static eval
-    Move move = Move::NO_MOVE; // The bestmove that we currently have
+    std::uint64_t key;         // The zobrist Key of the position           (8 Byte)
+    std::int16_t depth;        // The current depth                         (2 Byte)
+    std::int8_t type;          // Ether EXACT, UPPER_BOUND or LOWER_BOUND   (1 Byte)
+    int score;                 // The current score                         (4 Byte)
+    int eval;                  // The static eval                           (4 Byte)
+    Move move = Move::NO_MOVE; // The bestmove that we currently have       (4 Byte)
 
     void setEntry(std::uint64_t _key, std::int16_t _depth, std::uint8_t _type, int _score, Move _move, int _eval)
     {
