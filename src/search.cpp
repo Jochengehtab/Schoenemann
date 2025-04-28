@@ -380,11 +380,6 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
-    if (moveList.size() == 0)
-    {
-        return inCheck ? -infinity + ply : 0;
-    }
-
     int scoreMoves[218] = {0};
     // Sort the list
     moveOrder.orderMoves(&history, moveList, entry, stack[ply].killerMove, stack, board, scoreMoves, ply);
@@ -584,6 +579,12 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
             }
         }
     }
+
+    if (moveCounter == 0 && inCheck)
+    {
+        return -infinity + ply;
+    }
+    
 
     std::uint8_t finalType;
     // Calculate the node type
@@ -911,7 +912,9 @@ int Search::scaleOutput(int rawEval, Board &board)
                     materialScaleRook * board.pieces(PieceType::ROOK).count() +
                     materialScaleQueen * board.pieces(PieceType::QUEEN).count();
 
-    return rawEval * (materialScaleGamePhaseAdd + gamePhase) / materialScaleGamePhaseDiv;
+    int finalEval = rawEval * (materialScaleGamePhaseAdd + gamePhase) / materialScaleGamePhaseDiv;
+
+    return std::clamp(finalEval, -infinity, static_cast<int>(infinity));
 }
 
 std::string Search::getPVLine()

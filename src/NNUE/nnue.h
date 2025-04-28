@@ -133,6 +133,7 @@ public:
         {
             eval = util::forward(acc.black, acc.white, innerNet.outputWeight, innerNet.outputBias, bucket);
         }
+        
         return eval;
     }
 };
