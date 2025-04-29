@@ -194,7 +194,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
     const bool pvNode = beta > alpha + 1;
     const bool inCheck = board.inCheck();
     const bool isSingularSearch = stack[ply].exludedMove != Move::NULL_MOVE;
-    
+
     stack[ply].inCheck = inCheck;
 
     // Get an potential hash entry
@@ -580,11 +580,18 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         }
     }
 
-    if (moveCounter == 0 && inCheck)
+    if (moveCounter == 0)
     {
-        return -infinity + ply;
+        if (isSingularSearch)
+        {
+            return alpha;
+        }
+        if (inCheck)
+        {
+            return -infinity + ply;
+        }
+        return 0;
     }
-    
 
     std::uint8_t finalType;
     // Calculate the node type
