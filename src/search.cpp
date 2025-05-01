@@ -461,7 +461,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 extensions -= singularTTSub;
             }
 
-            else if (singularScore >= singularBeta)
+            else if (singularScore >= singularBeta + 12)
             {
                 extensions--;
             }
