@@ -463,7 +463,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
 
             else if (singularScore >= singularBeta)
             {
-                extensions++;
+                extensions--;
             }
             
         }
