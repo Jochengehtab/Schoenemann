@@ -437,7 +437,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
             const std::uint8_t singularDepth = (depth - singularDepthSub) / singularDepthDiv;
 
             stack[ply].exludedMove = move;
-            int singularScore = pvs(singularBeta - depth, singularBeta, singularDepth, ply, board, isCutNode);
+            int singularScore = pvs(singularBeta - 1, singularBeta, singularDepth, ply, board, isCutNode);
             stack[ply].exludedMove = Move::NULL_MOVE;
 
             if (singularScore < singularBeta)
@@ -460,6 +460,12 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
             {
                 extensions -= singularTTSub;
             }
+
+            if (singularScore >= singularBeta)
+            {
+                extensions--;
+            }
+            
         }
 
         // Update the the piece and the move for continuationHistory
