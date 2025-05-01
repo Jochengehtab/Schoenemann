@@ -440,10 +440,11 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
             int singularScore = pvs(singularBeta - 1, singularBeta, singularDepth, ply, board, isCutNode);
             stack[ply].exludedMove = Move::NULL_MOVE;
 
+            // Our search fails low so we extend 
             if (singularScore < singularBeta)
             {
                 extensions++;
-                // If we aren't in a pvNode and our score plus some margin is still less then our singular beta when can extend furthur
+                // If we aren't in a pvNode and our score plus some margin fails low again extend furthur
                 if (!pvNode && singularScore + singularBetaDoubleExtensionMargin < singularBeta)
                 {
                     extensions++;
@@ -461,7 +462,9 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 extensions -= singularTTSub;
             }
 
-            else if (singularScore >= singularBeta + 25)
+            // Idea: If we fail high with some margin we reduce extension because
+            // the position is unlikely to reach
+            else if (singularScore >= beta)
             {
                 extensions--;
             }
