@@ -425,7 +425,13 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
 
         int extensions = 0;
 
-        if (!isSingularSearch && hashedMove == move && depth >= singularMinDepth && hashedDepth >= depth - singularHashDepthReuction && (hashedType != UPPER_BOUND) && std::abs(hashedScore) < infinity && !(ply == 0))
+        if (!isSingularSearch &&
+            hashedMove == move &&
+            depth >= singularMinDepth &&
+            hashedDepth >= depth - singularHashDepthReuction &&
+            (hashedType != UPPER_BOUND) &&
+            std::abs(hashedScore) < infinity &&
+            !(ply == 0))
         {
             const int singularBeta = hashedScore - depth * singularBetaDepthMul;
             const std::uint8_t singularDepth = (depth - singularDepthSub) / singularDepthDiv;
@@ -586,6 +592,7 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         {
             return alpha;
         }
+
         if (inCheck)
         {
             return -infinity + ply;
