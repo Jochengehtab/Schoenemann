@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Compile
-      run: make EXE=Schoenemann
+      run: cd src && make EXE=Schoenemann
 
     - name: Bench
       run: |
