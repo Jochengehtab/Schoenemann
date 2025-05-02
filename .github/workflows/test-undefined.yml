@@ -37,14 +37,15 @@ jobs:
         echo "→ expected bench = $bench"
 
         cd src/
-        ./Schoenemann bench > output      # ← make sure you redirect here
-        real=$(grep 'Nodes: ' output | awk '{print $4}')
+        real=$(./Schoenemann bench \
+               | awk '/Nodes: /{ print $4 }')
         echo "→ measured real  = $real"
 
         if [[ "$bench" != "$real" ]]; then
           echo "✗ got $real, expected $bench"
           exit 1
         fi
+
 
 
     - name: Bench (Windows)
