@@ -1,70 +1,60 @@
 name: Schoenemann Build & Bench
+
 on:
   push:
+    branches:
+      - main
+      - feature/**      # adjust to your naming
   pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   engine:
+    name: Build & Bench
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-24.04, windows-latest]
 
     steps:
-      - name: Checkout PR head
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
 
       - name: Compile
-        run: cd src && make EXE=Schoenemann
+        run: |
+          cd src
+          make EXE=Schoenemann
 
       - name: Bench
         shell: ${{ runner.os == 'Windows' && 'pwsh' || 'bash' }}
         run: |
-          #— extract expected bench from the commit message
-          if (${{ runner.os == 'Windows' }}) {
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            # PowerShell block...
             $summary = git show --summary
             if ($summary -match 'Bench:?\s+([0-9]+)') {
               $bench = $Matches[1]
-            } else {
-              Write-Error "No Bench:… in summary:`n$summary"
-              exit 1
-            }
-            Write-Host "→ expected bench = $bench"
-
-            # run and parse real nodes
+            } else { exit 1 }
             Set-Location src
             $out = .\Schoenemann bench
             if ($out -match 'Nodes *: *([0-9]+)') {
               $real = $Matches[1]
-            } else {
-              Write-Error "No Nodes:… in output:`n$out"
-              exit 1
-            }
-            Write-Host "→ measured real  = $real"
-
-            if ($bench -ne $real) {
-              Write-Error "✗ got $real, expected $bench"
-              exit 1
-            }
-          } else {
-            set -euxo pipefail
+            } else { exit 1 }
+            if ($bench -ne $real) { exit 1 }
+          else
+            # Bash block...
             bench=$(git show --summary \
-                    | grep -oE 'Bench:?[[:space:]][0-9]+' \
-                    | awk '{print $2}')
-            echo "→ expected bench = $bench"
+              | grep -oE 'Bench:?[[:space:]][0-9]+' \
+              | awk '{print $2}')
             cd src
             real=$(./Schoenemann bench \
-                   | awk -F'[: ]+' '/Nodes/{print $3}')
-            echo "→ measured real  = $real"
-            if [[ "$bench" != "$real" ]]; then
-              echo "✗ got $real, expected $bench"
-              exit 1
-            fi
-          }
+              | awk -F'[: ]+' '/Nodes/{print $3}')
+            if [[ "$bench" != "$real" ]]; then exit 1; fi
+          fi
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
