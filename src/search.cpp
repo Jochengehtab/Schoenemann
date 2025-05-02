@@ -462,8 +462,8 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
                 extensions -= singularTTSub;
             }
 
-            // Idea: If we fail high with some margin we reduce extension because
-            // the position is unlikely to reach
+            // Idea: If we fail high reduce extension because
+            // the position is unlikely to be reached
             else if (singularScore >= beta)
             {
                 extensions--;
