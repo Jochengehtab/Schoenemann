@@ -57,28 +57,38 @@ jobs:
         git fetch origin "${{ github.event.pull_request.head.ref }}"
         git checkout FETCH_HEAD
 
-        $bench = git show --summary `
-                 | Select-String -Pattern 'Bench:?\s+\d+' `
-                 | ForEach-Object { $_.Matches[0].Groups[1].Value }
+        # Get the commit summary once
+        $summary = git show --summary
+
+        # Extract the Bench number (with proper capture group)
+        if ($summary -match 'Bench:?\s+([0-9]+)') {
+          $bench = $Matches[1]
+        } else {
+          Write-Error "Could not parse bench from summary:`n$summary"
+          exit 1
+        }
         Write-Host "→ expected bench = $bench"
 
+        # Run the engine and capture its full output
         Set-Location src
-        .\Schoenemann bench > output
+        $output = .\Schoenemann bench
+        $output | Out-File -FilePath bench-output.txt -Encoding utf8
 
-        # Option A: using the temp file
-        $real = Select-String -Path output -Pattern 'Nodes *: ' `
-                | ForEach-Object { ($_ -split '\s+')[2] }
+        # Extract the Nodes count
+        if ($output -match 'Nodes *: *([0-9]+)') {
+          $real = $Matches[1]
+        } else {
+          Write-Error "Could not parse real nodes from output:`n$output"
+          exit 1
+        }
         Write-Host "→ measured real  = $real"
 
-        # Option B: inline without temp file
-        # $real = .\Schoenemann bench `
-        #         | Select-String 'Nodes *: ' `
-        #         | ForEach-Object { ($_ -split '\s+')[2] }
-
+        # Compare and fail if mismatched
         if ($bench -ne $real) {
           Write-Error "✗ got $real, expected $bench"
           exit 1
         }
+
 
     - name: Upload binary
       uses: actions/upload-artifact@v4
