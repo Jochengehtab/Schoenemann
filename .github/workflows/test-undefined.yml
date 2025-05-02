@@ -1,40 +1,39 @@
-name: Build and Test on Windows and Linux
-
+# Taken from here
+# https://github.com/Yoshie2000/PlentyChess/blob/main/.github/workflows/plenty.yml
+name: Schoenemann Build & Bench
 on:
   push:
-    branches: [main]
+  workflow_dispatch:
   pull_request:
 
 jobs:
-  build-and-test:
+  engine:
+    name: Schoenemann Build & Bench
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-latest]
-    runs-on: ${{ matrix.os }}
-
+        os: [ubuntu-24.04, macos-14]
+        architecture: [arm64]
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
-      - name: Setup environment
-        shell: bash
-        run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            sudo apt-get update
-            sudo apt-get install -y --no-install-recommends clang++-18 make wget gnupg lsb-release
-            wget https://apt.llvm.org/llvm.sh
-            chmod +x llvm.sh
-            sudo ./llvm.sh 18
-            sudo ln -sf /usr/bin/clang++-18 /usr/bin/clang++
-          else
-            choco install llvm -y
-            choco install make -y
-            # Optionally adjust PATH if needed (this example uses the default installation path)
-            export PATH="/c/Program Files/LLVM/bin:$PATH"
-          fi
+    - name: Clone
+      uses: actions/checkout@v2
 
-      - name: Build with make all
-        shell: bash
-        run: |
-          cd src
-          make all
+    - name: Compile
+      run: make -j profile-build EXE=Schoenemann
+
+    - name: Bench
+      run: |
+        git fetch origin ${{ github.event.pull_request.head.ref }}
+        git checkout FETCH_HEAD
+        bench=$(git show --summary | grep -oE 'Bench: [0-9]+' | awk '{print $2}')
+        ./Schoenemann bench > output
+        real=$(grep 'Nodes: ' output | awk '{print $4}')
+        if [[ "$bench" != "$real" ]]; then echo "got $real, expected $bench (real: '$(git show --summary)')" && exit 1; fi
+    
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: Schoenemann-${{github.sha}}-neon-${{matrix.os}}
+        path: ./Schoenemann
