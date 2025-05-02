@@ -8,34 +8,62 @@ on:
 
 jobs:
   engine:
-    runs-on: ${{ matrix.os }}
+    name: Schoenemann Build & Bench
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
         os: [ubuntu-24.04, windows-latest]
-
+    
     steps:
-      - uses: actions/checkout@v2
 
-      - name: Compile
-        run: cd src && make EXE=Schoenemann
+    - name: Clone
+      uses: actions/checkout@v2
 
-      - name: Bench
-        # Force Bash on both Linux *and* Windows
-        shell: bash
-        run: |
-          git fetch origin ${{ github.event.pull_request.head.ref }}
-          git checkout FETCH_HEAD
-          bench=$(git show --summary | grep -oE 'Bench: [0-9]+' | awk '{print $2}')
-          cd src/
-          ./Schoenemann bench > output
-          real=$(grep 'Nodes: ' output | awk '{print $4}')
-          if [[ "$bench" != "$real" ]]; then
-            echo "got $real, expected $bench (real: '$(git show --summary)')"
-            exit 1
-          fi
+    - name: Compile
+      run: cd src && make EXE=Schoenemann
 
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: Schoenemann-${{github.sha}}-neon-${{matrix.os}}
-          path: src/Schoenemann
+        - name: Bench (Linux/macOS)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        git fetch origin ${{ github.event.pull_request.head.ref }}
+        git checkout FETCH_HEAD
+        bench=$(git show --summary | grep -oE 'Bench: [0-9]+' | awk '{print $2}')
+        cd src/
+        ./Schoenemann bench > output
+        real=$(grep 'Nodes: ' output | awk '{print $4}')
+        if [[ "$bench" != "$real" ]]; then
+          echo "got $real, expected $bench (real: '$(git show --summary)')"
+          exit 1
+        fi
+
+    - name: Bench (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        git fetch origin ${{ github.event.pull_request.head.ref }}
+        git checkout FETCH_HEAD
+
+        # Extract the "Bench:" number
+        $bench = git show --summary |
+                 Select-String -Pattern 'Bench: (\d+)' |
+                 ForEach-Object { $_.Matches[0].Groups[1].Value }
+
+        Set-Location src
+        .\Schoenemann bench > output
+
+        # Extract the "Nodes:" value
+        $real = Select-String -Path output -Pattern 'Nodes: ' |
+                ForEach-Object { ($_ -split '\s+')[3] }
+
+        if ($bench -ne $real) {
+          Write-Host "got $real, expected $bench (real: $(git show --summary))"
+          exit 1
+        }
+
+    
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: Schoenemann-${{github.sha}}-neon-${{matrix.os}}
+        path: src/Schoenemann
