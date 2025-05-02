@@ -21,15 +21,16 @@ jobs:
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends \
-              clang++-18 make wget gnupg lsb-release
+            sudo apt-get install -y --no-install-recommends clang++-18 make wget gnupg lsb-release
             wget https://apt.llvm.org/llvm.sh
-            chmod +x llvm.sh && sudo ./llvm.sh 18
+            chmod +x llvm.sh
+            sudo ./llvm.sh 18
             sudo ln -sf /usr/bin/clang++-18 /usr/bin/clang++
           else
-            choco install llvm make -y
-            # Ensure LLVM bin is on PATH
-            echo "PATH=\"/c/Program Files/LLVM/bin:\$PATH\"" >> $GITHUB_ENV
+            choco install llvm -y
+            choco install make -y
+            # Optionally adjust PATH if needed (this example uses the default installation path)
+            export PATH="/c/Program Files/LLVM/bin:$PATH"
           fi
 
       - name: Build with make all
@@ -38,45 +39,40 @@ jobs:
           cd src
           make all
 
-      - name: Check for bench number in commit message
+      - name: Check for Bench number in commit message
         id: bench-check
-        shell: bash
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MSG"
           if [[ $COMMIT_MSG =~ Bench[[:space:]]+([0-9]+) ]]; then
-            echo "BENCH_NUM=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            BENCH_NUM="${BASH_REMATCH[1]}"
+            echo "Found bench number: $BENCH_NUM"
+            echo "BENCH_NUM=$BENCH_NUM" >> $GITHUB_ENV
+          else
+            echo "No bench number found in commit message"
           fi
-
-      # Linux benchmark
-      - name: Run benchmark on Linux
-        if: matrix.os == 'ubuntu-22.04' && env.BENCH_NUM
         shell: bash
+
+      - name: Run benchmark test
+        if: env.BENCH_NUM
         run: |
           cd src
-          [[ -f null ]] \
-            || { echo "::error::null not found"; exit 1; }
-          OUTPUT=$(./null bench)
-          if [[ $OUTPUT =~ Nodes[[:space:]]*:[[:space:]]*([0-9]+) ]]; then
-            [[ "${BASH_REMATCH[1]}" -eq "$BENCH_NUM" ]] \
-              || { echo "::error::Mismatch: expected $BENCH_NUM, got ${BASH_REMATCH[1]}"; exit 1; }
+          if [[ -f null.exe ]]; then
+            BINARY=./null.exe
           else
-            echo "::error::Failed to parse nodes"; exit 1
+            BINARY=./null
           fi
-
-      # Windows benchmark (use PowerShell for PE binary)
-      - name: Run benchmark on Windows
-        if: matrix.os == 'windows-latest' && env.BENCH_NUM
-        shell: pwsh
-        run: |
-          Set-Location src
-          if (-not (Test-Path .\null.exe)) {
-            Write-Error "null.exe not found"; exit 1
-          }
-          $output = & .\null.exe bench
-          if ($output -notmatch 'Nodes\s*:\s*(\d+)') {
-            Write-Error "Failed to parse nodes"; exit 1
-          }
-          $nodes = $Matches[1]
-          if ($nodes -ne $Env:BENCH_NUM) {
-            Write-Error "Mismatch: expected $Env:BENCH_NUM, got $nodes"; exit 1
-          }
+          OUTPUT=$($BINARY bench)
+          echo "Bench output: $OUTPUT"
+          if [[ $OUTPUT =~ Nodes[[:space:]]*:[[:space:]]*([0-9]+) ]]; then
+            OUTPUT_NODES="${BASH_REMATCH[1]}"
+          else
+            echo "Failed to extract nodes number from output"
+            exit 1
+          fi
+          echo "Commit bench number: ${{ env.BENCH_NUM }}"
+          if [ "$OUTPUT_NODES" -ne "${{ env.BENCH_NUM }}" ]; then
+            echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
+            exit 1
+          fi
+        shell: bash
