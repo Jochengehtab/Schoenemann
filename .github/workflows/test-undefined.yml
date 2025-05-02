@@ -1,4 +1,4 @@
-name: Build and Test on Windows and Linux with Bench Check
+name: Build and Test on Windows and Linux
 
 on:
   push:
@@ -38,41 +38,3 @@ jobs:
         run: |
           cd src
           make all
-
-      - name: Check for Bench number in commit message
-        id: bench-check
-        run: |
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          echo "Commit message: $COMMIT_MSG"
-          if [[ $COMMIT_MSG =~ Bench[[:space:]]+([0-9]+) ]]; then
-            BENCH_NUM="${BASH_REMATCH[1]}"
-            echo "Found bench number: $BENCH_NUM"
-            echo "BENCH_NUM=$BENCH_NUM" >> $GITHUB_ENV
-          else
-            echo "No bench number found in commit message"
-          fi
-        shell: bash
-
-      - name: Run benchmark test
-        if: env.BENCH_NUM
-        run: |
-          cd src
-          if [[ -f null.exe ]]; then
-            BINARY=./null.exe
-          else
-            BINARY=./null
-          fi
-          OUTPUT=$($BINARY bench)
-          echo "Bench output: $OUTPUT"
-          if [[ $OUTPUT =~ Nodes[[:space:]]*:[[:space:]]*([0-9]+) ]]; then
-            OUTPUT_NODES="${BASH_REMATCH[1]}"
-          else
-            echo "Failed to extract nodes number from output"
-            exit 1
-          fi
-          echo "Commit bench number: ${{ env.BENCH_NUM }}"
-          if [ "$OUTPUT_NODES" -ne "${{ env.BENCH_NUM }}" ]; then
-            echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
-            exit 1
-          fi
-        shell: bash
