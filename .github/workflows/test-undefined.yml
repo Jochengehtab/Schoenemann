@@ -27,6 +27,7 @@ jobs:
         git fetch origin ${{ github.event.pull_request.head.ref }}
         git checkout FETCH_HEAD
         bench=$(git show --summary | grep -oE 'Bench: [0-9]+' | awk '{print $2}')
+        cd src/
         ./Schoenemann bench > output
         real=$(grep 'Nodes: ' output | awk '{print $4}')
         if [[ "$bench" != "$real" ]]; then echo "got $real, expected $bench (real: '$(git show --summary)')" && exit 1; fi
@@ -35,4 +36,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Schoenemann-${{github.sha}}-neon-${{matrix.os}}
-        path: ./Schoenemann
+        path: src/Schoenemann
