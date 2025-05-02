@@ -23,6 +23,7 @@ jobs:
       run: cd src && make EXE=Schoenemann
 
     - name: Bench
+      shell: bash
       run: |
         git fetch origin ${{ github.event.pull_request.head.ref }}
         git checkout FETCH_HEAD
@@ -30,7 +31,11 @@ jobs:
         cd src/
         ./Schoenemann bench > output
         real=$(grep 'Nodes: ' output | awk '{print $4}')
-        if ([[ "$bench" != "$real" ]]); then echo "got $real, expected $bench (real: '$(git show --summary)')" && exit 1; fi
+        if [[ "$bench" != "$real" ]]; then
+          echo "got $real, expected $bench (real: '$(git show --summary)')"
+          exit 1
+        fi
+
     
     - name: Upload binary
       uses: actions/upload-artifact@v4
