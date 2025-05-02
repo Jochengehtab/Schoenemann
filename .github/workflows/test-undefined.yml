@@ -50,6 +50,13 @@ jobs:
           exit 1
         fi
 
+    - name: Checkout PR head
+      uses: actions/checkout@v4
+      with:
+        # this ensures we get the exact commit that has the "Bench: ###" in its message
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 1
+
     - name: Bench (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
@@ -88,7 +95,6 @@ jobs:
           Write-Error "✗ got $real, expected $bench"
           exit 1
         }
-
 
     - name: Upload binary
       uses: actions/upload-artifact@v4
