@@ -62,14 +62,14 @@ void MoveOrder::orderMoves(History* history, Movelist &moveList, Hash *entry, Mo
 		else
 		{
 			scores[i] += history->getQuietHistory(board, move);
-			if (ply > 0 && stack[ply - 1].previousMovedPiece != PieceType::NONE)
+			if (stack[ply - 1].previousMovedPiece != PieceType::NONE)
 			{
 				scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply - 1, stack);
 			}
 
-			if (ply > 1 && stack[ply - 2].previousMovedPiece != PieceType::NONE)
+			if (stack[ply - 2].previousMovedPiece != PieceType::NONE)
 			{
-				scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply - 2, stack) / 2;
+				scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply - 2, stack);
 			}
 		}
 	}
