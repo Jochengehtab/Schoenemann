@@ -37,46 +37,49 @@ jobs:
         echo "→ expected bench = $bench"
 
         cd src/
-        real=$(./Schoenemann bench \
-               | awk '/Nodes: /{ print $4 }')
+        # Option A: still using a temp file
+        ./Schoenemann bench > output
+        real=$(grep -E 'Nodes *: ' output | awk '{print $3}')
         echo "→ measured real  = $real"
+
+        # Option B: inline, no temp file
+        # real=$(./Schoenemann bench | awk -F'[: ]+' '/Nodes/{print $3}')
 
         if [[ "$bench" != "$real" ]]; then
           echo "✗ got $real, expected $bench"
           exit 1
         fi
 
-
-
     - name: Bench (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        # fetch & checkout
         git fetch origin "${{ github.event.pull_request.head.ref }}"
         git checkout FETCH_HEAD
 
-        # extract Bench number (with or without colon)
-        $bench = git show --summary |
-                 Select-String 'Bench:?\s+[0-9]+' |
-                 ForEach-Object { $_.Matches[0].Value -replace '.*\s','' }
+        $bench = git show --summary `
+                 | Select-String -Pattern 'Bench:?\s+\d+' `
+                 | ForEach-Object { $_.Matches[0].Groups[1].Value }
         Write-Host "→ expected bench = $bench"
 
-        # run binary and capture real nodes
         Set-Location src
         .\Schoenemann bench > output
-        $real = (Select-String -Path output -Pattern 'Nodes: ' |
-                 ForEach-Object { ($_ -split '\s+')[3] })
+
+        # Option A: using the temp file
+        $real = Select-String -Path output -Pattern 'Nodes *: ' `
+                | ForEach-Object { ($_ -split '\s+')[2] }
         Write-Host "→ measured real  = $real"
 
-        # fail if they differ
+        # Option B: inline without temp file
+        # $real = .\Schoenemann bench `
+        #         | Select-String 'Nodes *: ' `
+        #         | ForEach-Object { ($_ -split '\s+')[2] }
+
         if ($bench -ne $real) {
-          Write-Host "✗ got $real, expected $bench (summary: $(git show --summary))"
+          Write-Error "✗ got $real, expected $bench"
           exit 1
         }
 
-
-    
     - name: Upload binary
       uses: actions/upload-artifact@v4
       with:
