@@ -28,27 +28,24 @@ jobs:
       run: |
         set -euxo pipefail
 
-        # fetch & checkout
         git fetch origin "${{ github.event.pull_request.head.ref }}"
         git checkout FETCH_HEAD
 
-        # extract Bench number (with or without colon)
         bench=$(git show --summary \
                 | grep -oE 'Bench:?[[:space:]][0-9]+' \
                 | awk '{print $2}')
         echo "→ expected bench = $bench"
 
-        # run binary and capture real nodes
         cd src/
-        ./Schoenemann bench > output
+        ./Schoenemann bench > output      # ← make sure you redirect here
         real=$(grep 'Nodes: ' output | awk '{print $4}')
         echo "→ measured real  = $real"
 
-        # fail if they differ
         if [[ "$bench" != "$real" ]]; then
-          echo "✗ got $real, expected $bench (summary: '$(git show --summary)')"
+          echo "✗ got $real, expected $bench"
           exit 1
         fi
+
 
     - name: Bench (Windows)
       if: runner.os == 'Windows'
