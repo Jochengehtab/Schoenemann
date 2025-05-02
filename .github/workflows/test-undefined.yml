@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-24.04, windows]
+        os: [ubuntu-24.04, windows-latest]
     
     steps:
 
@@ -22,16 +22,80 @@ jobs:
     - name: Compile
       run: cd src && make EXE=Schoenemann
 
-    - name: Bench
+    - name: Bench (Linux/macOS)
+      if: runner.os != 'Windows'
+      shell: bash
       run: |
-        git fetch origin ${{ github.event.pull_request.head.ref }}
+        set -euxo pipefail
+
+        git fetch origin "${{ github.event.pull_request.head.ref }}"
         git checkout FETCH_HEAD
-        bench=$(git show --summary | grep -oE 'Bench: [0-9]+' | awk '{print $2}')
+
+        bench=$(git show --summary \
+                | grep -oE 'Bench:?[[:space:]][0-9]+' \
+                | awk '{print $2}')
+        echo "→ expected bench = $bench"
+
         cd src/
+        # Option A: still using a temp file
         ./Schoenemann bench > output
-        real=$(grep 'Nodes: ' output | awk '{print $4}')
-        if [[ "$bench" != "$real" ]]; then echo "got $real, expected $bench (real: '$(git show --summary)')" && exit 1; fi
-    
+        real=$(grep -E 'Nodes *: ' output | awk '{print $3}')
+        echo "→ measured real  = $real"
+
+        # Option B: inline, no temp file
+        # real=$(./Schoenemann bench | awk -F'[: ]+' '/Nodes/{print $3}')
+
+        if [[ "$bench" != "$real" ]]; then
+          echo "✗ got $real, expected $bench"
+          exit 1
+        fi
+
+    - name: Checkout PR head
+      uses: actions/checkout@v4
+      with:
+        # this ensures we get the exact commit that has the "Bench: ###" in its message
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 1
+
+    - name: Bench (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        git fetch origin "${{ github.event.pull_request.head.ref }}"
+        git checkout FETCH_HEAD
+
+        # Get the commit summary once
+        $summary = git show --summary
+
+        # Extract the Bench number (with proper capture group)
+        if ($summary -match 'Bench:?\s+([0-9]+)') {
+          $bench = $Matches[1]
+        } else {
+          Write-Error "Could not parse bench from summary:`n$summary"
+          exit 1
+        }
+        Write-Host "→ expected bench = $bench"
+
+        # Run the engine and capture its full output
+        Set-Location src
+        $output = .\Schoenemann bench
+        $output | Out-File -FilePath bench-output.txt -Encoding utf8
+
+        # Extract the Nodes count
+        if ($output -match 'Nodes *: *([0-9]+)') {
+          $real = $Matches[1]
+        } else {
+          Write-Error "Could not parse real nodes from output:`n$output"
+          exit 1
+        }
+        Write-Host "→ measured real  = $real"
+
+        # Compare and fail if mismatched
+        if ($bench -ne $real) {
+          Write-Error "✗ got $real, expected $bench"
+          exit 1
+        }
+
     - name: Upload binary
       uses: actions/upload-artifact@v4
       with:
