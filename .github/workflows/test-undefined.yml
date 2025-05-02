@@ -11,7 +11,6 @@ jobs:
       matrix:
         os: [ubuntu-22.04, windows-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,15 +28,31 @@ jobs:
           else
             choco install llvm -y
             choco install make -y
-            # Optionally adjust PATH if needed (this example uses the default installation path)
-            export PATH="/c/Program Files/LLVM/bin:$PATH"
+            # ensure llvm is on the PATH
+            echo "::add-path::C:\\Program Files\\LLVM\\bin"
           fi
 
-      - name: Build with make all
+      - name: Build (make all)
         shell: bash
         run: |
           cd src
           make all
+
+      # ---- WINDOWS‐ONLY: upload the .exe so you can download it later ----
+      - name: Upload Windows exe
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3   # uploads src/null.exe as "windows-null-exe" :contentReference[oaicite:0]{index=0}
+        with:
+          name: windows-null-exe
+          path: src/null.exe
+
+      # ---- OPTIONAL: demonstrate downloading it again (e.g. clean working dir) ----
+      - name: (Re-)Download Windows exe
+        if: runner.os == 'Windows'
+        uses: actions/download-artifact@v3  # pulls down the artifact by name :contentReference[oaicite:1]{index=1}
+        with:
+          name: windows-null-exe
+          path: src/
 
       - name: Check for Bench number in commit message
         id: bench-check
@@ -45,16 +60,14 @@ jobs:
           COMMIT_MSG=$(git log -1 --pretty=%B)
           echo "Commit message: $COMMIT_MSG"
           if [[ $COMMIT_MSG =~ Bench[[:space:]]+([0-9]+) ]]; then
-            BENCH_NUM="${BASH_REMATCH[1]}"
-            echo "Found bench number: $BENCH_NUM"
-            echo "BENCH_NUM=$BENCH_NUM" >> $GITHUB_ENV
+            echo "BENCH_NUM=${BASH_REMATCH[1]}" >> $GITHUB_ENV
           else
             echo "No bench number found in commit message"
           fi
-        shell: bash
 
       - name: Run benchmark test
         if: env.BENCH_NUM
+        shell: bash
         run: |
           cd src
           if [[ -f null.exe ]]; then
@@ -70,9 +83,8 @@ jobs:
             echo "Failed to extract nodes number from output"
             exit 1
           fi
-          echo "Commit bench number: ${{ env.BENCH_NUM }}"
+          echo "Expected bench number: ${{ env.BENCH_NUM }}"
           if [ "$OUTPUT_NODES" -ne "${{ env.BENCH_NUM }}" ]; then
             echo "Bench number mismatch: expected ${{ env.BENCH_NUM }}, got $OUTPUT_NODES"
             exit 1
           fi
-        shell: bash
