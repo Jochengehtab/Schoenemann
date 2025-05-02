@@ -26,14 +26,27 @@ jobs:
       if: runner.os != 'Windows'
       shell: bash
       run: |
-        git fetch origin ${{ github.event.pull_request.head.ref }}
+        set -euxo pipefail
+
+        # fetch & checkout
+        git fetch origin "${{ github.event.pull_request.head.ref }}"
         git checkout FETCH_HEAD
-        bench=$(git show --summary | grep -oE 'Bench: [0-9]+' | awk '{print $2}')
+
+        # extract Bench number (with or without colon)
+        bench=$(git show --summary \
+                | grep -oE 'Bench:?[[:space:]][0-9]+' \
+                | awk '{print $2}')
+        echo "→ expected bench = $bench"
+
+        # run binary and capture real nodes
         cd src/
         ./Schoenemann bench > output
         real=$(grep 'Nodes: ' output | awk '{print $4}')
+        echo "→ measured real  = $real"
+
+        # fail if they differ
         if [[ "$bench" != "$real" ]]; then
-          echo "got $real, expected $bench (real: '$(git show --summary)')"
+          echo "✗ got $real, expected $bench (summary: '$(git show --summary)')"
           exit 1
         fi
 
@@ -41,25 +54,29 @@ jobs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        git fetch origin ${{ github.event.pull_request.head.ref }}
+        # fetch & checkout
+        git fetch origin "${{ github.event.pull_request.head.ref }}"
         git checkout FETCH_HEAD
 
-        # Extract the "Bench:" number
+        # extract Bench number (with or without colon)
         $bench = git show --summary |
-                 Select-String -Pattern 'Bench: (\d+)' |
-                 ForEach-Object { $_.Matches[0].Groups[1].Value }
+                 Select-String 'Bench:?\s+[0-9]+' |
+                 ForEach-Object { $_.Matches[0].Value -replace '.*\s','' }
+        Write-Host "→ expected bench = $bench"
 
+        # run binary and capture real nodes
         Set-Location src
         .\Schoenemann bench > output
+        $real = (Select-String -Path output -Pattern 'Nodes: ' |
+                 ForEach-Object { ($_ -split '\s+')[3] })
+        Write-Host "→ measured real  = $real"
 
-        # Extract the "Nodes:" value
-        $real = Select-String -Path output -Pattern 'Nodes: ' |
-                ForEach-Object { ($_ -split '\s+')[3] }
-
+        # fail if they differ
         if ($bench -ne $real) {
-          Write-Host "got $real, expected $bench (real: $(git show --summary))"
+          Write-Host "✗ got $real, expected $bench (summary: $(git show --summary))"
           exit 1
         }
+
 
     
     - name: Upload binary
