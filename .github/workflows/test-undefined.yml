@@ -22,7 +22,7 @@ jobs:
     - name: Compile
       run: cd src && make EXE=Schoenemann
 
-        - name: Bench (Linux/macOS)
+    - name: Bench (Linux/macOS)
       if: runner.os != 'Windows'
       shell: bash
       run: |
