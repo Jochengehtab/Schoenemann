@@ -730,7 +730,7 @@ int Search::qs(std::int16_t alpha, std::int16_t beta, Board &board, std::int16_t
     for (Move &move : moveList)
     {
         // Fultiy Prunning
-        if (!see(board, move, fpCutoff) && standPat + SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
+        if (!see(board, move, fpCutoff) && standPat + *SEE_PIECE_VALUES[board.at(move.to()).type()] <= alpha)
         {
             continue;
         }

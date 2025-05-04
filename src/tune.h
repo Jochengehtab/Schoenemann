@@ -41,13 +41,13 @@ struct EngineParameter
     int min;
     int max;
 
-    operator int()
+    inline operator int() const
     {
         return value;
     }
 
     EngineParameter(std::string parameterName, int startValue, int minValue, int maxValue)
-    : name(parameterName), value(startValue), min(minValue), max(maxValue)
+        : name(parameterName), value(startValue), min(minValue), max(maxValue)
     {
         if (this->max < this->min)
         {
@@ -58,20 +58,20 @@ struct EngineParameter
     }
 };
 
-extern int SEE_PIECE_VALUES[7];
-extern int PIECE_VALUES[7];
-
 // #define DO_TUNING
 
 #ifdef DO_TUNING
 
 // The # turns parameterName into a string
-
 #define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) EngineParameter parameterName(#parameterName, startValue, minValue, maxValue)
+extern EngineParameter *SEE_PIECE_VALUES[7];
+extern EngineParameter *PIECE_VALUES[7];
 
 #else
 
 #define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) constexpr int parameterName = startValue
+extern int *SEE_PIECE_VALUES[7];
+extern int *PIECE_VALUES[7];
 
 #endif
 

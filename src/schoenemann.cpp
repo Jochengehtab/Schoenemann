@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
                         param->value = std::stoi(token);
                         if (param->name == "lmrBase" || param->name == "lmrDivisor")
                         {
-                            search.initLMR();
+                            search->initLMR();
                         }
                     }
                 }

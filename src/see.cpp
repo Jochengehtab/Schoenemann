@@ -30,14 +30,14 @@ int getPieceValue(const Board &board, Move &move)
 
     if (moveType == move.ENPASSANT)
     {
-        return SEE_PIECE_VALUES[0];
+        return *SEE_PIECE_VALUES[0];
     }
 
-    int score = SEE_PIECE_VALUES[board.at<PieceType>(move.to())];
+    int score = *SEE_PIECE_VALUES[board.at<PieceType>(move.to())];
 
     if (moveType == move.PROMOTION)
     {
-        score += SEE_PIECE_VALUES[move.promotionType()] - SEE_PIECE_VALUES[0];
+        score += *SEE_PIECE_VALUES[move.promotionType()] - *SEE_PIECE_VALUES[0];
     }
 
     return score;
@@ -53,7 +53,7 @@ bool see(const Board &board, Move &move, int cutoff)
     }
 
     PieceType next = (move.typeOf() == move.PROMOTION) ? move.promotionType() : board.at<PieceType>(move.from());
-    score -= SEE_PIECE_VALUES[next];
+    score -= *SEE_PIECE_VALUES[next];
 
     if (score >= 0)
     {
@@ -100,7 +100,7 @@ bool see(const Board &board, Move &move, int cutoff)
         }
 
         attackers &= occupancy;
-        score = -score - 1 - SEE_PIECE_VALUES[next];
+        score = -score - 1 - *SEE_PIECE_VALUES[next];
         us = ~us;
 
         if (score >= 0)
