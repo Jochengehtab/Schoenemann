@@ -54,11 +54,10 @@ std::string engineParameterToSpsaInput()
     std::stringstream stream;
     for (EngineParameter *e : engineParameter)
     {
-        stream << e->name << ", " << "int" << ", " << double(e->value) << ", " << double(e->min) << ", " << double(e->max) << ", " << std::max(0.5, double(e->max - e->min) / 20.0) << ", " << 0.002 << "\n";
+        stream << e->name << ", int, " << double(e->value) << ", " << double(e->min) << ", " << double(e->max) << ", " << std::max(0.5, double(e->max - e->min) / 20.0) << ", " << 0.002 << "\n";
     }
     return stream.str();
 }
-
 
 DEFINE_PARAM_B(seePawn, 140, 100, 180);
 DEFINE_PARAM_B(seeKnight, 287, 200, 350);
