@@ -26,92 +26,92 @@
 
 std::chrono::time_point start = std::chrono::steady_clock::now();
 
-DEFINE_PARAM_S(probeCutBetaAdd, 460, 25);
-DEFINE_PARAM_S(probeCuteSub, 4, 1);
+DEFINE_PARAM_B(probeCutBetaAdd, 460, 380, 540);
+DEFINE_PARAM_B(probeCuteSub, 4, 3, 5);
 
-DEFINE_PARAM_S(iidDepth, 3, 1);
+DEFINE_PARAM_B(iidDepth, 3, 3, 4);
 
-DEFINE_PARAM_S(rfpDepth, 5, 1);
-DEFINE_PARAM_S(rfpEvalSub, 80, 6);
-DEFINE_PARAM_B(rfpDivisory, 2, 1, 10);
+DEFINE_PARAM_B(rfpDepth, 5, 4, 6);
+DEFINE_PARAM_B(rfpEvalSub, 80, 50, 120);
+DEFINE_PARAM_B(rfpDivisory, 2, 2, 3);
 
-DEFINE_PARAM_S(winningDepth, 6, 1);
-DEFINE_PARAM_S(winningEvalSub, 97, 20);
-DEFINE_PARAM_S(winningDepthMul, 24, 4);
+DEFINE_PARAM_B(winningDepth, 6, 6, 7);
+DEFINE_PARAM_B(winningEvalSub, 97, 80, 120);
+DEFINE_PARAM_B(winningDepthMul, 24, 16, 30);
 
-DEFINE_PARAM_S(probeCutMarginAdd, 76, 10);
+DEFINE_PARAM_B(probeCutMarginAdd, 76, 50, 100);
 
-DEFINE_PARAM_B(winningDepthDiv, 3, 1, 20);
-DEFINE_PARAM_S(winningDepthSub, 4, 1);
-DEFINE_PARAM_B(winningCount, 2, 1, 6);
+DEFINE_PARAM_B(winningDepthDiv, 3, 3, 4);
+DEFINE_PARAM_B(winningDepthSub, 4, 3, 5);
+DEFINE_PARAM_B(winningCount, 2, 2, 3);
 
 // Null Move Prunning
-DEFINE_PARAM_B(nmpDepth, 3, 1, 9);
-DEFINE_PARAM_S(nmpDepthAdd, 2, 1);
-DEFINE_PARAM_B(nmpDepthDiv, 3, 1, 10);
-DEFINE_PARAM_S(nmpTweak, 1, 12);
+DEFINE_PARAM_B(nmpDepth, 3, 3, 4);
+DEFINE_PARAM_B(nmpDepthAdd, 2, 1, 3);
+DEFINE_PARAM_B(nmpDepthDiv, 3, 3, 4);
+DEFINE_PARAM_B(nmpTweak, 1, 1, 2);
 
 // Razoring
-DEFINE_PARAM_B(razorDepth, 1, 1, 10);
-DEFINE_PARAM_S(razorAlpha, 247, 30);
-DEFINE_PARAM_S(razorDepthMul, 50, 9);
+DEFINE_PARAM_B(razorDepth, 1, 1, 2);
+DEFINE_PARAM_B(razorAlpha, 247, 220, 270);
+DEFINE_PARAM_B(razorDepthMul, 50, 35, 65);
 
 // PVS - SEE
-DEFINE_PARAM_B(pvsSSEDepth, 2, 1, 6);
-DEFINE_PARAM_S(pvsSSECaptureCutoff, 92, 10);
-DEFINE_PARAM_S(pvsSSENonCaptureCutoff, 18, 10);
+DEFINE_PARAM_B(pvsSSEDepth, 2, 2, 3);
+DEFINE_PARAM_B(pvsSSECaptureCutoff, 92, 60, 120);
+DEFINE_PARAM_B(pvsSSENonCaptureCutoff, 18, 11, 25);
 
 // Aspiration Window
-DEFINE_PARAM_S(aspDelta, 26, 6);
+DEFINE_PARAM_B(aspDelta, 26, 18, 36);
 // DEFINE_PARAM_B(aspDivisor, 2, 2, 8); When tuned this triggers crashes for some reason :(
-DEFINE_PARAM_B(aspMul, 134, 1, 450);
-DEFINE_PARAM_B(aspDepth, 7, 6, 12);
+DEFINE_PARAM_B(aspMul, 134, 100, 163);
+DEFINE_PARAM_B(aspDepth, 7, 6, 8);
 
 // Late Move Reductions
-DEFINE_PARAM_B(lmrBase, 78, 1, 300);
-DEFINE_PARAM_B(lmrDivisor, 240, 1, 700);
-DEFINE_PARAM_B(lmrDepth, 2, 1, 7);
-DEFINE_PARAM_S(lmrCutNodeMul, 2, 15);
+DEFINE_PARAM_B(lmrBase, 78, 50, 105);
+DEFINE_PARAM_B(lmrDivisor, 240, 200, 280);
+DEFINE_PARAM_B(lmrDepth, 2, 2, 3);
+DEFINE_PARAM_B(lmrCutNodeMul, 2, 2, 3);
 
-DEFINE_PARAM_S(iirReduction, 2, 1);
-DEFINE_PARAM_S(fpCutoff, 2, 1);
+DEFINE_PARAM_B(iirReduction, 2, 1, 2);
+DEFINE_PARAM_B(fpCutoff, 2, 1, 3);
 
 // Quiet History
-DEFINE_PARAM_S(quietHistoryGravityBase, 31, 5);
-DEFINE_PARAM_S(quietHistoryDepthMul, 204, 25);
-DEFINE_PARAM_S(quietHistoryBonusCap, 1734, 200);
-DEFINE_PARAM_S(quietHistoryMalusBase, 15, 6);
-DEFINE_PARAM_S(quietHistoryMalusMax, 1900, 150);
-DEFINE_PARAM_S(quietHistoryMalusDepthMul, 171, 25);
+DEFINE_PARAM_B(quietHistoryGravityBase, 31, 21, 41);
+DEFINE_PARAM_B(quietHistoryDepthMul, 204, 150, 250);
+DEFINE_PARAM_B(quietHistoryBonusCap, 1734, 1500, 2000);
+DEFINE_PARAM_B(quietHistoryMalusBase, 15, 10, 20);
+DEFINE_PARAM_B(quietHistoryMalusMax, 1900, 1700, 2100);
+DEFINE_PARAM_B(quietHistoryMalusDepthMul, 171, 121, 221);
 
 // Continuation Hisotry
-DEFINE_PARAM_S(continuationHistoryMalusBase, 25, 6);
-DEFINE_PARAM_S(continuationHistoryMalusMax, 2172, 150);
-DEFINE_PARAM_S(continuationHistoryMalusDepthMul, 185, 25);
-DEFINE_PARAM_S(continuationHistoryGravityBase, 26, 5);
-DEFINE_PARAM_S(continuationHistoryDepthMul, 208, 25);
-DEFINE_PARAM_S(continuationHistoryBonusCap, 1959, 200);
+DEFINE_PARAM_B(continuationHistoryMalusBase, 25, 18, 32);
+DEFINE_PARAM_B(continuationHistoryMalusMax, 2172, 1800, 2400);
+DEFINE_PARAM_B(continuationHistoryMalusDepthMul, 185, 120, 240);
+DEFINE_PARAM_B(continuationHistoryGravityBase, 26, 20, 32);
+DEFINE_PARAM_B(continuationHistoryDepthMul, 208, 150, 258);
+DEFINE_PARAM_B(continuationHistoryBonusCap, 1959, 1700, 2300);
 
 // Material Scaling
-DEFINE_PARAM_S(materialScaleKnight, 3, 1);
-DEFINE_PARAM_S(materialScaleBishop, 3, 1);
-DEFINE_PARAM_S(materialScaleRook, 5, 1);
-DEFINE_PARAM_S(materialScaleQueen, 18, 3);
-DEFINE_PARAM_S(materialScaleGamePhaseAdd, 169, 25);
-DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 1, 700);
+DEFINE_PARAM_B(materialScaleKnight, 3, 2, 4);
+DEFINE_PARAM_B(materialScaleBishop, 3, 2, 4);
+DEFINE_PARAM_B(materialScaleRook, 5, 4, 6);
+DEFINE_PARAM_B(materialScaleQueen, 18, 12, 24);
+DEFINE_PARAM_B(materialScaleGamePhaseAdd, 169, 120, 220);
+DEFINE_PARAM_B(materialScaleGamePhaseDiv, 269, 220, 320);
 
 // Pawn CorrectionHistory
-DEFINE_PARAM_S(pawnCorrectionHistoryDepthAdd, 180, 20);
-DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 1, 4000);
+DEFINE_PARAM_B(pawnCorrectionHistoryDepthAdd, 180, 120, 240);
+DEFINE_PARAM_B(pawnCorrectionHistoryDepthDiv, 768, 600, 936);
 
 // Singular Extension
-DEFINE_PARAM_B(singularMinDepth, 6, 1, 15);
-DEFINE_PARAM_B(singularHashDepthReuction, 3, 1, 8);
-DEFINE_PARAM_B(singularBetaDepthMul, 2, 1, 6);
-DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 1, 50);
-DEFINE_PARAM_S(singularDepthSub, 1, 15);
-DEFINE_PARAM_B(singularDepthDiv, 2, 1, 20);
-DEFINE_PARAM_S(singularTTSub, 2, 10);
+DEFINE_PARAM_B(singularMinDepth, 6, 6, 7);
+DEFINE_PARAM_B(singularHashDepthReuction, 3, 2, 4);
+DEFINE_PARAM_B(singularBetaDepthMul, 2, 2, 3);
+DEFINE_PARAM_B(singularBetaDoubleExtensionMargin, 5, 3, 8);
+DEFINE_PARAM_B(singularDepthSub, 1, 1, 2);
+DEFINE_PARAM_B(singularDepthDiv, 2, 2, 3);
+DEFINE_PARAM_B(singularTTSub, 2, 2, 3);
 
 int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::int16_t ply, Board &board, bool isCutNode)
 {
