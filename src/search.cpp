@@ -113,6 +113,15 @@ DEFINE_PARAM_B(singularDepthSub, 1, 1, 2);
 DEFINE_PARAM_B(singularDepthDiv, 2, 2, 3);
 DEFINE_PARAM_B(singularTTSub, 2, 2, 3);
 
+// Late Move Prunnig
+DEFINE_PARAM_B(lmpBase, 6, 5, 7);
+DEFINE_PARAM_B(lmpDepthMargin, 2, 2, 3);
+DEFINE_PARAM_B(lmpDepth, 3, 2, 3);
+
+// Idea
+DEFINE_PARAM_B(ideaAlpha, 500, 400, 600);
+DEFINE_PARAM_B(ideaMoveCount, 3, 2, 4);
+
 int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::int16_t ply, Board &board, bool isCutNode)
 {
     if (shouldStop)
@@ -412,18 +421,18 @@ int Search::pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::
         }
 
         // Idea
-        if (!pvNode && bestScore > -infinity && moveCounter >= 3 * depth && staticEval < alpha - 500)
+        if (!pvNode && bestScore > -infinity && moveCounter >= ideaMoveCount * depth && staticEval < alpha - ideaAlpha)
         {
             continue;
         }
 
         // Late move prunning
-        if (!pvNode && isQuiet && bestScore > -infinity && moveCounter > (6 + 2 * depth * depth) && depth <= 3)
+        if (!pvNode && isQuiet && bestScore > -infinity && moveCounter > (lmpBase + lmpDepthMargin * depth * depth) && depth <= lmpDepth)
         {
             break;
         }
 
-        int extensions = 0;
+        std::int8_t extensions = 0;
 
         if (!isSingularSearch &&
             hashedMove == move &&
