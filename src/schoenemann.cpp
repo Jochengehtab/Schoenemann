@@ -17,13 +17,10 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <memory>
-#include <cstring>
-#include <sstream>
 
 #include "consts.h"
 #include "helper.h"
@@ -46,7 +43,8 @@ int main(int argc, char *argv[])
     Network net;
     Helper helper;
 
-    auto search = std::make_unique<Search>(timeManagement, transpositionTable, moveOrder, net);
+    const std::unique_ptr<Search> search =
+        std::make_unique<Search>(timeManagement, transpositionTable, moveOrder, net);
 
     // The main board
     Board board(&net);
@@ -75,18 +73,26 @@ int main(int argc, char *argv[])
 
     if (argc > 1 && std::strcmp(argv[1], "datagen") == 0)
     {
+        // Vector to hold threads
         std::vector<std::thread> threads;
+
+        // Launch multiple threads
         for (std::uint16_t i = 0; i < 5; ++i)
         {
-            // threads.emplace_back(std::thread([&board, &search, &transpositionTable]() {
-            //     generate(board, search.get(), transpositionTable);
-            // }));
+            // threads.emplace_back(std::thread([&board]()
+            //  { generate(board, search, transpositionTable); }));
         }
-        for (auto &thread : threads)
-            if (thread.joinable()) thread.join();
+
+        // Join threads to ensure they complete before exiting main
+        for (std::thread &thread : threads)
+        {
+            if (thread.joinable())
+            {
+                thread.join();
+            }
+        }
         return 0;
     }
-
     // Main UCI-Loop
     do
     {
@@ -98,13 +104,13 @@ int main(int argc, char *argv[])
         std::istringstream is(cmd);
         cmd.clear();
 
-        // Ensure token is always initialized before comparison
         token.clear();
         is >> token;
 
         if (token == "uci")
         {
             helper.uciPrint();
+
 #ifdef DO_TUNING
             std::cout << engineParameterToUCI();
 #endif
@@ -120,19 +126,28 @@ int main(int argc, char *argv[])
         }
         else if (token == "ucinewgame")
         {
+            // Reset the board
             board.setFen(STARTPOS);
+
+            // Clear the transposition table
             transpositionTable.clear();
+
+            // Reset the time mangement
             timeManagement.reset();
+
+            // Also reset all the historys
             search->resetHistory();
         }
         else if (token == "setoption")
         {
             is >> token;
+
             if (token == "name")
             {
                 is >> token;
 #ifdef DO_TUNING
-                if (auto *param = findEngineParameterByName(token))
+                EngineParameter *param = findEngineParameterByName(token);
+                if (param != nullptr)
                 {
                     is >> token;
                     if (token == "value")
@@ -140,9 +155,12 @@ int main(int argc, char *argv[])
                         is >> token;
                         param->value = std::stoi(token);
                         if (param->name == "lmrBase" || param->name == "lmrDivisor")
+                        {
                             search->initLMR();
+                        }
                     }
                 }
+
 #endif
                 if (token == "Hash")
                 {
@@ -179,15 +197,16 @@ int main(int argc, char *argv[])
         }
         else if (token == "eval")
         {
-            auto raw = net.evaluate((int)board.sideToMove(), board.occ().count());
-            std::cout << "The raw eval is: " << raw << std::endl;
-            std::cout << "The scaled evaluation is: " 
-                      << search->scaleOutput(raw, board)
-                      << " cp" << std::endl;
+            std::cout << "The raw eval is: " << net.evaluate((int)board.sideToMove(), board.occ().count()) << std::endl;
+            std::cout << "The scaled evaluation is: " << search->scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board) << " cp" << std::endl;
         }
         else if (token == "spsa")
         {
             std::cout << engineParameterToSpsaInput() << std::endl;
+        }
+        else if (token == "stop")
+        {
+            search->shouldStop = true;
         }
         else
         {
