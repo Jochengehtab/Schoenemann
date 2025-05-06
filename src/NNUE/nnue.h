@@ -45,46 +45,8 @@ private:
     accumulator acc;
 
 public:
-    Network()
-    {
 
-        // Open the NNUE file with the given path
-        FILE *nn;
-        #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-            fopen_s(&nn, EVALFILE, "rb");
-        #else
-            nn = fopen(EVALFILE, "rb");
-        #endif
-
-        if (nn)
-        {
-            size_t read = 0;
-            size_t fileSize = sizeof(innerNet);
-            size_t objectsExpected = fileSize / sizeof(int16_t);
-
-            // Read all the different weight and bias
-            read += fread(&innerNet.featureWeight, sizeof(int16_t), inputSize * hiddenSize, nn);
-            read += fread(&innerNet.featureBias, sizeof(int16_t), hiddenSize, nn);
-            read += fread(&innerNet.outputWeight, sizeof(int16_t), hiddenSize * 2 * outputSize, nn);
-            read += fread(&innerNet.outputBias, sizeof(int16_t), outputSize, nn);
-
-            // Check if the file was read correctly
-            if (std::abs((int64_t)read - (int64_t)objectsExpected) >= 16)
-            {
-                std::cout << "Error loading the net, aborting ";
-                std::cout << "Expected " << objectsExpected << " shorts, got " << read << "\n";
-                exit(1);
-            }
-
-            // Close the file after reading it
-            fclose(nn);
-        }
-        else
-        {
-            std::cout << "The NNUE File wasn't found" << std::endl;
-            exit(1);
-        }
-    }
+    Network();
 
     inline void refreshAccumulator()
     {

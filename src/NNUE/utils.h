@@ -22,6 +22,7 @@
 
 #include <array>
 #include <immintrin.h>
+#include <algorithm>
 
 #include "nnueconsts.h"
 
