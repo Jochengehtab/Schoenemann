@@ -342,6 +342,7 @@ void Search::iterativeDeepening(Board &board, const bool isInfinite) {
                 << nodes << " nps "
                 << static_cast<std::uint64_t>(nodes / (elapsed.count() + 1) * 1000)
                 << " hashfull " << transpositionTable.estimateHashfull()
+                << " time " << static_cast<std::uint64_t>(elapsed.count() + 1)
                 << " pv " << getPVLine()
                 << std::endl;
 
@@ -359,7 +360,7 @@ std::string Search::scoreToUci(const int &score) {
     if (score <= -EVAL_MATE_IN_MAX_PLY) {
         return " mate " + std::to_string(-(EVAL_MATE + score) / 2);
     }
-    return " cp " + std::to_string(score);
+    return " score cp " + std::to_string(score);
 }
 
 void Search::initLMR() {
