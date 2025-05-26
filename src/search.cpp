@@ -75,7 +75,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
     }
 
     if (!root) {
-
         if (shouldStop || ply >= MAX_PLY - 1) {
             return ply >= MAX_PLY - 1 && !board.inCheck() ? evaluate(board) : 0;
         }
@@ -101,8 +100,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
 
     // Check if we can return our score that we got from the transposition table
     if (!pvNode && ttHit && !root && hashedDepth >= depth && ((hashedType == UPPER_BOUND && hashedScore <= alpha) ||
-                                            (hashedType == LOWER_BOUND && hashedScore >= beta) ||
-                                            (hashedType == EXACT))) {
+                                                              (hashedType == LOWER_BOUND && hashedScore >= beta) ||
+                                                              (hashedType == EXACT))) {
         return hashedScore;
     }
 
@@ -212,6 +211,24 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
         return 0;
     }
 
+    // Transposition Table lookup
+    const Hash *entry = transpositionTable.getHash(board.hash());
+    const bool ttHit = entry != nullptr;
+    int hashedScore = EVAL_NONE;
+    std::uint8_t hashedType = 4;
+
+    if (ttHit && entry->key == board.hash()) {
+        hashedScore = tt::scoreFromTT(entry->score, ply);
+        hashedType = static_cast<std::uint8_t>(entry->type);
+    }
+
+    // Check if we can return our score that we got from the transposition table
+    if (!pvNode && ttHit && ((hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+                             (hashedType == LOWER_BOUND && hashedScore >= beta) ||
+                             (hashedType == EXACT))) {
+        return hashedScore;
+    }
+
     const int standPat = evaluate(board);
 
     if (standPat >= beta) {
@@ -266,6 +283,9 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
         bestScore = matedIn(ply);
     }
 
+    const std::uint8_t flag = bestScore >= beta ? LOWER_BOUND : UPPER_BOUND;
+    transpositionTable.storeHash(board.hash(), 0, flag, tt::scoreToTT(bestScore, ply), bestMoveInQs, standPat);
+
     return bestScore;
 }
 
@@ -286,7 +306,8 @@ void Search::iterativeDeepening(Board &board, const bool isInfinite) {
     int beta = EVAL_INFINITE;
 
     for (int i = 1; i < MAX_PLY; i++) {
-        if ((timeManagement.shouldStopID(start) && !isInfinite) || i == MAX_PLY - 1 || nodes == nodeLimit || shouldStop) {
+        if ((timeManagement.shouldStopID(start) && !isInfinite) || i == MAX_PLY - 1 || nodes == nodeLimit ||
+            shouldStop) {
             std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
             break;
         }
