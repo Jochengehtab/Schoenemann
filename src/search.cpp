@@ -90,7 +90,7 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
     if (ttHit && entry->key == board.hash()) {
         hashedScore = tt::scoreFromTT(entry->score, ply);
         hashedType = static_cast<std::uint8_t>(entry->type);
-        hashedDepth = static_cast<unsigned char>(entry->depth);
+        hashedDepth = static_cast<int>(entry->depth);
     }
 
     // Check if we can return our score that we got from the transposition table
@@ -261,9 +261,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
         assert(moveCount == 0);
         bestScore = matedIn(ply);
     }
-
-    const std::uint8_t flag = bestScore >= beta ? LOWER_BOUND : UPPER_BOUND;
-    transpositionTable.storeHash(board.hash(), 0, flag, tt::scoreToTT(bestScore, ply), bestMoveInQs, standPat);
 
     return bestScore;
 }
