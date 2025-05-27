@@ -229,10 +229,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
 
         board.unmakeMove(move);
 
-        if (shouldStop) {
-            return 0;
-        }
-
         // Our current Score is better than the previous bestScore so we update it
         if (score > bestScore) {
             bestScore = score;
