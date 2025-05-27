@@ -60,7 +60,6 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
 
     // We check for a timeout
     if (timeManagement.shouldStopSoft(start) || nodes >= nodeLimit) {
-        std::cout << (timeManagement.shouldStopSoft(start)) << std::endl;
         shouldStop = true;
     }
 
@@ -75,12 +74,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
     }
 
     if (!root) {
-        if (shouldStop || ply >= MAX_PLY - 1) {
+        if (shouldStop || ply >= MAX_PLY - 1 || isDraw(board)) {
             return ply >= MAX_PLY - 1 && !board.inCheck() ? evaluate(board) : 0;
-        }
-
-        if (isDraw(board)) {
-            return 0;
         }
     }
 
@@ -95,11 +90,11 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
     if (ttHit && entry->key == board.hash()) {
         hashedScore = tt::scoreFromTT(entry->score, ply);
         hashedType = static_cast<std::uint8_t>(entry->type);
-        hashedDepth = static_cast<int>(entry->depth);
+        hashedDepth = static_cast<unsigned char>(entry->depth);
     }
 
     // Check if we can return our score that we got from the transposition table
-    if (!pvNode && ttHit && !root && hashedDepth >= depth && ((hashedType == UPPER_BOUND && hashedScore <= alpha) ||
+    if (!pvNode && !root && hashedDepth >= depth && ((hashedType == UPPER_BOUND && hashedScore <= alpha) ||
                                                               (hashedType == LOWER_BOUND && hashedScore >= beta) ||
                                                               (hashedType == EXACT))) {
         return hashedScore;
@@ -203,12 +198,9 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
     if (timeManagement.shouldStopSoft(start) || nodes >= nodeLimit) {
         shouldStop = true;
     }
-    if (shouldStop || ply >= MAX_PLY - 1) {
-        return ply >= MAX_PLY - 1 && !board.inCheck() ? evaluate(board) : 0;
-    }
 
-    if (isDraw(board)) {
-        return 0;
+    if (shouldStop || ply >= MAX_PLY - 1 || isDraw(board)) {
+        return ply >= MAX_PLY - 1 && !board.inCheck() ? evaluate(board) : 0;
     }
 
     // Transposition Table lookup
@@ -228,7 +220,6 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
                              (hashedType == EXACT))) {
         return hashedScore;
     }
-
     const int standPat = evaluate(board);
 
     if (standPat >= beta) {
@@ -254,6 +245,11 @@ int Search::qs(int alpha, int beta, Board &board, int ply) {
         assert(score < EVAL_INFINITE && score > -EVAL_INFINITE);
 
         board.unmakeMove(move);
+
+        if (shouldStop) {
+            return 0;
+        }
+
         // Our current Score is better than the previous bestScore so we update it
         if (score > bestScore) {
             bestScore = score;
