@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     search->resetHistory();
 
     if (argc > 1 && std::strcmp(argv[1], "bench") == 0) {
-        helper.runBenchmark(*search, board);
+        helper.runBenchmark(search.get(), board);
         return 0;
     }
 
@@ -140,7 +140,6 @@ int main(int argc, char *argv[]) {
                         }
                     }
                 }
-
 #endif
                 if (token == "Hash") {
                     is >> token;
@@ -163,7 +162,7 @@ int main(int argc, char *argv[]) {
         } else if (token == "datagen") {
             // generate(board);
         } else if (token == "bench") {
-            helper.runBenchmark(*search, board);
+            helper.runBenchmark(search.get(), board);
         } else if (token == "eval") {
             std::cout << "The raw eval is: " << net.evaluate(board.sideToMove(), board.occ().count()) << std::endl;
             std::cout << "The scaled evaluation is: " << Search::scaleOutput(

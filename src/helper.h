@@ -27,7 +27,7 @@ private:
 public:
     static void transpositionTableTest(const tt &transpositionTable);
 
-    static void runBenchmark(Search &search, Board &board);
+    static void runBenchmark(Search* search, Board &board);
 
     static void uciPrint();
 

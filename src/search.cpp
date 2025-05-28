@@ -151,6 +151,8 @@ int Search::pvs(int alpha, int beta, int depth, int ply, Board &board) {
 
                 // If we are ate the root we set the bestMove
                 if (ply == 0) {
+
+                    // Update the score of the root move
                     for (int x = 0; x < rootMoveListSize; x++) {
                         if (rootMoveList[x].move == move) {
                             rootMoveList[x].score = score;
@@ -281,15 +283,19 @@ void Search::iterativeDeepening(Board &board, const bool isInfinite) {
     int alpha = -EVAL_INFINITE;
     int beta = EVAL_INFINITE;
 
+    // Generate all legal root moves to later report the correct score
     Movelist moveList;
     movegen::legalmoves(moveList, board);
 
+    // Initialize the rootMoveList
     rootMoveList.reset(new RootMove[moveList.size()]);
 
+    // Fill every move into the rootMoveList
     for (int i = 0; i < moveList.size(); i++) {
         rootMoveList[i].move = moveList[i];
     }
 
+    // We keep track of the size
     rootMoveListSize = moveList.size();
 
     for (int i = 1; i < MAX_PLY; i++) {
@@ -342,6 +348,7 @@ void Search::iterativeDeepening(Board &board, const bool isInfinite) {
 std::string Search::scoreToUci() const {
     int score = EVAL_NONE;
 
+    // Get the score of the best root move
     for (int i = 0; i < rootMoveListSize; i++) {
         if (rootMoveList[i].move == rootBestMove) {
              score = rootMoveList[i].score;

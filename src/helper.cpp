@@ -61,18 +61,18 @@ void Helper::uciPrint() {
             << "option name Threads type spin default 1 min 1 max 1" << std::endl;
 }
 
-void Helper::runBenchmark(Search &search, Board &board) {
+void Helper::runBenchmark(Search* search, Board &board) {
     // Setting up the clock
     const std::chrono::time_point start = std::chrono::steady_clock::now();
 
     // Resting the nodes
-    search.nodes = 0;
-    search.setTimeInfinite();
+    search->nodes = 0;
+    search->setTimeInfinite();
 
     // Looping over all bench positions
     for (const std::string &test: testStrings) {
         board.setFen(test);
-        search.pvs(-EVAL_INFINITE, EVAL_INFINITE, benchDepth, 0, board);
+        search->pvs(-EVAL_INFINITE, EVAL_INFINITE, benchDepth, 0, board);
     }
 
     const std::chrono::time_point end = std::chrono::steady_clock::now();
@@ -82,10 +82,10 @@ void Helper::runBenchmark(Search &search, Board &board) {
     const int timeInMs = static_cast<int>(timeElapsed.count());
 
     // calculates the Nodes per Second
-    const int NPS = static_cast<int>(search.nodes / timeElapsed.count() * 1000);
+    const int NPS = static_cast<int>(search->nodes / timeElapsed.count() * 1000);
 
     // Prints out the final bench
-    std::cout << "Time  : " << timeInMs << " ms\nNodes : " << search.nodes << "\nNPS   : " << NPS << std::endl;
+    std::cout << "Time  : " << timeInMs << " ms\nNodes : " << search->nodes << "\nNPS   : " << NPS << std::endl;
 
     board.setFen(STARTPOS);
 }
