@@ -197,6 +197,14 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board) {
             if (!inCheck && isQuiet && staticEval + 50 + 100 * depth < alpha && depth < 6) {
                 continue;
             }
+            // Static Exchange evaluation (SEE)
+            // We look at a move if it returns a negative result form SEE.
+            // That means when the result is positive the opponent is winning the exchange on
+            // the target square of the move. If the move is not a capture then we make a bigger cutoff.
+            if (!pvNode && depth < 4 && !SEE::see(board, move, !isQuiet ? -90 : -20))
+            {
+                continue;
+            }
         }
 
         board.makeMove(move);
