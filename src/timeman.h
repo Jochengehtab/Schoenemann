@@ -43,6 +43,8 @@ public:
 
     int timeLeft = 0;
     int increment = 0;
+    int moveTime = -1;
+
     std::chrono::milliseconds hardLimit{0};
     std::chrono::milliseconds softLimit{0};
     bool isInfiniteSearch = false;

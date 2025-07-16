@@ -91,7 +91,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     // Check if we can return our score that we got from the transposition table
     if (!pvNode && !root && hashedDepth >= depth && ((hashedType == Bound::UPPER && hashedScore <= alpha) ||
                                                      (hashedType == Bound::LOWER && hashedScore >= beta) ||
-                                                     (hashedType == EXACT))) {
+                                                     hashedType == EXACT)) {
         return hashedScore;
     }
 
@@ -124,7 +124,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     }
 
     // Reverse Futility Pruning
-    // If we subtract a margin from our stati evaluation, and it is still far
+    // If we subtract a margin from our static evaluation, and it is still far
     // above beta, we can assume that the node will fail high (beta cutoff) and prune it
     if (!isSingularSearch && !inCheck && !pvNode && depth < 9 && staticEval - 100 * (depth - improving) >= beta) {
         // By tweaking the return value with beta, we try to adjust it more to the window.
@@ -507,7 +507,7 @@ void Search::iterativeDeepening(Board &board, const SearchParams &params) {
 
     // We keep track of the size
     rootMoveListSize = moveList.size();
-    const int finalDepth = params.depth == 255 ? MAX_PLY : params.depth + 1;
+    const int finalDepth = params.depth == MAX_PLY ? MAX_PLY : params.depth + 1;
     for (int i = 1; i < finalDepth; i++) {
         if ((timeManagement.shouldStopID(start) && !params.isInfinite) || i == MAX_PLY - 1 || nodes == nodeLimit ||
             shouldStop) {
@@ -615,7 +615,7 @@ void Search::initLMR() {
     constexpr double lmrBaseFinal = lmrBase / 100.0;
     constexpr double lmrDivisorFinal = lmrDivisor / 100.0;
     for (int depth = 1; depth < MAX_PLY; depth++) {
-        for (int moveCount = 1; moveCount < 218; moveCount++) {
+        for (int moveCount = 1; moveCount < MAX_MOVES; moveCount++) {
             reductions[depth][moveCount] = static_cast<std::uint8_t>(std::clamp(
                 lmrBaseFinal + std::log(depth) * std::log(moveCount) / lmrDivisorFinal, 0.0, 255.0));
         }

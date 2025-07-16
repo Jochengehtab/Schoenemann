@@ -20,6 +20,12 @@
 #include "timeman.h"
 
 void TimeManagement::calculateTimeForMove() {
+    if (moveTime != -1) {
+        hardLimit = std::chrono::milliseconds{moveTime};
+        softLimit = std::chrono::milliseconds{moveTime};
+        return;
+    }
+
     // Only use half of out time as maximum
     timeLeft -= timeLeft / 2;
 
@@ -63,6 +69,7 @@ void TimeManagement::updateEvalStability(const int score, const int previousScor
 void TimeManagement::reset() {
     bestMoveStabilityCount = 0;
     bestEvalStabilityCount = 0;
+    moveTime = -1;
 
     hardLimit = std::chrono::milliseconds{0};
     softLimit = std::chrono::milliseconds{0};

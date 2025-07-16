@@ -26,10 +26,11 @@
 #include "search_fwd.h"
 #include <memory>
 #include <limits>
+#include <atomic>
 
-struct SearchParams {
+struct alignas(8) SearchParams {
     bool isInfinite = false;
-    int depth = 255;
+    int depth = MAX_PLY;
 };
 
 class Search {
@@ -44,7 +45,7 @@ public:
     Move rootBestMove = Move::NULL_MOVE;
     Move previousBestMove = Move::NULL_MOVE;
 
-    bool shouldStop = false;
+    std::atomic<bool> shouldStop{false};
 
     std::uint64_t nodeLimit = NO_NODE_LIMIT;
     std::uint64_t nodes = 0;

@@ -118,69 +118,58 @@ void Helper::handleSetPosition(Board &board, std::istringstream &is, std::string
     }
 }
 
-void Helper::handleGo(Search &search, TimeManagement &timeManagement, Board &board, std::istringstream &is,
-                      std::string &token, SearchParams &params) {
-    int number[4];
-    bool hasTime = false;
-    search.shouldStop = false;
 
-    is >> token;
-    if (!is.good()) {
-        params.isInfinite = true;
-        std::thread t1([&] { search.iterativeDeepening(board, params); });
-        t1.detach();
-    }
-    while (is.good()) {
-        if (token == "wtime") {
-            is >> token;
-            number[0] = std::stoi(token);
-            hasTime = true;
-        } else if (token == "btime") {
-            is >> token;
-            number[1] = std::stoi(token);
-            hasTime = true;
-        } else if (token == "winc") {
-            is >> token;
-            number[2] = std::stoi(token);
-        } else if (token == "binc") {
-            is >> token;
-            number[3] = std::stoi(token);
-        } else if (token == "depth") {
-            is >> token;
-            params.depth = std::stoi(token);
-            std::thread t1([&] { search.iterativeDeepening(board, params); });
-            t1.detach();
+void Helper::handleGo(Search &search, TimeManagement &timeManagement, Board &board,
+                      std::istringstream &is, SearchParams params) {
 
-            std::cout << "bestmove " << uci::moveToUci(search.rootBestMove) << std::endl;
-        } else if (token == "nodes") {
-            is >> token;
-            search.nodeLimit = std::stoi(token);
-            std::thread t1([&] { search.iterativeDeepening(board, params); });
-            t1.detach();
-        } else if (token == "movetime") {
-            is >> token;
-            timeManagement.timeLeft = std::stoi(token);
-            std::thread t1([&] { search.iterativeDeepening(board, params); });
-            t1.detach();
-        } else if (token == "infinite") {
-            params.isInfinite = true;
-            std::thread t1([&] { search.iterativeDeepening(board, params); });
-            t1.detach();
-        }
-        if (!(is >> token)) {
-            break;
-        }
+    // Reset everything for a new search
+    params.isInfinite = false;
+    params.depth = MAX_PLY;
+
+    search.nodeLimit = -1;
+    timeManagement.reset();
+
+    // Setup values
+    std::string token;
+    int wtime = -1, btime = -1, winc = 0, binc = 0, movetime = -1;
+
+    while (is >> token) {
+        if (token == "wtime")      { is >> wtime; }
+        else if (token == "btime") { is >> btime; }
+        else if (token == "winc")  { is >> winc; }
+        else if (token == "binc")  { is >> binc; }
+        else if (token == "depth") { is >> params.depth; }
+        else if (token == "nodes") { is >> search.nodeLimit; }
+        else if (token == "movetime") { is >> movetime; }
+        else if (token == "infinite") { params.isInfinite = true; }
     }
-    if (hasTime) {
+
+    // We search infinite so no time calculation is needed
+    if (params.isInfinite) {
+        timeManagement.isInfiniteSearch = true;
+        return;
+    }
+
+    if (movetime != -1) {
+        timeManagement.moveTime = movetime;
+        timeManagement.increment = 0;
+        timeManagement.isInfiniteSearch = false;
+    } else if (wtime != -1 || btime != -1) {
         if (board.sideToMove() == Color::WHITE) {
-            timeManagement.timeLeft = number[0];
-            timeManagement.increment = number[2];
+            timeManagement.timeLeft = wtime;
+            timeManagement.increment = winc;
         } else {
-            timeManagement.timeLeft = number[1];
-            timeManagement.increment = number[3];
+            timeManagement.timeLeft = btime;
+            timeManagement.increment = binc;
         }
+        timeManagement.isInfiniteSearch = false;
+    } else {
+        // Nothing was specialized so we search infinitely
+        params.isInfinite = true;
+        timeManagement.isInfiniteSearch = true;
+    }
 
-        std::thread t1([&] { search.iterativeDeepening(board, params); });
-        t1.detach();
+    if (!timeManagement.isInfiniteSearch) {
+        timeManagement.calculateTimeForMove();
     }
 }
