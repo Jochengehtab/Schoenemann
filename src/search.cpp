@@ -134,10 +134,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         stack[ply].previousMovedPiece = PieceType::NONE;
         stack[ply].previousMove = Move::NULL_MOVE;
         stack[ply].nmpFailHighMove = Move::NULL_MOVE;
-        initialPly = ply;
 
         board.makeNullMove();
-        const int score = -pvs(-beta, -alpha, depth - nmpDepthReduction, ply + 1, board, !cutNode);
+        const int score = -pvs(-beta, -alpha, depth - nmpDepthReduction, ply, board, !cutNode);
         board.unmakeNullMove();
 
         if (score >= beta) {
@@ -151,8 +150,6 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             history.updateThreatHistory(stack[ply].nmpFailHighMove, board.at(stack[ply].nmpFailHighMove.from()).type(), board.sideToMove(),
                                         nmpBonus);
         }
-
-        initialPly = 0;
     }
 
     // Internal Iterative Reduction
@@ -328,7 +325,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply,
                                                       stack);
 
-                    stack[ply - initialPly].nmpFailHighMove = move;
+                    stack[ply].nmpFailHighMove = move;
 
                     const int nmpMalus = std::min(15 + 170 * depth, 1900);
 
