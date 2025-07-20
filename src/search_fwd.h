@@ -15,6 +15,7 @@ struct alignas(1024) SearchStack {
     Move previousMove = Move::NULL_MOVE; // (4 Byte)
     Move excludedMove = Move::NULL_MOVE; // (4 Byte)
     int failHighMargin = 0;
+    Move nmpFailHighMove = Move::NULL_MOVE;
 };
 
 struct alignas(8) RootMove {

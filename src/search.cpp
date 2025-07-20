@@ -133,21 +133,21 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         const int nmpDepthReduction = 3 + depth / 3;
         stack[ply].previousMovedPiece = PieceType::NONE;
         stack[ply].previousMove = Move::NULL_MOVE;
-        nmpFailHighMove = Move::NULL_MOVE;
+        stack[ply].nmpFailHighMove = Move::NULL_MOVE;
 
         board.makeNullMove();
-        const int score = -pvs(-beta, -alpha, depth - nmpDepthReduction, ply + 1, board, !cutNode);
+        const int score = -pvs(-beta, -alpha, depth - nmpDepthReduction, ply, board, !cutNode);
         board.unmakeNullMove();
 
         if (score >= beta) {
             return score;
         }
 
-        if (nmpFailHighMove != Move::NULL_MOVE) {
+        if (stack[ply].nmpFailHighMove != Move::NULL_MOVE) {
             int value = beta - score;
             stack[ply].failHighMargin = value;
             const int nmpBonus = std::min(30 + 200 * depth, 2000);
-            history.updateThreatHistory(nmpFailHighMove, board.at(nmpFailHighMove.from()).type(), board.sideToMove(),
+            history.updateThreatHistory(stack[ply].nmpFailHighMove, board.at(stack[ply].nmpFailHighMove.from()).type(), board.sideToMove(),
                                         nmpBonus);
         }
     }
@@ -325,7 +325,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply,
                                                       stack);
 
-                    nmpFailHighMove = move;
+                    stack[ply].nmpFailHighMove = move;
 
                     const int nmpMalus = std::min(15 + 170 * depth, 1900);
 
@@ -340,7 +340,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                             continue;
                         }
 
-                        if (madeMove != nmpFailHighMove) {
+                        if (madeMove != stack[ply].nmpFailHighMove) {
                             history.updateThreatHistory(madeMove, board.at(madeMove.from()).type(), board.sideToMove(),
                                                         -nmpMalus);
                         }
