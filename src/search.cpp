@@ -136,7 +136,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         stack[ply].nmpFailHighMove = Move::NULL_MOVE;
 
         board.makeNullMove();
-        const int score = -pvs(-beta, -alpha, depth - nmpDepthReduction, ply, board, !cutNode);
+        const int score = -pvs(-beta, -beta - 1, depth - nmpDepthReduction, ply + 1, board, true);
         board.unmakeNullMove();
 
         if (score >= beta) {
@@ -144,6 +144,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         }
 
         if (stack[ply].nmpFailHighMove != Move::NULL_MOVE) {
+            std::cout << "hi" << std::endl;
             int value = beta - score;
             stack[ply].failHighMargin = value;
             const int nmpBonus = std::min(30 + 200 * depth, 2000);
