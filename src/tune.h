@@ -42,26 +42,27 @@ struct EngineParameter {
     int min;
     int max;
 
-    explicit operator int() const {
+    operator int() const {
         return value;
     }
 
     EngineParameter(std::string parameterName, const int startValue, const int minValue, const int maxValue)
         : name(std::move(parameterName)), value(startValue), min(minValue), max(maxValue) {
-        if (this->max < this->min) {
-            std::cout << "Max Value is smaller than the Min value" << std::endl;
+        // TODO proper value checking
+        if (this->max < this->min && this->min > 0 && this->max > 0) {
+            std::cout << "Max Value " << this->max << " is smaller than the Min" << this->min <<" value" << std::endl;
         }
 
         addEngineParameter(this);
     }
 };
 
-// #define DO_TUNING
+#define DO_TUNING
 
 #ifdef DO_TUNING
 
 // The # turns parameterName into a string
-#define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) EngineParameter parameterName(#parameterName, startValue, minValue, maxValue)
+#define DEFINE_PARAM(parameterName, startValue, minValue, maxValue) EngineParameter parameterName(#parameterName, startValue, minValue, maxValue)
 extern EngineParameter *SEE_PIECE_VALUES[7];
 extern EngineParameter *PIECE_VALUES[7];
 

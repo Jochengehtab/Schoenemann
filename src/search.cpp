@@ -305,14 +305,14 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     stack[ply].killerMove = move;
 
                     // Quiet History
-                    const int quietHistoryBonus = std::min(qhBB + qhBM * depth, qhBC);
-                    const int quietHistoryMalus = std::min(qhMB + qhMM * depth, qhMC);
+                    const int quietHistoryBonus = std::min(qhBB + qhBM * depth, static_cast<int>(qhBC));
+                    const int quietHistoryMalus = std::min(qhMB + qhMM * depth, static_cast<int>(qhMC));
 
                     history.updateQuietHistory(board, move, quietHistoryBonus);
 
                     // Continuation History
-                    const int continuationHistoryBonus = std::min(chBB + chBM * depth, chBC);
-                    const int continuationHistoryMalus = std::min(chMB + chMM * depth, chMC);
+                    const int continuationHistoryBonus = std::min(chBB + chBM * depth, static_cast<int>(chBC));
+                    const int continuationHistoryMalus = std::min(chMB + chMM * depth, static_cast<int>(chMC));
 
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply,
                                                       stack);
@@ -605,8 +605,8 @@ std::string Search::scoreToUci() const {
 }
 
 void Search::initLMR() {
-    constexpr double lmrBaseFinal = lmrBase / 100.0;
-    constexpr double lmrDivisorFinal = lmrDivisor / 100.0;
+    const double lmrBaseFinal = lmrBase / 100.0;
+    const double lmrDivisorFinal = lmrDivisor / 100.0;
     for (int depth = 1; depth < MAX_PLY; depth++) {
         for (int moveCount = 1; moveCount < MAX_MOVES; moveCount++) {
             reductions[depth][moveCount] = static_cast<std::uint8_t>(std::clamp(
