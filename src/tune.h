@@ -49,7 +49,7 @@ struct EngineParameter {
     EngineParameter(std::string parameterName, const int startValue, const int minValue, const int maxValue)
         : name(std::move(parameterName)), value(startValue), min(minValue), max(maxValue) {
         // TODO proper value checking
-        if (this->max < this->min && this->min > 0 && this->max > 0) {
+        if (this->max < this->min) {
             std::cout << "Max Value " << this->max << " is smaller than the Min" << this->min <<" value" << std::endl;
         }
 
