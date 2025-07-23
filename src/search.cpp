@@ -25,9 +25,10 @@
 #include "search.h"
 #include "see.h"
 #include "tune.h"
+#include "tunables.h"
 
-DEFINE_PARAM_B(lmrBase, 80, 50, 105);
-DEFINE_PARAM_B(lmrDivisor, 250, 200, 280);
+DEFINE_PARAM(lmrBase, 80, 50, 105);
+DEFINE_PARAM(lmrDivisor, 250, 200, 280);
 
 int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, bool cutNode) {
     assert(-EVAL_INFINITE <= alpha && alpha < beta && beta <= EVAL_INFINITE);
@@ -118,7 +119,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     // Reverse Futility Pruning
     // If we subtract a margin from our static evaluation, and it is still far
     // above beta, we can assume that the node will fail high (beta cutoff) and prune it
-    if (!isSingularSearch && !inCheck && !pvNode && depth < 9 && staticEval - 100 * (depth - improving) >= beta) {
+    if (!isSingularSearch && !inCheck && !pvNode && depth < 9 && staticEval - rfpSub * (depth - improving) >= beta) {
         // By tweaking the return value with beta, we try to adjust it more to the window.
         // As we do this, we make the value more inaccurate, but we are potentially adjusting
         // it more to our window which can probably produce a fail high
@@ -130,7 +131,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     // We search this with a full window and a reduced search depth.
     // If the search returns a score above beta we can cut that off.
     if (!isSingularSearch && !pvNode && depth > 3 && !inCheck && staticEval >= beta) {
-        const int nmpDepthReduction = 3 + depth / 3;
+        const int nmpDepthReduction = nmpBase + depth / nmpDiv;
         stack[ply].previousMovedPiece = PieceType::NONE;
         stack[ply].previousMove = Move::NULL_MOVE;
 
@@ -182,7 +183,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
             // Futility Pruning
             // We skip quiet moves that have less potential to raise alpha
-            if (!inCheck && isQuiet && staticEval + 50 + 100 * depth < alpha && depth < 6) {
+            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth < alpha && depth < 6) {
                 continue;
             }
 
@@ -190,7 +191,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             // We look at a move if it returns a negative result form SEE.
             // That means when the result is positive the opponent is winning the exchange on
             // the target square of the move. If the move is not a capture then we make a bigger cutoff.
-            if (!pvNode && depth < 4 && !SEE::see(board, move, !isQuiet ? -90 : -20)) {
+            if (!pvNode && depth < 4 && !SEE::see(board, move, isQuiet ? seeQuiet : seeNonQuiet)) {
                 continue;
             }
         }
@@ -200,12 +201,12 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         if (!isSingularSearch &&
             hashedMove == move &&
             depth > 5 &&
-            hashedDepth >= depth - 3 &&
+            hashedDepth >= depth - seDepthSub &&
             hashedType != Bound::UPPER &&
             std::abs(hashedScore) < EVAL_MATE_IN_MAX_PLY &&
             !root) {
             const int singularBeta = hashedScore - depth * 2;
-            const std::uint8_t singularDepth = (depth - 1) / 2;
+            const std::uint8_t singularDepth = (depth - seNewDepthSub) / 2;
 
             stack[ply].excludedMove = move;
             const int singularScore = pvs(singularBeta - 1, singularBeta, singularDepth, ply, board, cutNode);
@@ -304,14 +305,14 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     stack[ply].killerMove = move;
 
                     // Quiet History
-                    const int quietHistoryBonus = std::min(30 + 200 * depth, 1750);
-                    const int quietHistoryMalus = std::min(15 + 170 * depth, 1900);
+                    const int quietHistoryBonus = std::min(qhBB + qhBM * depth, qhBC);
+                    const int quietHistoryMalus = std::min(qhMB + qhMM * depth, qhMC);
 
                     history.updateQuietHistory(board, move, quietHistoryBonus);
 
                     // Continuation History
-                    const int continuationHistoryBonus = std::min(25 + 200 * depth, 2000);
-                    const int continuationHistoryMalus = std::min(25 + 185 * depth, 2150);
+                    const int continuationHistoryBonus = std::min(chBB + chBM * depth, chBC);
+                    const int continuationHistoryMalus = std::min(chMB + chMM * depth, chMC);
 
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply,
                                                       stack);
@@ -483,7 +484,7 @@ void Search::iterativeDeepening(Board &board, const SearchParams &params) {
 
     int alpha = -EVAL_INFINITE;
     int beta = EVAL_INFINITE;
-    int delta = 25;
+    int delta = aspBase;
 
     // Generate all legal root moves to later report the correct score
     Movelist moveList;
@@ -512,7 +513,7 @@ void Search::iterativeDeepening(Board &board, const SearchParams &params) {
 
         if (i > 3) {
             // Set up the initial aspiration window
-            delta = 25;
+            delta = aspBase;
             alpha = std::max(currentScore - delta, -EVAL_INFINITE);
             beta = std::min(currentScore + delta, EVAL_INFINITE);
         }
@@ -620,7 +621,7 @@ int Search::scaleOutput(const int rawEval, const Board &board) {
                           5 * board.pieces(PieceType::ROOK).count() +
                           9 * board.pieces(PieceType::QUEEN).count();
 
-    const int finalEval = rawEval * (160 + gamePhase) / 270;
+    const int finalEval = rawEval * (materialBase + gamePhase) / materialDiv;
 
     return std::clamp(finalEval, -EVAL_MATE, EVAL_MATE);
 }

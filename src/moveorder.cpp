@@ -21,7 +21,7 @@
 #include "see.h"
 #include "tune.h"
 
-DEFINE_PARAM_B(mvaLvvMultiplyer, 103, 83, 123);
+DEFINE_PARAM(mvaLvvMultiplyer, 103, 83, 123);
 
 void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Hash *entry, const Move &killer,
                            const SearchStack *stack, const Board &board, int *scores, const int &ply) {

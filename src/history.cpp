@@ -25,9 +25,9 @@
 
 #include "tune.h"
 
-DEFINE_PARAM_B(quietHistoryDiv, 28000, 10000, 50000);
-DEFINE_PARAM_B(continuationHistoryDiv, 28000, 10000, 50000);
-DEFINE_PARAM_B(correctionValueDiv, 30, 1, 600);
+DEFINE_PARAM(quietHistoryDiv, 28000, 10000, 50000);
+DEFINE_PARAM(continuationHistoryDiv, 28000, 10000, 50000);
+DEFINE_PARAM(correctionValueDiv, 30, 1, 600);
 
 int History::getQuietHistory(const Board &board, const Move move) const {
     return quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()];

@@ -23,6 +23,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <utility>
 
 struct EngineParameter;
 
@@ -45,8 +46,8 @@ struct EngineParameter {
         return value;
     }
 
-    EngineParameter(std::string parameterName, int startValue, int minValue, int maxValue)
-        : name(parameterName), value(startValue), min(minValue), max(maxValue) {
+    EngineParameter(std::string parameterName, const int startValue, const int minValue, const int maxValue)
+        : name(std::move(parameterName)), value(startValue), min(minValue), max(maxValue) {
         if (this->max < this->min) {
             std::cout << "Max Value is smaller than the Min value" << std::endl;
         }
@@ -66,7 +67,7 @@ extern EngineParameter *PIECE_VALUES[7];
 
 #else
 
-#define DEFINE_PARAM_B(parameterName, startValue, minValue, maxValue) constexpr int parameterName = startValue
+#define DEFINE_PARAM(parameterName, startValue, minValue, maxValue) constexpr int parameterName = startValue
 extern int *SEE_PIECE_VALUES[7];
 extern int *PIECE_VALUES[7];
 

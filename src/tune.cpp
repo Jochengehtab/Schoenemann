@@ -63,20 +63,20 @@ std::string engineParameterToSpsaInput() {
 }
 
 
-DEFINE_PARAM_B(seePawn, 100, 100, 180);
-DEFINE_PARAM_B(seeKnight, 300, 200, 350);
-DEFINE_PARAM_B(seeBishop, 300, 280, 400);
-DEFINE_PARAM_B(seeRook, 500, 500, 700);
-DEFINE_PARAM_B(seeQueen, 900, 840, 1240);
-DEFINE_PARAM_B(seeEmpty, 0, 0, 0);
+DEFINE_PARAM(seePawn, 100, 100, 180);
+DEFINE_PARAM(seeKnight, 300, 200, 350);
+DEFINE_PARAM(seeBishop, 300, 280, 400);
+DEFINE_PARAM(seeRook, 500, 500, 700);
+DEFINE_PARAM(seeQueen, 900, 840, 1240);
+DEFINE_PARAM(seeEmpty, 0, 0, 0);
 
-DEFINE_PARAM_B(piecePawn, 73, 53, 93);
-DEFINE_PARAM_B(pieceKnight, 258, 208, 288);
-DEFINE_PARAM_B(pieceBishop, 217, 208, 308);
-DEFINE_PARAM_B(pieceRook, 476, 430, 500);
-DEFINE_PARAM_B(pieceQueen, 569, 530, 700);
-DEFINE_PARAM_B(pieceKing, 15000, 15000, 15000);
-DEFINE_PARAM_B(pieceEmpty, 0, 0, 0);
+DEFINE_PARAM(piecePawn, 73, 53, 93);
+DEFINE_PARAM(pieceKnight, 258, 208, 288);
+DEFINE_PARAM(pieceBishop, 217, 208, 308);
+DEFINE_PARAM(pieceRook, 476, 430, 500);
+DEFINE_PARAM(pieceQueen, 569, 530, 700);
+DEFINE_PARAM(pieceKing, 15000, 15000, 15000);
+DEFINE_PARAM(pieceEmpty, 0, 0, 0);
 
 #ifdef DO_TUNING
 
