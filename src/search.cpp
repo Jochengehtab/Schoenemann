@@ -126,6 +126,29 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         return (staticEval + beta) / 2;
     }
 
+    // Razoring
+    if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= 1)
+    {
+        const int ralpha = alpha - razorAlpha - depth * razorDepthMul;
+
+        if (staticEval < ralpha)
+        {
+            int qscore;
+            if (depth == 1 && ralpha < alpha)
+            {
+                qscore = qs(alpha, beta, board, ply);
+                return qscore;
+            }
+
+            qscore = qs(ralpha, ralpha + 1, board, ply);
+
+            if (qscore <= ralpha)
+            {
+                return qscore;
+            }
+        }
+    }
+
     // Null Move Pruning
     // If our position is excellent we pass a move to our opponent.
     // We search this with a full window and a reduced search depth.

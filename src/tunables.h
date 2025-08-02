@@ -40,6 +40,9 @@ DEFINE_PARAM(qhMC, 1900, 1550, 2250);
 // Bonus Base
 DEFINE_PARAM(chBB, 25, 15, 35);
 
+DEFINE_PARAM(razorAlpha, 250, 220, 270);
+DEFINE_PARAM(razorDepthMul, 50, 35, 65);
+
 // Bonus Multiplier
 DEFINE_PARAM(chBM, 200, 120, 280);
 
