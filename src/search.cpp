@@ -100,6 +100,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         staticEval = evaluate(board);
     }
 
+    int rawEval = staticEval;
+    staticEval = std::clamp(history.correctEval(staticEval, board), -EVAL_INFINITE + MAX_PLY, EVAL_INFINITE - MAX_PLY);
+
     // Save statick eval into the SearchStack. This is important for the improving flag
     stack[ply].staticEval = staticEval;
 
@@ -374,7 +377,13 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     const Bound flag = failHigh ? Bound::LOWER : !failLow ? Bound::EXACT : Bound::UPPER;
     if (!isSingularSearch) {
         transpositionTable.storeHash(board.hash(), depth, flag, tt::scoreToTT(bestScore, ply), bestMoveInPVS,
-                                     staticEval);
+                                     rawEval);
+    }
+
+    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && ((flag == Bound::EXACT) || (flag == Bound::UPPER && bestScore <= staticEval) || (flag == Bound::LOWER && bestScore > staticEval)))
+    {
+        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        history.updatePawnCorrectionHistory(bonus, board, 768);
     }
 
     return bestScore;
