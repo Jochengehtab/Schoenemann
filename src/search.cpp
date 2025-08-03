@@ -382,7 +382,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
     if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && ((flag == Bound::EXACT) || (flag == Bound::UPPER && bestScore <= staticEval) || (flag == Bound::LOWER && bestScore > staticEval)))
     {
-        int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+        const int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         history.updatePawnCorrectionHistory(bonus, board, 768);
     }
 
