@@ -246,8 +246,6 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                 if (!pvNode && singularScore + 10 < singularBeta) {
                     extensions++;
                 }
-            } else if (singularBeta >= beta) {
-                return singularBeta;
             }
         }
 
