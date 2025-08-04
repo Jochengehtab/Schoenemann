@@ -107,7 +107,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     if (!inCheck) {
         stack[ply].staticEval = staticEval;
     } else {
-        stack[ply].staticEval = EVAL_INFINITE - staticEval;
+        stack[ply].staticEval = EVAL_NONE;
     }
 
     bool improving = false;
