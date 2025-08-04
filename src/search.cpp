@@ -100,22 +100,23 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         staticEval = evaluate(board);
     }
 
-    int rawEval = staticEval;
+    const int rawEval = staticEval;
     staticEval = std::clamp(history.correctEval(staticEval, board), -EVAL_INFINITE + MAX_PLY, EVAL_INFINITE - MAX_PLY);
 
     // Save statick eval into the SearchStack. This is important for the improving flag
-    stack[ply].staticEval = staticEval;
+    if (!inCheck) {
+        stack[ply].staticEval = staticEval;
+    } else {
+        stack[ply].staticEval = EVAL_INFINITE - staticEval;
+    }
 
     bool improving = false;
 
     // Check if we improved over one move
     // That means we check if our evaluation is greater than two plies ago
-    if (ply > 2 && staticEval > stack[ply - 2].staticEval) {
+    if (ply > 2 && staticEval > stack[ply - 2].staticEval && stack[ply - 2].staticEval != EVAL_NONE) {
         improving = true;
-    }
-
-    // Check if we improved a move ago
-    if (ply > 4 && staticEval > stack[ply - 4].staticEval) {
+    } else if (ply > 4 && staticEval > stack[ply - 4].staticEval && stack[ply - 4].staticEval != EVAL_NONE) {
         improving = true;
     }
 
@@ -130,23 +131,19 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     }
 
     // Razoring
-    if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= 1)
-    {
+    if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= 1) {
         const int ralpha = alpha - razorAlpha - depth * razorDepthMul;
 
-        if (staticEval < ralpha)
-        {
+        if (staticEval < ralpha) {
             int qscore;
-            if (depth == 1 && ralpha < alpha)
-            {
+            if (depth == 1 && ralpha < alpha) {
                 qscore = qs(alpha, beta, board, ply);
                 return qscore;
             }
 
             qscore = qs(ralpha, ralpha + 1, board, ply);
 
-            if (qscore <= ralpha)
-            {
+            if (qscore <= ralpha) {
                 return qscore;
             }
         }
@@ -384,9 +381,11 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                                      rawEval);
     }
 
-    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && ((flag == Bound::EXACT) || (flag == Bound::UPPER && bestScore <= staticEval) || (flag == Bound::LOWER && bestScore > staticEval)))
-    {
-        const int bonus = std::clamp((int)(bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
+    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (
+            (flag == Bound::EXACT) || (flag == Bound::UPPER && bestScore <= staticEval) || (
+                flag == Bound::LOWER && bestScore > staticEval))) {
+        const int bonus = std::clamp((int) (bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4,
+                                     CORRHIST_LIMIT / 4);
         history.updatePawnCorrectionHistory(bonus, board, 768);
     }
 
