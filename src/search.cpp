@@ -241,6 +241,11 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
             if (singularScore < singularBeta) {
                 extensions++;
+                // If we aren't in a pvNode and our score plus some margin
+                // is still less than our singular beta when can extend further
+                if (!pvNode && singularScore + 10 < singularBeta) {
+                    extensions++;
+                }
             }
         }
 
