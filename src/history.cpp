@@ -21,7 +21,7 @@
 
 #include "history.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "tune.h"
 

@@ -195,6 +195,10 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     for (int i = 0; i < moveList.size(); i++) {
         const Move move = MoveOrder::sortByScore(moveList, scoreMoves, i);
 
+        if (move == stack[ply].excludedMove) {
+            continue;
+        }
+
         // We consider a move quiet if it isn't a capture or a promotion
         const bool isQuiet = !board.isCapture(move) && move.typeOf() != Move::PROMOTION;
 
