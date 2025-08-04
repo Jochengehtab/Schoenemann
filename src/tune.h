@@ -50,7 +50,7 @@ struct EngineParameter {
         : name(std::move(parameterName)), value(startValue), min(minValue), max(maxValue) {
         // TODO proper value checking
         if (this->max < this->min) {
-            std::cout << "Max Value " << this->max << " is smaller than the Min" << this->min <<" value" << std::endl;
+            std::cout << "Max Value " << this->max << " is smaller than the Min" << this->min << " value" << std::endl;
         }
 
         addEngineParameter(this);
