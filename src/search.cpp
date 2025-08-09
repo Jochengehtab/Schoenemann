@@ -131,7 +131,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     }
 
     // Razoring
-    if (!isSingularSearch && !pvNode && !board.inCheck() && depth <= 1) {
+    if (!isSingularSearch && !pvNode && staticEval < alpha && !board.inCheck() && depth <= 1) {
         const int score = qs(alpha, beta, board, ply);
         if (score <= alpha) {
             return score;
