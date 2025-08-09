@@ -21,6 +21,7 @@
 #include <chrono>
 #include <thread>
 #include <memory>
+#include <cstring>
 
 #include "consts.h"
 #include "helper.h"
@@ -28,23 +29,20 @@
 #include "datagen.h"
 #include "tune.h"
 #include "search.h"
-#include "history.h"
 #include "tt.h"
-#include "time.h"
-#include "moveorder.h"
+#include "timeman.h"
+#include "see.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     std::uint32_t transpositionTableSize = 16;
-    
+
     tt transpositionTable(transpositionTableSize);
-    Time timeManagement;
-    MoveOrder moveOrder;
+    TimeManagement timeManagement;
     Network net;
-    Helper helper;
+    SearchParams params;
 
     const std::unique_ptr<Search> search =
-        std::make_unique<Search>(timeManagement, transpositionTable, moveOrder, net);
+            std::make_unique<Search>(timeManagement, transpositionTable, net);
 
     // The main board
     Board board(&net);
@@ -65,65 +63,64 @@ int main(int argc, char *argv[])
     timeManagement.reset();
     search->resetHistory();
 
-    if (argc > 1 && strcmp(argv[1], "bench") == 0)
-    {
-        helper.runBenchmark(*search, board);
+    std::thread searchThread;
+
+    // Helper function for stoping the search
+    auto stopSearch = [&]() {
+        if (searchThread.joinable()) {
+            search->shouldStop = true;
+            searchThread.join();
+        }
+    };
+
+    if (argc > 1 && std::strcmp(argv[1], "bench") == 0) {
+        Helper::runBenchmark(search.get(), board, params);
         return 0;
     }
 
-    if (argc > 1 && strcmp(argv[1], "datagen") == 0)
-    {
+    if (argc > 1 && std::strcmp(argv[1], "datagen") == 0) {
         // Vector to hold threads
         std::vector<std::thread> threads;
 
         // Launch multiple threads
-        for (std::uint16_t i = 0; i < 5; ++i)
-        {
+        for (std::uint16_t i = 0; i < 5; ++i) {
             // threads.emplace_back(std::thread([&board]()
             //  { generate(board, search, transpositionTable); }));
         }
 
         // Join threads to ensure they complete before exiting main
-        for (std::thread &thread : threads)
-        {
-            if (thread.joinable())
-            {
+        for (std::thread &thread: threads) {
+            if (thread.joinable()) {
                 thread.join();
             }
         }
         return 0;
     }
     // Main UCI-Loop
-    do
-    {
-        if (argc == 1 && !getline(std::cin, cmd))
-        {
+    do {
+        if (argc == 1 && !std::getline(std::cin, cmd)) {
             cmd = "quit";
         }
 
         std::istringstream is(cmd);
         cmd.clear();
-        is >> std::skipws >> token;
 
-        if (token == "uci")
-        {
-            helper.uciPrint();
+        token.clear();
+        is >> token;
+
+        if (token == "uci") {
+            Helper::uciPrint();
 
 #ifdef DO_TUNING
             std::cout << engineParameterToUCI();
 #endif
             std::cout << "uciok" << std::endl;
-        }
-        else if (token == "stop")
-        {
-            search->shouldStop = true;
-        }
-        else if (token == "isready")
-        {
+        } else if (token == "stop") {
+            stopSearch();
+        } else if (token == "isready") {
             std::cout << "readyok" << std::endl;
-        }
-        else if (token == "ucinewgame")
-        {
+        } else if (token == "ucinewgame") {
+            stopSearch();
             // Reset the board
             board.setFen(STARTPOS);
 
@@ -135,13 +132,11 @@ int main(int argc, char *argv[])
 
             // Also reset all the historys
             search->resetHistory();
-        }
-        else if (token == "setoption")
-        {
+        } else if (token == "setoption") {
+            stopSearch();
             is >> token;
 
-            if (token == "name")
-            {
+            if (token == "name") {
                 is >> token;
 #ifdef DO_TUNING
                 EngineParameter *param = findEngineParameterByName(token);
@@ -158,13 +153,10 @@ int main(int argc, char *argv[])
                         }
                     }
                 }
-
 #endif
-                if (token == "Hash")
-                {
+                if (token == "Hash") {
                     is >> token;
-                    if (token == "value")
-                    {
+                    if (token == "value") {
                         is >> token;
                         transpositionTableSize = std::stoi(token);
                         transpositionTable.clear();
@@ -172,45 +164,42 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-        }
-        else if (token == "position")
-        {
-            helper.handleSetPosition(board, is, token);
-        }
-        else if (token == "go")
-        {
-            helper.handleGo(*search, timeManagement, board, is, token);
-        }
-        else if (token == "d")
-        {
+        } else if (token == "position") {
+            stopSearch();
+            Helper::handleSetPosition(board, is, token);
+        } else if (token == "go") {
+
+            // Stop search
+            stopSearch();
+            search->shouldStop = false;
+
+            Helper::handleGo(*search, timeManagement, board, is, params);
+            searchThread = std::thread([&] {
+                search->iterativeDeepening(board, params);
+            });
+        } else if (token == "d") {
             std::cout << board << std::endl;
-        }
-        else if (token == "datagen")
-        {
+        } else if (token == "fen") {
+            std::cout << board.getFen() << std::endl;
+        } else if (token == "datagen") {
             // generate(board);
-        }
-        else if (token == "bench")
-        {
-            helper.runBenchmark(*search, board);
-        }
-        else if (token == "eval")
-        {
-            std::cout << "The raw eval is: " << net.evaluate((int)board.sideToMove(), board.occ().count()) << std::endl;
-            std::cout << "The scaled evaluation is: " << search->scaleOutput(net.evaluate((int)board.sideToMove(), board.occ().count()), board) << " cp" << std::endl;
-        }
-        else if (token == "spsa")
-        {
+        } else if (token == "bench") {
+            Helper::runBenchmark(search.get(), board, params);
+        } else if (token == "eval") {
+            std::cout << "The raw eval is: " << net.evaluate(board.sideToMove(), board.occ().count()) << std::endl;
+            std::cout << "The scaled evaluation is: " << Search::scaleOutput(
+                net.evaluate(board.sideToMove(), board.occ().count()), board) << " cp" << std::endl;
+        } else if (token == "spsa") {
             std::cout << engineParameterToSpsaInput() << std::endl;
-        }
-        else if (token == "stop")
-        {
+        } else if (token == "stop") {
             search->shouldStop = true;
         }
-        else
-        {
+        else {
             std::cout << "No valid command: '" << token << "'!" << std::endl;
         }
     } while (token != "quit");
+
+    stopSearch();
 
     return 0;
 }

@@ -21,64 +21,46 @@
 #include "see.h"
 #include "tune.h"
 
-DEFINE_PARAM_B(mvaLvvMultiplyer, 103, 83, 123);
+DEFINE_PARAM(mvaLvvMultiplyer, 103, 83, 123);
 
-void MoveOrder::orderMoves(History* history, Movelist &moveList, Hash *entry, Move& killer, SearchStack* stack, Board &board, int* scores, int ply)
-{
-	const bool isNullptr = entry == nullptr ? true : false;
-	const std::uint64_t key = board.zobrist();
+void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Hash *entry, const Move &killer,
+                           const SearchStack *stack, const Board &board, int *scores, const int &ply) {
+    const bool isNullptr = entry == nullptr;
+    const std::uint64_t key = board.zobrist();
 
-	for (int i = 0; i < moveList.size(); i++)
-	{
-		Move move = moveList[i];
-		if (!isNullptr)
-		{
-			if (entry->key == key && move == entry->move)
-			{
-				scores[i] = hashMoveScore;
-				continue;
-			}
-		}
-		if (board.isCapture(move))
-		{
-			PieceType captured = board.at<PieceType>(move.to());
-			PieceType capturing = board.at<PieceType>(move.from());
+    for (int i = 0; i < moveList.size(); i++) {
+        Move move = moveList[i];
+        if (!isNullptr) {
+            if (entry->key == key && move == entry->move) {
+                scores[i] = hashMoveScore;
+                continue;
+            }
+        }
+        if (board.isCapture(move)) {
+            const PieceType captured = board.at<PieceType>(move.to());
+            const PieceType capturing = board.at<PieceType>(move.from());
 
-			int captureScore = see(board, move, 0) ? goodCapture : badCapture;
+            int captureScore = SEE::see(board, move, 0) ? goodCapture : badCapture;
 
-			// MVA - LVV
-			captureScore += mvaLvvMultiplyer * (*PIECE_VALUES[captured]) - (*PIECE_VALUES[capturing]);
+            // MVA - LVV
+            captureScore += mvaLvvMultiplyer * (*PIECE_VALUES[captured]) - (*PIECE_VALUES[capturing]);
 
-			scores[i] = captureScore;
-		}
-		else if (move == killer && killer != Move::NULL_MOVE)
-		{
-			scores[i] = killerScore;
-		}
-		else if (move.typeOf() == Move::PROMOTION)
-		{
-			scores[i] = promotion;
-		}
-		else
-		{
-			scores[i] += history->getQuietHistory(board, move);
-			if (ply > 0 && stack[ply - 1].previousMovedPiece != PieceType::NONE)
-			{
-				scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply - 1, stack);
-			}
-		}
-	}
+            scores[i] = captureScore;
+        } else if (move == killer && killer != Move::NULL_MOVE) {
+            scores[i] = killerScore;
+        } else {
+            scores[i] += history->getQuietHistory(board, move);
+            scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
+        }
+    }
 }
 
-Move MoveOrder::sortByScore(Movelist &moveList, int scores[], int i)
-{
-	for (int j = i + 1; j < moveList.size(); j++)
-	{
-		if (scores[j] > scores[i])
-		{
-			std::swap(moveList[i], moveList[j]);
-			std::swap(scores[i], scores[j]);
-		}
-	}
-	return moveList[i];
+Move MoveOrder::sortByScore(Movelist &moveList, int scores[], const int &i) {
+    for (int j = i + 1; j < moveList.size(); j++) {
+        if (scores[j] > scores[i]) {
+            std::swap(moveList[i], moveList[j]);
+            std::swap(scores[i], scores[j]);
+        }
+    }
+    return moveList[i];
 }

@@ -32,6 +32,6 @@
 #include <string>
 #include <vector>
 
-void generate(Board &board, Search& search, tt transpositionTable);
+void generate(Board &board, Search &search, tt &transpositionTable, SearchParams &params);
 
 #endif

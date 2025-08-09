@@ -24,27 +24,23 @@
 
 #include "nnueconsts.h"
 
-class accumulator
-{
+class accumulator {
 public:
-    std::array<std::int16_t, hiddenSize> white;
-    std::array<std::int16_t, hiddenSize> black;
+    std::array<std::int16_t, hiddenSize> white{};
+    std::array<std::int16_t, hiddenSize> black{};
 
-    accumulator()
-    {
+    accumulator() {
         zeroAccumulator();
     }
 
-    inline void loadBias(std::array<std::int16_t, hiddenSize> &bias)
-    {
-        std::copy(std::begin(bias), std::end(bias), std::begin(white));
-        std::copy(std::begin(bias), std::end(bias), std::begin(black));
+    void loadBias(std::array<std::int16_t, hiddenSize> &bias) {
+        std::ranges::copy(bias, std::begin(white));
+        std::ranges::copy(bias, std::begin(black));
     }
 
-    inline void zeroAccumulator()
-    {
-        std::fill(std::begin(white), std::end(white), 0);
-        std::fill(std::begin(black), std::end(black), 0);
+    void zeroAccumulator() {
+        std::ranges::fill(white, 0);
+        std::ranges::fill(black, 0);
     }
 };
 

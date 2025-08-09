@@ -20,58 +20,73 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
-#include <iostream>
-
-#include "time.h"
+#include "timeman.h"
 #include "tt.h"
 #include "moveorder.h"
 #include "search_fwd.h"
+#include <memory>
+#include <limits>
+#include <atomic>
 
-class Search
-{
+struct alignas(8) SearchParams {
+    bool isInfinite = false;
+    int depth = MAX_PLY;
+};
+
+class Search {
 public:
-	Search(Time &timeManagement,
-		   tt &transpositionTabel,
-		   MoveOrder &moveOrder,
-		   Network &net) : timeManagement(timeManagement),
-						   transpositionTabel(transpositionTabel),
-						   moveOrder(moveOrder),
-						   net(net) {}
+    Search(TimeManagement &timeManagement,
+           tt &transpositionTabel,
+           Network &net) : reductions{}, stack{}, timeManagement(timeManagement),
+                           transpositionTable(transpositionTabel), history(),
+                           net(net) {
+    }
 
-	Move rootBestMove = Move::NULL_MOVE;
-	Move previousBestMove = Move::NULL_MOVE;
+    Move rootBestMove = Move::NULL_MOVE;
+    Move previousBestMove = Move::NULL_MOVE;
 
-	bool shouldStop = false;
-	bool isNormalSearch = true;
-	bool hasNodeLimit = false;
+    std::atomic<bool> shouldStop{false};
 
-	std::uint64_t nodeLimit = 0;
-	std::uint64_t timeForMove = 0;
-	std::uint64_t nodes = 0;
+    std::uint64_t nodeLimit = NO_NODE_LIMIT;
+    std::uint64_t nodes = 0;
 
-	int scoreData = 0;
-	int previousBestScore = 0;
+    int timeForMove = 0;
+    int currentScore = 0;
+    int previousBestScore = 0;
 
-	std::uint8_t reductions[255][218];
-	SearchStack stack[256];
+    std::uint8_t reductions[MAX_PLY][MAX_MOVES];
+    SearchStack stack[MAX_PLY];
 
-	int pvs(std::int16_t alpha, std::int16_t beta, std::int16_t depth, std::int16_t ply, Board &board, bool isCutNode);
-	int qs(std::int16_t alpha, std::int16_t beta, Board &board, std::int16_t ply);
+    static int scaleOutput(int rawEval, const Board &board);
 
-	int scaleOutput(int rawEval, Board &board);
+    [[nodiscard]] std::string scoreToUci() const;
+    [[nodiscard]] int evaluate(const Board &board) const;
 
-	void iterativeDeepening(Board &board, bool isInfinite);
-	void initLMR();
-	void resetHistory();
+    int pvs(int alpha, int beta, int depth, int ply, Board &board, bool cutNode);
+    int qs(int alpha, int beta, Board &board, int ply);
+
+    void updatePv(int ply, const Move &move);
+    void iterativeDeepening(Board &board, const SearchParams &params);
+    void initLMR();
+    void resetHistory();
 
 private:
-	int aspiration(std::int16_t maxDepth, std::int16_t score, Board &board);
-	std::string getPVLine();
-	Time &timeManagement;
-	tt &transpositionTabel;
-	History history;
-	MoveOrder &moveOrder;
-	Network &net;
+    TimeManagement &timeManagement;
+    tt &transpositionTable;
+    History history;
+    Network &net;
+
+    std::chrono::steady_clock::time_point start;
+
+    std::unique_ptr<RootMove[]> rootMoveList;
+    int rootMoveListSize = 0;
+    static constexpr std::uint64_t NO_NODE_LIMIT = std::numeric_limits<std::uint64_t>::max();
+
+    static bool isDraw(const Board &board);
+
+    [[nodiscard]] bool shouldExit(const Board &board, int ply) const;
+
+    [[nodiscard]] std::string getPVLine() const;
 };
 
 #endif

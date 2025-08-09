@@ -20,8 +20,6 @@
 #ifndef NNUECONSTS
 #define NNUECONSTS
 
-#include <iostream>
-
 constexpr std::uint16_t inputSize = 768;
 constexpr std::uint16_t hiddenSize = 1024;
 constexpr std::uint16_t outputSize = 8;

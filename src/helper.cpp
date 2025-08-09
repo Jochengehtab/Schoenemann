@@ -23,231 +23,153 @@
 #include <chrono>
 #include <thread>
 
-void Helper::transpositionTableTest(Board &board, tt &transpositionTabel)
-{
-	// Set up a unique position
-	board.setFen("3N4/2p5/5K2/k1PB3p/3Pr3/1b5p/6p1/5nB1 w - - 0 1");
-	std::uint64_t key = board.hash();
+void Helper::transpositionTableTest(const tt &transpositionTable) {
+    Board board;
+    // Set up a unique position
+    board.setFen("3N4/2p5/5K2/k1PB3p/3Pr3/1b5p/6p1/5nB1 w - - 0 1");
+    const std::uint64_t key = board.hash();
 
-	// Store some placeholder information
-	transpositionTabel.storeEvaluation(key, 2, LOWER_BOUND, transpositionTabel.scoreToTT(200, 1), uci::uciToMove(board, "d5e4"), 1);
+    // Store some placeholder information
+    transpositionTable.storeHash(key, 2, Bound::LOWER, tt::scoreToTT(200, 1),
+                                 uci::uciToMove(board, "d5e4"), 1);
 
-	// Try to get the information out of the table
-	Hash *entry = transpositionTabel.getHash(key);
+    // Try to get the information out of the table
+    const Hash *entry = transpositionTable.getHash(key);
 
-	assert(entry != nullptr);
+    assert(entry != nullptr);
 
-	std::uint64_t hashedKey = entry->key;
-	short hashedDepth = entry->depth;
-	short hashedType = entry->type;
-	int hashedScore = entry->score;
-	Move hashedMove = entry->move;
+    const std::uint64_t hashedKey = entry->key;
+    assert(hashedKey == key);
 
-	if (hashedKey == key)
-	{
-		std::cout << "Key PASSED." << std::endl;
-	}
-	else
-	{
-		std::cout << "Key FAILED." << "Original key: \n"
-				  << key << "\nHash key: \n"
-				  << hashedKey << std::endl;
-	}
+    const std::uint8_t hashedDepth = entry->depth;
+    assert(hashedDepth == 2);
 
-	if (hashedDepth == 2)
-	{
-		std::cout << "Depth PASSED." << std::endl;
-	}
-	else
-	{
-		std::cout << "Depth FAILED." << "Original depth: 2" << "\nHash key: " << hashedDepth << std::endl;
-	}
+    const short hashedType = entry->type;
+    assert(hashedType == Bound::LOWER);
 
-	if (hashedType == LOWER_BOUND)
-	{
-		std::cout << "Type PASSED." << std::endl;
-	}
-	else
-	{
-		std::cout << "Type FAILED." << "Original type: 2" << "\nHash type: " << hashedType << std::endl;
-	}
+    const int hashedScore = entry->score;
+    assert(hashedScore == 200);
 
-	if (hashedScore == 200)
-	{
-		std::cout << "Score PASSED." << std::endl;
-	}
-	else
-	{
-		std::cout << "Score FAILED." << "Original score: 200" << "\nHash score: " << hashedScore << std::endl;
-	}
-
-	if (hashedMove == uci::uciToMove(board, "d5e4"))
-	{
-		std::cout << "Move PASSED." << std::endl;
-	}
-	else
-	{
-		std::cout << "Move FAILED." << "Original move: d5e4" << "\nHash move: " << hashedMove << std::endl;
-	}
-	board.setFen(STARTPOS);
+    const Move hashedMove = entry->move;
+    assert(hashedMove == uci::uciToMove(board, "d5e4"));
 }
 
 // Print the uci info
-void Helper::uciPrint()
-{
-	std::cout << "id name Schoenemann" << std::endl
-			  << "option name Hash type spin default 64 min 1 max 4096" << std::endl
-			  << "option name Threads type spin default 1 min 1 max 1" << std::endl;
+void Helper::uciPrint() {
+    std::cout << "id name Schoenemann" << std::endl
+            << "option name Hash type spin default 64 min 1 max 4096" << std::endl
+            << "option name Threads type spin default 1 min 1 max 1" << std::endl;
 }
 
-void Helper::runBenchmark(Search &search, Board &board)
-{
-	// Setting up the clock
-	std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+void Helper::runBenchmark(Search *search, Board &board, SearchParams &params) {
+    // Setting up the clock
+    const std::chrono::time_point start = std::chrono::steady_clock::now();
 
-	// Reseting the nodes
-	search.nodes = 0;
+    int nodes = 0;
 
-	// Looping over all bench positions
-	for (const std::string &test : testStrings)
-	{
-		board.setFen(test);
-		search.pvs(-infinity, infinity, benchDepth, 0, board, false);
-	}
+    params.depth = benchDepth;
+    params.isInfinite = true;
 
-	std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+    // Looping over all bench positions
+    for (const std::string &test: testStrings) {
+        board.setFen(test);
+        search->iterativeDeepening(board, params);
+        nodes += search->nodes;
+    }
 
-	// Calculates the total time used
-	std::chrono::duration<double, std::milli> timeElapsed = end - start;
-	int timeInMs = static_cast<int>(timeElapsed.count());
+    const std::chrono::time_point end = std::chrono::steady_clock::now();
 
-	// calculates the Nodes per Second
-	int NPS = static_cast<int>(search.nodes / timeElapsed.count() * 1000);
+    // Calculates the total time used
+    const std::chrono::duration<double, std::milli> timeElapsed = end - start;
+    const int timeInMs = static_cast<int>(timeElapsed.count());
 
-	// Prints out the final bench
-	std::cout << "Time  : " << timeInMs << " ms\nNodes : " << search.nodes << "\nNPS   : " << NPS << std::endl;
+    // calculates the Nodes per Second
+    const int NPS = static_cast<int>(nodes / timeElapsed.count() * 1000);
 
-	board.setFen(STARTPOS);
+    // Prints out the final bench
+    std::cout << "Time  : " << timeInMs << " ms\nNodes : " << nodes << "\nNPS   : " << NPS << std::endl;
+
+    board.setFen(STARTPOS);
 }
 
-void Helper::handleSetPosition(Board &board, std::istringstream &is, std::string &token)
-{
-	board.setFen(STARTPOS);
-	std::string fen;
-	std::vector<std::string> moves;
-	bool isFen = false;
-	while (is >> token)
-	{
-		if (token == "fen")
-		{
-			isFen = true;
-			while (is >> token && token != "moves")
-			{
-				fen += token + " ";
-			}
-			fen = fen.substr(0, fen.size() - 1);
-			board.setFen(fen);
-		}
-		else if (token != "moves" && isFen)
-		{
-			moves.push_back(token);
-		}
-		else if (token == "startpos")
-		{
-			board.setFen(STARTPOS);
-			isFen = true;
-		}
-	}
+void Helper::handleSetPosition(Board &board, std::istringstream &is, std::string &token) {
+    board.setFen(STARTPOS);
+    std::string fen;
+    std::vector<std::string> moves;
+    bool isFen = false;
+    while (is >> token) {
+        if (token == "fen") {
+            isFen = true;
+            while (is >> token && token != "moves") {
+                fen += token + " ";
+            }
+            fen = fen.substr(0, fen.size() - 1);
+            board.setFen(fen);
+        } else if (token != "moves" && isFen) {
+            moves.push_back(token);
+        } else if (token == "startpos") {
+            board.setFen(STARTPOS);
+            isFen = true;
+        }
+    }
 
-	for (const std::string &move : moves)
-	{
-		board.makeMove(uci::uciToMove(board, move));
-	}
+    for (const std::string &move: moves) {
+        board.makeMove(uci::uciToMove(board, move));
+    }
 }
 
-void Helper::handleGo(Search &search, Time &timeManagement, Board &board, std::istringstream &is, std::string &token)
-{
-	int number[4];
-	bool hasTime = false;
-	search.shouldStop = false;
 
-	is >> token;
-	if (!is.good())
-	{
-		std::thread t1([&]
-					   { search.iterativeDeepening(board, true); });
-		t1.detach();
-	}
-	while (is.good())
-	{
-		if (token == "wtime")
-		{
-			is >> token;
-			number[0] = std::stoi(token);
-			hasTime = true;
-		}
-		else if (token == "btime")
-		{
-			is >> token;
-			number[1] = std::stoi(token);
-			hasTime = true;
-		}
-		else if (token == "winc")
-		{
-			is >> token;
-			number[2] = std::stoi(token);
-		}
-		else if (token == "binc")
-		{
-			is >> token;
-			number[3] = std::stoi(token);
-		}
-		else if (token == "depth")
-		{
-			is >> token;
-			std::thread t1([&]
-						   { search.pvs(-infinity, infinity, std::stoi(token), 0, board, false); });
-			t1.detach();
+void Helper::handleGo(Search &search, TimeManagement &timeManagement, Board &board,
+                      std::istringstream &is, SearchParams params) {
 
-			std::cout << "bestmove " << uci::moveToUci(search.rootBestMove) << std::endl;
-		}
-		else if (token == "nodes")
-		{
-			is >> token;
-			search.hasNodeLimit = true;
-			search.nodeLimit = std::stoi(token);
-			std::thread t1([&]
-						   { search.iterativeDeepening(board, true); });
-			t1.detach();
-		}
-		else if (token == "movetime")
-		{
-			is >> token;
-			timeManagement.timeLeft = std::stoi(token);
-			std::thread t1([&]
-						   { search.iterativeDeepening(board, false); });
-			t1.detach();
-		}
-		if (!(is >> token))
-		{
-			break;
-		}
-	}
-	if (hasTime)
-	{
-		if (board.sideToMove() == Color::WHITE)
-		{
-			timeManagement.timeLeft = number[0];
-			timeManagement.increment = number[2];
-		}
-		else
-		{
-			timeManagement.timeLeft = number[1];
-			timeManagement.increment = number[3];
-		}
+    // Reset everything for a new search
+    params.isInfinite = false;
+    params.depth = MAX_PLY;
 
-		std::thread t1([&]
-					   { search.iterativeDeepening(board, false); });
-		t1.detach();
-	}
+    search.nodeLimit = -1;
+    timeManagement.reset();
+
+    // Setup values
+    std::string token;
+    int wtime = -1, btime = -1, winc = 0, binc = 0, movetime = -1;
+
+    while (is >> token) {
+        if (token == "wtime")      { is >> wtime; }
+        else if (token == "btime") { is >> btime; }
+        else if (token == "winc")  { is >> winc; }
+        else if (token == "binc")  { is >> binc; }
+        else if (token == "depth") { is >> params.depth; }
+        else if (token == "nodes") { is >> search.nodeLimit; }
+        else if (token == "movetime") { is >> movetime; }
+        else if (token == "infinite") { params.isInfinite = true; }
+    }
+
+    // We search infinite so no time calculation is needed
+    if (params.isInfinite) {
+        timeManagement.isInfiniteSearch = true;
+        return;
+    }
+
+    if (movetime != -1) {
+        timeManagement.moveTime = movetime;
+        timeManagement.increment = 0;
+        timeManagement.isInfiniteSearch = false;
+    } else if (wtime != -1 || btime != -1) {
+        if (board.sideToMove() == Color::WHITE) {
+            timeManagement.timeLeft = wtime;
+            timeManagement.increment = winc;
+        } else {
+            timeManagement.timeLeft = btime;
+            timeManagement.increment = binc;
+        }
+        timeManagement.isInfiniteSearch = false;
+    } else {
+        // Nothing was specialized so we search infinitely
+        params.isInfinite = true;
+        timeManagement.isInfiniteSearch = true;
+    }
+
+    if (!timeManagement.isInfiniteSearch) {
+        timeManagement.calculateTimeForMove();
+    }
 }

@@ -11,14 +11,14 @@ ifeq ($(OS),Windows_NT)
 	EXE := $(EXE).exe
 endif
 
-SOURCES = schoenemann.cpp search.cpp time.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp history.cpp
+SOURCES = schoenemann.cpp search.cpp timeman.cpp helper.cpp tt.cpp moveorder.cpp see.cpp tune.cpp datagen.cpp history.cpp NNUE/nnue.cpp
 
 all:
 	$(CXX) $(FLAGS) -march=native -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 test:
-# Possible santizier: address, undefined, leak, thread, memory
-	$(CXX) $(FLAGS) -fsanitize=leak -g3 -fno-omit-frame-pointer -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
+# Possible santizier: address, undefined, leak, thread, (memory does not work probably)
+	$(CXX) $(FLAGS) -fsanitize=address,undefined,leak -g3 -fno-omit-frame-pointer -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)
 
 release:
 	$(CXX) $(FLAGS) -O3 -funroll-loops -DEVALFILE=\"$(EVALFILE)\" $(SOURCES) -o $(EXE)

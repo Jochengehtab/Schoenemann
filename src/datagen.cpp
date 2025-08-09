@@ -19,10 +19,8 @@
 
 #include "datagen.h"
 
-void generate(Board &board, Search& search, tt transpositionTable)
-{
+void generate(Board &board, Search &search, tt &transpositionTable, SearchParams &params) {
     // Set up the nodes limit
-    search.hasNodeLimit = true;
     search.nodeLimit = 10000;
 
     // Initialize stuff for random moves
@@ -33,8 +31,7 @@ void generate(Board &board, Search& search, tt transpositionTable)
     std::ofstream outputFile("outputt.txt", std::ios::app);
 
     // Check if the file is open
-    if (!outputFile.is_open())
-    {
+    if (!outputFile.is_open()) {
         std::cout << "Error opening output file!" << std::endl;
         return;
     }
@@ -48,8 +45,7 @@ void generate(Board &board, Search& search, tt transpositionTable)
 
     auto startTime = std::chrono::steady_clock::now();
 
-    while (true)
-    {
+    while (true) {
         counter++;
 
         // Reset the board
@@ -58,22 +54,19 @@ void generate(Board &board, Search& search, tt transpositionTable)
         bool exitEarly = false;
 
         // Play random moves
-        for (int i = 0; i < 10; i++)
-        {
+        for (int i = 0; i < 10; i++) {
             // Generate all legal moves
             Movelist moveList;
             movegen::legalmoves(moveList, board);
 
             // Check if the game ended already
-            std::pair<GameResultReason, GameResult> result = board.isGameOver();
-            if (result.second != GameResult::NONE)
-            {
+            auto [fst, snd] = board.isGameOver();
+            if (snd != GameResult::NONE) {
                 exitEarly = true;
                 break;
             }
 
-            if (moveList.size() == 0)
-            {
+            if (moveList.size() == 0) {
                 exitEarly = true;
                 break;
             }
@@ -83,8 +76,7 @@ void generate(Board &board, Search& search, tt transpositionTable)
 
             // Choose a random move
             Move move = moveList[dis(gen)];
-            if (!see(board, move, 0))
-            {
+            if (!SEE::see(board, move, 0)) {
                 exitEarly = true;
                 break;
             }
@@ -94,8 +86,7 @@ void generate(Board &board, Search& search, tt transpositionTable)
         }
 
         // If we got an early exit we continue
-        if (exitEarly)
-        {
+        if (exitEarly) {
             continue;
         }
 
@@ -105,24 +96,18 @@ void generate(Board &board, Search& search, tt transpositionTable)
         int moveCount = 0;
         bool isIllegal = false;
 
-        for (int i = 0; i < 500; i++)
-        {
+        for (int i = 0; i < 500; i++) {
             // Check if the game is over
             std::pair<GameResultReason, GameResult> result = board.isGameOver();
-            if (result.second != GameResult::NONE)
-            {
-                if (result.second == GameResult::DRAW)
-                {
+            if (result.second != GameResult::NONE) {
+                if (result.second == GameResult::DRAW) {
                     resultString = "0.5";
                 }
 
                 // We check if it is a win or a loose for white
-                if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK)
-                {
+                if (result.second == GameResult::LOSE && board.sideToMove() == Color::BLACK) {
                     resultString = "1.0";
-                }
-                else
-                {
+                } else {
                     resultString = "0.0";
                 }
 
@@ -130,14 +115,14 @@ void generate(Board &board, Search& search, tt transpositionTable)
             }
 
             // Search for 5000 nodes
-            search.iterativeDeepening(board, true);
+            search.iterativeDeepening(board, params);
 
             // Get the best move
             Move bestMove = search.rootBestMove;
 
             // Check if the move is illegal the want to make
-            if (board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (board.sideToMove() == Color::WHITE))
-            {
+            if (board.at(bestMove.from()) == Piece::NONE || !(board.at(bestMove.from()) < Piece::BLACKPAWN) == (
+                    board.sideToMove() == Color::WHITE)) {
                 isIllegal = true;
                 break;
             }
@@ -146,21 +131,17 @@ void generate(Board &board, Search& search, tt transpositionTable)
             if (bestMove.typeOf() == Move::PROMOTION ||
                 board.inCheck() ||
                 board.isCapture(bestMove) ||
-                (board.sideToMove() == Color::WHITE && search.scoreData >= 10000) ||
-                (board.sideToMove() == Color::BLACK && search.scoreData <= 10000))
-            {
+                (board.sideToMove() == Color::WHITE && search.currentScore >= 10000) ||
+                (board.sideToMove() == Color::BLACK && search.currentScore <= 10000)) {
                 board.makeMove(bestMove);
                 continue;
             }
 
             // We create the output string based on whites perspective
-            if (board.sideToMove() == Color::WHITE)
-            {
-                outputLine[i] = board.getFen() + " | " + std::to_string(search.scoreData) + " | ";
-            }
-            else if (board.sideToMove() == Color::WHITE)
-            {
-                outputLine[i] = board.getFen() + " | " + std::to_string(-search.scoreData) + " | ";
+            if (board.sideToMove() == Color::WHITE) {
+                outputLine[i] = board.getFen() + " | " + std::to_string(search.currentScore) + " | ";
+            } else if (board.sideToMove() == Color::WHITE) {
+                outputLine[i] = board.getFen() + " | " + std::to_string(-search.currentScore) + " | ";
             }
 
             // Count up the position
@@ -171,17 +152,14 @@ void generate(Board &board, Search& search, tt transpositionTable)
         }
 
         // If something has interrupted our FEN-Gen we continue
-        if (resultString == "none" || isIllegal)
-        {
+        if (resultString == "none" || isIllegal) {
             continue;
         }
 
         // Write the output to the file
-        for (int i = 0; i < std::min(moveCount, 500); i++)
-        {
+        for (int i = 0; i < std::min(moveCount, 500); i++) {
             // If empty we don't want to write to the output file
-            if (outputLine[i].empty())
-            {
+            if (outputLine[i].empty()) {
                 continue;
             }
 
@@ -193,17 +171,16 @@ void generate(Board &board, Search& search, tt transpositionTable)
         }
 
         // Every 1000 iterations we want to print stats
-        if (counter % 10 == 0)
-        {
+        if (counter % 10 == 0) {
             auto currentTime = std::chrono::steady_clock::now();
             auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
             double positionsPerSecond = static_cast<double>(positions) / elapsedTime;
-            std::cout << "Generated: " << positions << " positions | " << "PPS: " << (int)positionsPerSecond << std::endl;
+            std::cout << "Generated: " << positions << " positions | " << "PPS: " << (int) positionsPerSecond <<
+                    std::endl;
         }
     }
 
     // Reset everything
     transpositionTable.clear();
     outputFile.close();
-    search.hasNodeLimit = false;
 }

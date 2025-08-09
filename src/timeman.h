@@ -25,26 +25,34 @@
 #include "chess.hpp"
 using namespace chess;
 
-class Time
-{
+class TimeManagement {
+public:
+    void calculateTimeForMove();
+
+    void updateBestMoveStability(Move bestMove, Move previousBestMove);
+
+    void updateEvalStability(int score, int previousScore);
+
+    void reset();
+
+    [[nodiscard]]
+    bool shouldStopSoft(const std::chrono::steady_clock::time_point& start) const noexcept;
+
+    [[nodiscard]]
+    bool shouldStopID(const std::chrono::steady_clock::time_point& start) const noexcept;
+
+    int timeLeft = 0;
+    int increment = 0;
+    int moveTime = -1;
+
+    std::chrono::milliseconds hardLimit{0};
+    std::chrono::milliseconds softLimit{0};
+    bool isInfiniteSearch = false;
 private:
     std::uint16_t bestMoveStabilityCount = 0;
     std::uint16_t bestEvalStabilityCount = 0;
 
-    double hardLimit = 0;
-    double softLimit = 0;
-
-public:
-    void calculateTimeForMove();
-    void updateBestMoveStability(Move bestMove, Move previousBestMove);
-    void updateEvalStability(int score, int previousScore);
-    void reset();
-
-    bool shouldStopSoft(std::chrono::steady_clock::time_point start);
-    bool shouldStopID(std::chrono::steady_clock::time_point start);
-
-    int timeLeft = 0;
-    int increment = 0;
 };
+
 
 #endif

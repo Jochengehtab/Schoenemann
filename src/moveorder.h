@@ -24,12 +24,12 @@
 #include "tt.h"
 #include "history.h"
 
-class MoveOrder
-{
-private:
+class MoveOrder {
 public:
-    void orderMoves(History* history, Movelist &moveList, Hash *entry, Move& killer, SearchStack* stack, Board &board, int* scores, int ply);
-    Move sortByScore(Movelist &moveList, int scores[], int i);
+    static void orderMoves(const History *history, Movelist &moveList, const Hash *entry, const Move &killer,
+                           const SearchStack *stack, const Board &board, int *scores, const int &ply);
+
+    static Move sortByScore(Movelist &moveList, int scores[], const int &i);
 };
 
 #endif

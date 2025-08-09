@@ -54,48 +54,42 @@ VERSION: 0.6.76
 
 #include "NNUE/nnue.h"
 
-namespace chess
-{
-
-    class Color
-    {
+namespace chess {
+    class Color {
     public:
-        enum class underlying : std::int8_t
-        {
+        enum class underlying : std::int8_t {
             WHITE = 0,
             BLACK = 1,
             NONE = -1
         };
 
-        constexpr Color() : color(underlying::NONE) {}
-        constexpr Color(underlying c) : color(c)
-        {
+        constexpr Color() : color(underlying::NONE) {
         }
-        constexpr Color(int c) : color(static_cast<underlying>(c)) {}
-        constexpr Color(std::string_view str) : color(underlying::NONE)
-        {
-            if (str == "w")
-            {
+
+        constexpr Color(underlying c) : color(c) {
+        }
+
+        constexpr Color(int c) : color(static_cast<underlying>(c)) {
+        }
+
+        constexpr Color(std::string_view str) : color(underlying::NONE) {
+            if (str == "w") {
                 color = underlying::WHITE;
-            }
-            else if (str == "b")
-            {
+            } else if (str == "b") {
                 color = underlying::BLACK;
             }
         }
 
         constexpr Color operator~() const noexcept { return static_cast<Color>(static_cast<uint8_t>(color) ^ 1); }
 
-        explicit operator std::string() const
-        {
-            switch (color)
-            {
-            case underlying::WHITE:
-                return "w";
-            case underlying::BLACK:
-                return "b";
-            default:
-                return "NONE";
+        explicit operator std::string() const {
+            switch (color) {
+                case underlying::WHITE:
+                    return "w";
+                case underlying::BLACK:
+                    return "b";
+                default:
+                    return "NONE";
             }
         }
 
@@ -116,39 +110,33 @@ namespace chess
         underlying color;
     }; // namespace chess
 
-    inline std::ostream &operator<<(std::ostream &os, const Color &color) { return os << static_cast<std::string>(color); }
-
-    constexpr Color::underlying operator~(Color::underlying color)
-    {
-        switch (color)
-        {
-        case Color::underlying::WHITE:
-            return Color::underlying::BLACK;
-        case Color::underlying::BLACK:
-            return Color::underlying::WHITE;
-        default:
-            return Color::underlying::NONE;
-        }
+    inline std::ostream &operator<<(std::ostream &os, const Color &color) {
+        return os << static_cast<std::string>(color);
     }
 
+    constexpr Color::underlying operator~(Color::underlying color) {
+        switch (color) {
+            case Color::underlying::WHITE:
+                return Color::underlying::BLACK;
+            case Color::underlying::BLACK:
+                return Color::underlying::WHITE;
+            default:
+                return Color::underlying::NONE;
+        }
+    }
 } // namespace chess
 
 #include <vector>
 
-namespace chess
-{
-    namespace utils
-    {
-
+namespace chess {
+    namespace utils {
         // Split a string by a delimiter
-        [[nodiscard]] inline std::vector<std::string_view> splitString(std::string_view string, const char &delimiter)
-        {
+        [[nodiscard]] inline std::vector<std::string_view> splitString(std::string_view string, const char &delimiter) {
             std::vector<std::string_view> result;
             size_t start = 0;
             size_t end = string.find(delimiter);
 
-            while (end != std::string_view::npos)
-            {
+            while (end != std::string_view::npos) {
                 result.push_back(string.substr(start, end - start));
                 start = end + 1;
                 end = string.find(delimiter, start);
@@ -161,19 +149,13 @@ namespace chess
         }
 
         constexpr char tolower(char c) { return (c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c; }
-
     } // namespace utils
-
 } // namespace chess
 
-namespace chess
-{
-
-    class File
-    {
+namespace chess {
+    class File {
     public:
-        enum class underlying : std::uint8_t
-        {
+        enum class underlying : std::uint8_t {
             FILE_A,
             FILE_B,
             FILE_C,
@@ -185,11 +167,19 @@ namespace chess
             NO_FILE
         };
 
-        constexpr File() : file(underlying::NO_FILE) {}
-        constexpr File(underlying file) : file(file) {}
-        constexpr File(int file) : file(static_cast<underlying>(file)) {}
+        constexpr File() : file(underlying::NO_FILE) {
+        }
+
+        constexpr File(underlying file) : file(file) {
+        }
+
+        constexpr File(int file) : file(static_cast<underlying>(file)) {
+        }
+
         constexpr File(std::string_view sw)
-            : file(static_cast<underlying>(static_cast<char>(utils::tolower(static_cast<unsigned char>(sw[0]))) - 'a')) {}
+            : file(static_cast<underlying>(static_cast<char>(utils::tolower(
+                                               static_cast<unsigned char>(sw[0]))) - 'a')) {
+        }
 
         [[nodiscard]] constexpr underlying internal() const noexcept { return file; }
 
@@ -199,28 +189,27 @@ namespace chess
         constexpr bool operator==(const underlying &rhs) const noexcept { return file == rhs; }
         constexpr bool operator!=(const underlying &rhs) const noexcept { return file != rhs; }
 
-        constexpr bool operator>=(const File &rhs) const noexcept
-        {
+        constexpr bool operator>=(const File &rhs) const noexcept {
             return static_cast<int>(file) >= static_cast<int>(rhs.file);
         }
-        constexpr bool operator<=(const File &rhs) const noexcept
-        {
+
+        constexpr bool operator<=(const File &rhs) const noexcept {
             return static_cast<int>(file) <= static_cast<int>(rhs.file);
         }
 
-        constexpr bool operator>(const File &rhs) const noexcept
-        {
+        constexpr bool operator>(const File &rhs) const noexcept {
             return static_cast<int>(file) > static_cast<int>(rhs.file);
         }
 
-        constexpr bool operator<(const File &rhs) const noexcept
-        {
+        constexpr bool operator<(const File &rhs) const noexcept {
             return static_cast<int>(file) < static_cast<int>(rhs.file);
         }
 
         constexpr operator int() const noexcept { return static_cast<int>(file); }
 
-        explicit operator std::string() const { return std::string(1, static_cast<char>(static_cast<int>(file) + 'a')); }
+        explicit operator std::string() const {
+            return std::string(1, static_cast<char>(static_cast<int>(file) + 'a'));
+        }
 
         static constexpr underlying FILE_A = underlying::FILE_A;
         static constexpr underlying FILE_B = underlying::FILE_B;
@@ -236,11 +225,9 @@ namespace chess
         underlying file;
     };
 
-    class Rank
-    {
+    class Rank {
     public:
-        enum class underlying
-        {
+        enum class underlying {
             RANK_1,
             RANK_2,
             RANK_3,
@@ -252,11 +239,19 @@ namespace chess
             NO_RANK
         };
 
-        constexpr Rank() : rank_(underlying::NO_RANK) {}
-        constexpr Rank(underlying rank) : rank_(rank) {}
-        constexpr Rank(int rank) : rank_(static_cast<underlying>(rank)) {}
+        constexpr Rank() : rank_(underlying::NO_RANK) {
+        }
+
+        constexpr Rank(underlying rank) : rank_(rank) {
+        }
+
+        constexpr Rank(int rank) : rank_(static_cast<underlying>(rank)) {
+        }
+
         constexpr Rank(std::string_view sw)
-            : rank_(static_cast<underlying>(static_cast<char>(utils::tolower(static_cast<unsigned char>(sw[0]))) - '1')) {}
+            : rank_(static_cast<underlying>(static_cast<char>(utils::tolower(
+                                                static_cast<unsigned char>(sw[0]))) - '1')) {
+        }
 
         [[nodiscard]] constexpr underlying internal() const noexcept { return rank_; }
 
@@ -266,12 +261,11 @@ namespace chess
         constexpr bool operator==(const underlying &rhs) const noexcept { return rank_ == rhs; }
         constexpr bool operator!=(const underlying &rhs) const noexcept { return rank_ != rhs; }
 
-        constexpr bool operator>=(const Rank &rhs) const noexcept
-        {
+        constexpr bool operator>=(const Rank &rhs) const noexcept {
             return static_cast<int>(rank_) >= static_cast<int>(rhs.rank_);
         }
-        constexpr bool operator<=(const Rank &rhs) const noexcept
-        {
+
+        constexpr bool operator<=(const Rank &rhs) const noexcept {
             return static_cast<int>(rank_) <= static_cast<int>(rhs.rank_);
         }
 
@@ -281,15 +275,13 @@ namespace chess
 
         constexpr std::uint64_t bb() const noexcept { return 0xffULL << (8 * static_cast<int>(rank_)); }
 
-        [[nodiscard]] static constexpr bool back_rank(Rank r, Color color) noexcept
-        {
+        [[nodiscard]] static constexpr bool back_rank(Rank r, Color color) noexcept {
             if (color == Color::WHITE)
                 return r == Rank::RANK_1;
             return r == Rank::RANK_8;
         }
 
-        [[nodiscard]] static constexpr Rank rank(Rank r, Color color) noexcept
-        {
+        [[nodiscard]] static constexpr Rank rank(Rank r, Color color) noexcept {
             if (color == Color::WHITE)
                 return r;
             return Rank(static_cast<underlying>(static_cast<int>(RANK_8) - static_cast<int>(r)));
@@ -309,8 +301,7 @@ namespace chess
         underlying rank_;
     };
 
-    class Square
-    {
+    class Square {
     public:
         // clang-format off
         enum class underlying {
@@ -326,18 +317,25 @@ namespace chess
         };
         // clang-format on
 
-        constexpr Square() : sq(underlying::NO_SQ) {}
-
-        constexpr Square(int sq) : sq(static_cast<underlying>(sq)) {}
-        constexpr Square(File file, Rank rank) : sq(static_cast<underlying>(file + rank * 8)) {}
-        constexpr Square(Rank rank, File file) : sq(static_cast<underlying>(file + rank * 8)) {}
-        constexpr Square(underlying sq) : sq(sq) {}
-        constexpr Square(std::string_view str) : sq(static_cast<underlying>((str[0] - 'a') + (str[1] - '1') * 8))
-        {
+        constexpr Square() : sq(underlying::NO_SQ) {
         }
 
-        constexpr Square operator^(const Square &s) const noexcept
-        {
+        constexpr Square(int sq) : sq(static_cast<underlying>(sq)) {
+        }
+
+        constexpr Square(File file, Rank rank) : sq(static_cast<underlying>(file + rank * 8)) {
+        }
+
+        constexpr Square(Rank rank, File file) : sq(static_cast<underlying>(file + rank * 8)) {
+        }
+
+        constexpr Square(underlying sq) : sq(sq) {
+        }
+
+        constexpr Square(std::string_view str) : sq(static_cast<underlying>((str[0] - 'a') + (str[1] - '1') * 8)) {
+        }
+
+        constexpr Square operator^(const Square &s) const noexcept {
             return Square(static_cast<underlying>(static_cast<int>(sq) ^ s.index()));
         };
 
@@ -345,64 +343,53 @@ namespace chess
 
         constexpr bool operator!=(const Square &rhs) const noexcept { return sq != rhs.sq; }
 
-        constexpr bool operator>(const Square &rhs) const noexcept
-        {
+        constexpr bool operator>(const Square &rhs) const noexcept {
             return static_cast<int>(sq) > static_cast<int>(rhs.sq);
         }
 
-        constexpr bool operator>=(const Square &rhs) const noexcept
-        {
+        constexpr bool operator>=(const Square &rhs) const noexcept {
             return static_cast<int>(sq) >= static_cast<int>(rhs.sq);
         }
 
-        constexpr bool operator<(const Square &rhs) const noexcept
-        {
+        constexpr bool operator<(const Square &rhs) const noexcept {
             return static_cast<int>(sq) < static_cast<int>(rhs.sq);
         }
 
-        constexpr bool operator<=(const Square &rhs) const noexcept
-        {
+        constexpr bool operator<=(const Square &rhs) const noexcept {
             return static_cast<int>(sq) <= static_cast<int>(rhs.sq);
         }
 
-        constexpr Square operator+(const Square &rhs) const noexcept
-        {
+        constexpr Square operator+(const Square &rhs) const noexcept {
             return Square(static_cast<underlying>(static_cast<int>(sq) + static_cast<int>(rhs.sq)));
         }
 
-        constexpr Square operator-(const Square &rhs) const noexcept
-        {
+        constexpr Square operator-(const Square &rhs) const noexcept {
             return Square(static_cast<underlying>(static_cast<int>(sq) - static_cast<int>(rhs.sq)));
         }
 
-        constexpr Square &operator++() noexcept
-        {
+        constexpr Square &operator++() noexcept {
             sq = static_cast<underlying>(static_cast<int>(sq) + 1);
             return *this;
         }
 
-        constexpr Square operator++(int) noexcept
-        {
+        constexpr Square operator++(int) noexcept {
             Square tmp(*this);
             operator++();
             return tmp;
         }
 
-        constexpr Square &operator--() noexcept
-        {
+        constexpr Square &operator--() noexcept {
             sq = static_cast<underlying>(static_cast<int>(sq) - 1);
             return *this;
         }
 
-        constexpr Square operator--(int) noexcept
-        {
+        constexpr Square operator--(int) noexcept {
             Square tmp(*this);
             operator--();
             return tmp;
         }
 
-        [[nodiscard]] operator std::string() const
-        {
+        [[nodiscard]] operator std::string() const {
             std::string str;
             str += static_cast<std::string>(file());
             str += static_cast<std::string>(rank());
@@ -414,8 +401,7 @@ namespace chess
         [[nodiscard]] constexpr File file() const noexcept { return File(index() & 7); }
         [[nodiscard]] constexpr Rank rank() const noexcept { return Rank(index() >> 3); }
 
-        [[nodiscard]] constexpr bool is_light() const noexcept
-        {
+        [[nodiscard]] constexpr bool is_light() const noexcept {
             return (static_cast<std::int8_t>(sq) / 8 + static_cast<std::int8_t>(sq) % 8) % 2 == 0;
         }
 
@@ -423,34 +409,29 @@ namespace chess
 
         [[nodiscard]] constexpr bool is_valid() const noexcept { return static_cast<std::int8_t>(sq) < 64; }
 
-        [[nodiscard]] constexpr static bool is_valid(Rank r, File f) noexcept
-        {
+        [[nodiscard]] constexpr static bool is_valid(Rank r, File f) noexcept {
             return r >= Rank::RANK_1 && r <= Rank::RANK_8 && f >= File::FILE_A && f <= File::FILE_H;
         }
 
         /**
          * @brief Get the chebyshev distance between two squares.
          */
-        [[nodiscard]] static int distance(Square sq, Square sq2) noexcept
-        {
+        [[nodiscard]] static int distance(Square sq, Square sq2) noexcept {
             return std::max(std::abs(sq.file() - sq2.file()), std::abs(sq.rank() - sq2.rank()));
         }
 
         /**
          * @brief Absolute value of sq - sq2.
          */
-        [[nodiscard]] static int value_distance(Square sq, Square sq2) noexcept
-        {
+        [[nodiscard]] static int value_distance(Square sq, Square sq2) noexcept {
             return std::abs(sq.index() - sq2.index());
         }
 
-        [[nodiscard]] static constexpr bool same_color(Square sq, Square sq2) noexcept
-        {
+        [[nodiscard]] static constexpr bool same_color(Square sq, Square sq2) noexcept {
             return ((9 * (sq ^ sq2).index()) & 8) == 0;
         }
 
-        [[nodiscard]] static constexpr bool back_rank(Square sq, Color color) noexcept
-        {
+        [[nodiscard]] static constexpr bool back_rank(Square sq, Color color) noexcept {
             if (color == Color::WHITE)
                 return sq.rank() == Rank::RANK_1;
             else
@@ -460,8 +441,7 @@ namespace chess
         /**
          * @brief Flips the square vertically.
          */
-        constexpr Square &flip() noexcept
-        {
+        constexpr Square &flip() noexcept {
             sq = static_cast<underlying>(static_cast<int>(sq) ^ 56);
             return *this;
         }
@@ -469,8 +449,7 @@ namespace chess
         /**
          * @brief Flips the square vertically, depending on the color.
          */
-        [[nodiscard]] constexpr Square relative_square(Color c) const noexcept
-        {
+        [[nodiscard]] constexpr Square relative_square(Color c) const noexcept {
             return Square(static_cast<int>(sq) ^ (c * 56));
         }
 
@@ -481,8 +460,7 @@ namespace chess
         /**
          * @brief Get the en passant square. Should only be called for valid ep positions.
          */
-        [[nodiscard]] constexpr Square ep_square() const noexcept
-        {
+        [[nodiscard]] constexpr Square ep_square() const noexcept {
             return Square(static_cast<int>(sq) ^ 8);
         }
 
@@ -490,16 +468,14 @@ namespace chess
          * @brief Get the destination square of the king after castling.
          * @return
          */
-        [[nodiscard]] static constexpr Square castling_king_square(bool is_king_side, Color c) noexcept
-        {
+        [[nodiscard]] static constexpr Square castling_king_square(bool is_king_side, Color c) noexcept {
             return Square(is_king_side ? Square::underlying::SQ_G1 : Square::underlying::SQ_C1).relative_square(c);
         }
 
         /**
          * @brief Get the destination square of the rook after castling.
          */
-        [[nodiscard]] static constexpr Square castling_rook_square(bool is_king_side, Color c) noexcept
-        {
+        [[nodiscard]] static constexpr Square castling_rook_square(bool is_king_side, Color c) noexcept {
             return Square(is_king_side ? Square::underlying::SQ_F1 : Square::underlying::SQ_D1).relative_square(c);
         }
 
@@ -512,14 +488,12 @@ namespace chess
         underlying sq;
     };
 
-    inline std::ostream &operator<<(std::ostream &os, const Square &sq)
-    {
+    inline std::ostream &operator<<(std::ostream &os, const Square &sq) {
         os << static_cast<std::string>(sq);
         return os;
     }
 
-    enum class Direction : int8_t
-    {
+    enum class Direction : int8_t {
         NORTH = 8,
         WEST = -1,
         SOUTH = -8,
@@ -530,47 +504,43 @@ namespace chess
         SOUTH_EAST = -7
     };
 
-    [[nodiscard]] constexpr Direction make_direction(Direction dir, Color c) noexcept
-    {
+    [[nodiscard]] constexpr Direction make_direction(Direction dir, Color c) noexcept {
         if (c == Color::BLACK)
             return static_cast<Direction>(-static_cast<int8_t>(dir));
         return dir;
     }
 
-    constexpr Square operator+(Square sq, Direction dir)
-    {
+    constexpr Square operator+(Square sq, Direction dir) {
         return static_cast<Square>(sq.index() + static_cast<int8_t>(dir));
     }
-
 } // namespace chess
 
-namespace chess
-{
-    class Bitboard
-    {
+namespace chess {
+    class Bitboard {
     public:
-        constexpr Bitboard() : bits(0) {}
-        constexpr Bitboard(std::uint64_t bits) : bits(bits) {}
-        constexpr Bitboard(File file) : bits(0)
-        {
+        constexpr Bitboard() : bits(0) {
+        }
+
+        constexpr Bitboard(std::uint64_t bits) : bits(bits) {
+        }
+
+        constexpr Bitboard(File file) : bits(0) {
             bits = 0x0101010101010101ULL << static_cast<int>(file.internal());
         }
-        constexpr Bitboard(Rank rank) : bits(0)
-        {
+
+        constexpr Bitboard(Rank rank) : bits(0) {
             bits = 0xFFULL << (8 * static_cast<int>(rank.internal()));
         }
 
         explicit operator bool() const noexcept { return bits != 0; }
 
-        explicit operator std::string() const
-        {
+        explicit operator std::string() const {
             std::bitset<64> b(bits);
             std::string str_bitset = b.to_string();
 
             std::string str;
 
-            for (int i = 0; i < 64; i += 8)
-            {
+            for (int i = 0; i < 64; i += 8) {
                 std::string x = str_bitset.substr(i, 8);
                 std::reverse(x.begin(), x.end());
                 str += x + '\n';
@@ -593,20 +563,17 @@ namespace chess
         constexpr Bitboard operator^(const Bitboard &rhs) const noexcept { return Bitboard(bits ^ rhs.bits); }
         constexpr Bitboard operator~() const noexcept { return Bitboard(~bits); }
 
-        constexpr Bitboard &operator&=(const Bitboard &rhs) noexcept
-        {
+        constexpr Bitboard &operator&=(const Bitboard &rhs) noexcept {
             bits &= rhs.bits;
             return *this;
         }
 
-        constexpr Bitboard &operator|=(const Bitboard &rhs) noexcept
-        {
+        constexpr Bitboard &operator|=(const Bitboard &rhs) noexcept {
             bits |= rhs.bits;
             return *this;
         }
 
-        constexpr Bitboard &operator^=(const Bitboard &rhs) noexcept
-        {
+        constexpr Bitboard &operator^=(const Bitboard &rhs) noexcept {
             bits ^= rhs.bits;
             return *this;
         }
@@ -616,36 +583,30 @@ namespace chess
         constexpr bool operator||(const Bitboard &rhs) const noexcept { return bits || rhs.bits; }
         constexpr bool operator&&(const Bitboard &rhs) const noexcept { return bits && rhs.bits; }
 
-        constexpr Bitboard &set(int index) noexcept
-        {
+        constexpr Bitboard &set(int index) noexcept {
             bits |= (1ULL << index);
             return *this;
         }
 
-        [[nodiscard]] constexpr bool check(int index) const noexcept
-        {
+        [[nodiscard]] constexpr bool check(int index) const noexcept {
             return bits & (1ULL << index);
         }
 
-        constexpr Bitboard &clear(int index) noexcept
-        {
+        constexpr Bitboard &clear(int index) noexcept {
             bits &= ~(1ULL << index);
             return *this;
         }
 
-        constexpr Bitboard &clear() noexcept
-        {
+        constexpr Bitboard &clear() noexcept {
             bits = 0;
             return *this;
         }
 
-        [[nodiscard]] static constexpr Bitboard fromSquare(int index) noexcept
-        {
+        [[nodiscard]] static constexpr Bitboard fromSquare(int index) noexcept {
             return Bitboard(1ULL << index);
         }
 
-        [[nodiscard]] static constexpr Bitboard fromSquare(Square sq) noexcept
-        {
+        [[nodiscard]] static constexpr Bitboard fromSquare(Square sq) noexcept {
             return Bitboard(1ULL << sq.index());
         }
 
@@ -655,8 +616,7 @@ namespace chess
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            int lsb() const noexcept
-        {
+        int lsb() const noexcept {
 #if __cplusplus >= 202002L
             return std::countr_zero(bits);
 #else
@@ -676,9 +636,7 @@ namespace chess
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            int msb() const noexcept
-        {
-
+        int msb() const noexcept {
 #if __cplusplus >= 202002L
             return std::countl_zero(bits) ^ 63;
 #else
@@ -698,8 +656,7 @@ namespace chess
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            int count() const noexcept
-        {
+        int count() const noexcept {
 #if __cplusplus >= 202002L
             return std::popcount(bits);
 #else
@@ -715,8 +672,7 @@ namespace chess
 #if !defined(_MSC_VER)
         constexpr
 #endif
-            std::uint8_t pop() noexcept
-        {
+        std::uint8_t pop() noexcept {
             std::uint8_t index = lsb();
             bits &= bits - 1;
             return index;
@@ -730,8 +686,7 @@ namespace chess
         std::uint64_t bits;
     };
 
-    inline std::ostream &operator<<(std::ostream &os, const Bitboard &bb)
-    {
+    inline std::ostream &operator<<(std::ostream &os, const Bitboard &bb) {
         os << std::string(bb);
         return os;
     }
@@ -740,18 +695,15 @@ namespace chess
     constexpr Bitboard operator|(std::uint64_t lhs, const Bitboard &rhs) { return rhs | lhs; }
 } // namespace chess
 
-namespace chess
-{
+namespace chess {
     class Board;
 } // namespace chess
 
-namespace chess
-{
-    class attacks
-    {
+namespace chess {
+    class attacks {
         using U64 = std::uint64_t;
-        struct Magic
-        {
+
+        struct Magic {
             U64 mask;
             U64 magic;
             Bitboard *attacks;
@@ -827,7 +779,8 @@ namespace chess
             0x5088008850000000, 0xA0100010A0000000, 0x4020002040000000, 0x0400040200000000, 0x0800080500000000,
             0x1100110A00000000, 0x2200221400000000, 0x4400442800000000, 0x8800885000000000, 0x100010A000000000,
             0x2000204000000000, 0x0004020000000000, 0x0008050000000000, 0x00110A0000000000, 0x0022140000000000,
-            0x0044280000000000, 0x0088500000000000, 0x0010A00000000000, 0x0020400000000000};
+            0x0044280000000000, 0x0088500000000000, 0x0010A00000000000, 0x0020400000000000
+        };
 
         // pre-calculated lookup table for king attacks
         static constexpr Bitboard KingAttacks[64] = {
@@ -843,7 +796,8 @@ namespace chess
             0x0070507000000000, 0x00E0A0E000000000, 0x00C040C000000000, 0x0302030000000000, 0x0705070000000000,
             0x0E0A0E0000000000, 0x1C141C0000000000, 0x3828380000000000, 0x7050700000000000, 0xE0A0E00000000000,
             0xC040C00000000000, 0x0203000000000000, 0x0507000000000000, 0x0A0E000000000000, 0x141C000000000000,
-            0x2838000000000000, 0x5070000000000000, 0xA0E0000000000000, 0x40C0000000000000};
+            0x2838000000000000, 0x5070000000000000, 0xA0E0000000000000, 0x40C0000000000000
+        };
 
         static constexpr U64 RookMagics[64] = {
             0x8a80104000800020ULL, 0x140002000100040ULL, 0x2801880a0017001ULL, 0x100081001000420ULL,
@@ -861,7 +815,8 @@ namespace chess
             0x101002200408200ULL, 0x40802000401080ULL, 0x4008142004410100ULL, 0x2060820c0120200ULL,
             0x1001004080100ULL, 0x20c020080040080ULL, 0x2935610830022400ULL, 0x44440041009200ULL,
             0x280001040802101ULL, 0x2100190040002085ULL, 0x80c0084100102001ULL, 0x4024081001000421ULL,
-            0x20030a0244872ULL, 0x12001008414402ULL, 0x2006104900a0804ULL, 0x1004081002402ULL};
+            0x20030a0244872ULL, 0x12001008414402ULL, 0x2006104900a0804ULL, 0x1004081002402ULL
+        };
 
         static constexpr U64 BishopMagics[64] = {
             0x40040844404084ULL, 0x2004208a004208ULL, 0x10190041080202ULL, 0x108060845042010ULL,
@@ -879,7 +834,8 @@ namespace chess
             0x500861011240000ULL, 0x180806108200800ULL, 0x4000020e01040044ULL, 0x300000261044000aULL,
             0x802241102020002ULL, 0x20906061210001ULL, 0x5a84841004010310ULL, 0x4010801011c04ULL,
             0xa010109502200ULL, 0x4a02012000ULL, 0x500201010098b028ULL, 0x8040002811040900ULL,
-            0x28000010020204ULL, 0x6000020202d0240ULL, 0x8918844842082200ULL, 0x4010011029020020ULL};
+            0x28000010020204ULL, 0x6000020202d0240ULL, 0x8918844842082200ULL, 0x4010011029020020ULL
+        };
 
         static inline Bitboard RookAttacks[0x19000] = {};
         static inline Bitboard BishopAttacks[0x1480] = {};
@@ -888,8 +844,10 @@ namespace chess
         static inline Magic BishopTable[64] = {};
 
     public:
-        static constexpr Bitboard MASK_RANK[8] = {0xff, 0xff00, 0xff0000, 0xff000000,
-                                                  0xff00000000, 0xff0000000000, 0xff000000000000, 0xff00000000000000};
+        static constexpr Bitboard MASK_RANK[8] = {
+            0xff, 0xff00, 0xff0000, 0xff000000,
+            0xff00000000, 0xff0000000000, 0xff000000000000, 0xff00000000000000
+        };
 
         static constexpr Bitboard MASK_FILE[8] = {
             0x101010101010101,
@@ -905,13 +863,13 @@ namespace chess
         /**
          * @brief  Shifts a bitboard in a given direction
          */
-        template <Direction direction>
+        template<Direction direction>
         [[nodiscard]] static constexpr Bitboard shift(const Bitboard b);
 
-        template <Color::underlying c>
+        template<Color::underlying c>
         [[nodiscard]] static Bitboard pawnLeftAttacks(const Bitboard pawns);
 
-        template <Color::underlying c>
+        template<Color::underlying c>
         [[nodiscard]] static Bitboard pawnRightAttacks(const Bitboard pawns);
 
         [[nodiscard]] static Bitboard pawn(Color c, Square sq) noexcept;
@@ -939,21 +897,16 @@ namespace chess
 #include <cctype>
 #include <optional>
 
-namespace chess::constants
-{
+namespace chess::constants {
     constexpr Bitboard DEFAULT_CHECKMASK = Bitboard(0xFFFFFFFFFFFFFFFFull);
     constexpr auto STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     constexpr auto MAX_MOVES = 256;
 } // namespace chess::constants
 
-namespace chess
-{
-
-    class PieceType
-    {
+namespace chess {
+    class PieceType {
     public:
-        enum class underlying : std::uint8_t
-        {
+        enum class underlying : std::uint8_t {
             PAWN,
             KNIGHT,
             BISHOP,
@@ -963,75 +916,77 @@ namespace chess
             NONE,
         };
 
-        constexpr PieceType() : pt(underlying::NONE) {}
-        constexpr explicit PieceType(int value)
-            : pt(static_cast<underlying>(value)) {}
-        constexpr PieceType(underlying pt) : pt(pt) {}
-        constexpr explicit PieceType(std::string_view type) : pt(underlying::NONE)
-        {
-            switch (type.data()[0])
-            {
-            case 'P':
-                pt = underlying::PAWN;
-                break;
-            case 'N':
-                pt = underlying::KNIGHT;
-                break;
-            case 'B':
-                pt = underlying::BISHOP;
-                break;
-            case 'R':
-                pt = underlying::ROOK;
-                break;
-            case 'Q':
-                pt = underlying::QUEEN;
-                break;
-            case 'K':
-                pt = underlying::KING;
-                break;
+        constexpr PieceType() : pt(underlying::NONE) {
+        }
 
-            case 'p':
-                pt = underlying::PAWN;
-                break;
-            case 'n':
-                pt = underlying::KNIGHT;
-                break;
-            case 'b':
-                pt = underlying::BISHOP;
-                break;
-            case 'r':
-                pt = underlying::ROOK;
-                break;
-            case 'q':
-                pt = underlying::QUEEN;
-                break;
-            case 'k':
-                pt = underlying::KING;
-                break;
-            default:
-                pt = underlying::NONE;
-                break;
+        constexpr explicit PieceType(int value)
+            : pt(static_cast<underlying>(value)) {
+        }
+
+        constexpr PieceType(underlying pt) : pt(pt) {
+        }
+
+        constexpr explicit PieceType(std::string_view type) : pt(underlying::NONE) {
+            switch (type.data()[0]) {
+                case 'P':
+                    pt = underlying::PAWN;
+                    break;
+                case 'N':
+                    pt = underlying::KNIGHT;
+                    break;
+                case 'B':
+                    pt = underlying::BISHOP;
+                    break;
+                case 'R':
+                    pt = underlying::ROOK;
+                    break;
+                case 'Q':
+                    pt = underlying::QUEEN;
+                    break;
+                case 'K':
+                    pt = underlying::KING;
+                    break;
+
+                case 'p':
+                    pt = underlying::PAWN;
+                    break;
+                case 'n':
+                    pt = underlying::KNIGHT;
+                    break;
+                case 'b':
+                    pt = underlying::BISHOP;
+                    break;
+                case 'r':
+                    pt = underlying::ROOK;
+                    break;
+                case 'q':
+                    pt = underlying::QUEEN;
+                    break;
+                case 'k':
+                    pt = underlying::KING;
+                    break;
+                default:
+                    pt = underlying::NONE;
+                    break;
             }
         }
 
-        explicit operator std::string() const
-        {
-            switch (pt)
-            {
-            case underlying::PAWN:
-                return "p";
-            case underlying::KNIGHT:
-                return "n";
-            case underlying::BISHOP:
-                return "b";
-            case underlying::ROOK:
-                return "r";
-            case underlying::QUEEN:
-                return "q";
-            case underlying::KING:
-                return "k";
-            default:
-                return " ";
+        explicit operator std::string() const {
+            switch (pt) {
+                case underlying::PAWN:
+                    return "p";
+                case underlying::KNIGHT:
+                    return "n";
+                case underlying::BISHOP:
+                    return "b";
+                case underlying::ROOK:
+                    return "r";
+                case underlying::QUEEN:
+                    return "q";
+                case underlying::KING:
+                    return "k";
+                default:
+                    return " ";
             }
         }
 
@@ -1054,17 +1009,14 @@ namespace chess
         underlying pt;
     };
 
-    inline std::ostream &operator<<(std::ostream &os, const PieceType &pt)
-    {
+    inline std::ostream &operator<<(std::ostream &os, const PieceType &pt) {
         os << static_cast<std::string>(pt);
         return os;
     }
 
-    class Piece
-    {
+    class Piece {
     public:
-        enum class underlying : std::uint8_t
-        {
+        enum class underlying : std::uint8_t {
             WHITEPAWN,
             WHITEKNIGHT,
             WHITEBISHOP,
@@ -1080,16 +1032,28 @@ namespace chess
             NONE
         };
 
-        constexpr Piece() : piece(underlying::NONE) {}
-        constexpr Piece(underlying piece) : piece(piece) {}
+        constexpr Piece() : piece(underlying::NONE) {
+        }
+
+        constexpr Piece(underlying piece) : piece(piece) {
+        }
+
         constexpr Piece(PieceType type, Color color)
-            : piece(color == Color::NONE      ? Piece::NONE
-                    : type == PieceType::NONE ? Piece::NONE
-                                              : static_cast<underlying>(static_cast<int>(color.internal()) * 6 + type)) {}
+            : piece(color == Color::NONE
+                        ? Piece::NONE
+                        : type == PieceType::NONE
+                              ? Piece::NONE
+                              : static_cast<underlying>(static_cast<int>(color.internal()) * 6 + type)) {
+        }
+
         constexpr Piece(Color color, PieceType type)
-            : piece(color == Color::NONE      ? Piece::NONE
-                    : type == PieceType::NONE ? Piece::NONE
-                                              : static_cast<underlying>(static_cast<int>(color.internal()) * 6 + type)) {}
+            : piece(color == Color::NONE
+                        ? Piece::NONE
+                        : type == PieceType::NONE
+                              ? Piece::NONE
+                              : static_cast<underlying>(static_cast<int>(color.internal()) * 6 + type)) {
+        }
+
         constexpr Piece(std::string_view p) : piece(underlying::NONE) { piece = convertCharToUnderlying(p[0]); }
 
         constexpr bool operator<(const Piece &rhs) const noexcept { return piece < rhs.piece; }
@@ -1103,53 +1067,50 @@ namespace chess
         constexpr bool operator==(const PieceType &rhs) const noexcept { return type() == rhs; }
         constexpr bool operator!=(const PieceType &rhs) const noexcept { return type() != rhs; }
 
-        explicit operator std::string() const
-        {
-            switch (piece)
-            {
-            case WHITEPAWN:
-                return "P";
-            case WHITEKNIGHT:
-                return "N";
-            case WHITEBISHOP:
-                return "B";
-            case WHITEROOK:
-                return "R";
-            case WHITEQUEEN:
-                return "Q";
-            case WHITEKING:
-                return "K";
+        explicit operator std::string() const {
+            switch (piece) {
+                case WHITEPAWN:
+                    return "P";
+                case WHITEKNIGHT:
+                    return "N";
+                case WHITEBISHOP:
+                    return "B";
+                case WHITEROOK:
+                    return "R";
+                case WHITEQUEEN:
+                    return "Q";
+                case WHITEKING:
+                    return "K";
                 // black
-            case BLACKPAWN:
-                return "p";
-            case BLACKKNIGHT:
-                return "n";
-            case BLACKBISHOP:
-                return "b";
-            case BLACKROOK:
-                return "r";
-            case BLACKQUEEN:
-                return "q";
-            case BLACKKING:
-                return "k";
-            default:
-                return ".";
+                case BLACKPAWN:
+                    return "p";
+                case BLACKKNIGHT:
+                    return "n";
+                case BLACKBISHOP:
+                    return "b";
+                case BLACKROOK:
+                    return "r";
+                case BLACKQUEEN:
+                    return "q";
+                case BLACKKING:
+                    return "k";
+                default:
+                    return ".";
             }
         }
 
         constexpr operator int() const noexcept { return static_cast<int>(piece); }
 
-        [[nodiscard]] constexpr PieceType type() const noexcept
-        {
+        [[nodiscard]] constexpr PieceType type() const noexcept {
             if (piece == NONE)
                 return PieceType::NONE;
             // return static_cast<PieceType::underlying>(int(piece) % 6);
-            return static_cast<PieceType::underlying>(static_cast<int>(piece) > 5 ? static_cast<int>(piece) - 6
-                                                                                  : static_cast<int>(piece));
+            return static_cast<PieceType::underlying>(static_cast<int>(piece) > 5
+                                                          ? static_cast<int>(piece) - 6
+                                                          : static_cast<int>(piece));
         }
 
-        [[nodiscard]] constexpr Color color() const noexcept
-        {
+        [[nodiscard]] constexpr Color color() const noexcept {
             if (piece == NONE)
                 return Color::NONE;
             return static_cast<Color>(static_cast<int>(piece) / 6);
@@ -1174,53 +1135,50 @@ namespace chess
     private:
         underlying piece;
 
-        [[nodiscard]] constexpr static underlying convertCharToUnderlying(char c)
-        {
-            switch (c)
-            {
-            case 'P':
-                return WHITEPAWN;
-            case 'N':
-                return WHITEKNIGHT;
-            case 'B':
-                return WHITEBISHOP;
-            case 'R':
-                return WHITEROOK;
-            case 'Q':
-                return WHITEQUEEN;
-            case 'K':
-                return WHITEKING;
-            case 'p':
-                return BLACKPAWN;
-            case 'n':
-                return BLACKKNIGHT;
-            case 'b':
-                return BLACKBISHOP;
-            case 'r':
-                return BLACKROOK;
-            case 'q':
-                return BLACKQUEEN;
-            case 'k':
-                return BLACKKING;
-            default:
-                return NONE;
+        [[nodiscard]] constexpr static underlying convertCharToUnderlying(char c) {
+            switch (c) {
+                case 'P':
+                    return WHITEPAWN;
+                case 'N':
+                    return WHITEKNIGHT;
+                case 'B':
+                    return WHITEBISHOP;
+                case 'R':
+                    return WHITEROOK;
+                case 'Q':
+                    return WHITEQUEEN;
+                case 'K':
+                    return WHITEKING;
+                case 'p':
+                    return BLACKPAWN;
+                case 'n':
+                    return BLACKKNIGHT;
+                case 'b':
+                    return BLACKBISHOP;
+                case 'r':
+                    return BLACKROOK;
+                case 'q':
+                    return BLACKQUEEN;
+                case 'k':
+                    return BLACKKING;
+                default:
+                    return NONE;
             }
         }
     };
 } // namespace chess
 
-namespace chess
-{
-
-    class Move
-    {
+namespace chess {
+    class Move {
     public:
         Move() = default;
-        constexpr Move(std::uint16_t move) : move_(move) {}
 
-        template <std::uint16_t MoveType = 0>
-        [[nodiscard]] static constexpr Move make(Square source, Square target, PieceType pt = PieceType::KNIGHT) noexcept
-        {
+        constexpr Move(std::uint16_t move) : move_(move) {
+        }
+
+        template<std::uint16_t MoveType = 0>
+        [[nodiscard]] static constexpr Move make(Square source, Square target,
+                                                 PieceType pt = PieceType::KNIGHT) noexcept {
             std::uint16_t bits_promotion = static_cast<std::uint16_t>(pt - PieceType(PieceType::KNIGHT));
 
             return Move(MoveType + (bits_promotion << 12) + (source.index() << 6) + target.index());
@@ -1230,13 +1188,11 @@ namespace chess
 
         [[nodiscard]] constexpr Square to() const noexcept { return static_cast<Square>(move_ & 0x3F); }
 
-        [[nodiscard]] constexpr std::uint16_t typeOf() const noexcept
-        {
+        [[nodiscard]] constexpr std::uint16_t typeOf() const noexcept {
             return static_cast<std::uint16_t>(move_ & (3 << 14));
         }
 
-        [[nodiscard]] constexpr PieceType promotionType() const noexcept
-        {
+        [[nodiscard]] constexpr PieceType promotionType() const noexcept {
             return static_cast<PieceType::underlying>(((move_ >> 12) & 3) + PieceType(PieceType::KNIGHT));
         }
 
@@ -1256,15 +1212,13 @@ namespace chess
         std::uint16_t move_;
     };
 
-    inline std::ostream &operator<<(std::ostream &os, const Move &move)
-    {
+    inline std::ostream &operator<<(std::ostream &os, const Move &move) {
         Square from_sq = move.from();
         Square to_sq = move.to();
 
         os << from_sq << to_sq;
 
-        if (move.typeOf() == Move::PROMOTION)
-        {
+        if (move.typeOf() == Move::PROMOTION) {
             os << static_cast<std::string>(move.promotionType());
         }
 
@@ -1276,10 +1230,8 @@ namespace chess
 #include <iterator>
 #include <stdexcept>
 
-namespace chess
-{
-    class Movelist
-    {
+namespace chess {
+    class Movelist {
     public:
         using value_type = Move;
         using size_type = int;
@@ -1297,13 +1249,11 @@ namespace chess
 
         // Element access
 
-        [[nodiscard]] constexpr reference at(size_type pos)
-        {
+        [[nodiscard]] constexpr reference at(size_type pos) {
             return moves_[pos];
         }
 
-        [[nodiscard]] constexpr const_reference at(size_type pos) const
-        {
+        [[nodiscard]] constexpr const_reference at(size_type pos) const {
             return moves_[pos];
         }
 
@@ -1334,24 +1284,20 @@ namespace chess
 
         constexpr void clear() noexcept { size_ = 0; }
 
-        constexpr void add(const_reference move) noexcept
-        {
+        constexpr void add(const_reference move) noexcept {
             moves_[size_++] = move;
         }
 
-        constexpr void add(value_type &&move) noexcept
-        {
+        constexpr void add(value_type &&move) noexcept {
             moves_[size_++] = move;
         }
 
         // Other
 
-        [[nodiscard]] [[deprecated("Use std::find() instead.")]] constexpr size_type find(value_type move) const noexcept
-        {
-            for (size_type i = 0; i < size_; ++i)
-            {
-                if (moves_[i] == move)
-                {
+        [[nodiscard]] [[deprecated("Use std::find() instead.")]] constexpr size_type find(
+            value_type move) const noexcept {
+            for (size_type i = 0; i < size_; ++i) {
+                if (moves_[i] == move) {
                     return i;
                 }
             }
@@ -1365,10 +1311,8 @@ namespace chess
     };
 } // namespace chess
 
-namespace chess
-{
-    enum PieceGenType
-    {
+namespace chess {
+    enum PieceGenType {
         PAWN = 1,
         KNIGHT = 2,
         BISHOP = 4,
@@ -1379,44 +1323,44 @@ namespace chess
 
     class Board;
 
-    class movegen
-    {
+    class movegen {
     public:
-        enum class MoveGenType : std::uint8_t
-        {
+        enum class MoveGenType : std::uint8_t {
             ALL,
             CAPTURE,
             QUIET
         };
 
-        template <MoveGenType mt = MoveGenType::ALL>
+        template<MoveGenType mt = MoveGenType::ALL>
         void static legalmoves(Movelist &movelist, const Board &board,
                                int pieces = PieceGenType::PAWN | PieceGenType::KNIGHT | PieceGenType::BISHOP |
                                             PieceGenType::ROOK | PieceGenType::QUEEN | PieceGenType::KING);
 
     private:
         static auto init_squares_between();
+
         static const std::array<std::array<Bitboard, 64>, 64> SQUARES_BETWEEN_BB;
 
         // Generate the checkmask. Returns a bitboard where the attacker path between the king and enemy piece is set.
-        template <Color::underlying c>
+        template<Color::underlying c>
         [[nodiscard]] static std::pair<Bitboard, int> checkMask(const Board &board, Square sq);
 
         // Generate the pin mask for horizontal and vertical pins. Returns a bitboard where the ray between the king and the
         // pinner is set.
-        template <Color::underlying c>
+        template<Color::underlying c>
         [[nodiscard]] static Bitboard pinMaskRooks(const Board &board, Square sq, Bitboard occ_enemy, Bitboard occ_us);
 
         // Generate the pin mask for diagonal pins. Returns a bitboard where the ray between the king and the pinner is set.
-        template <Color::underlying c>
-        [[nodiscard]] static Bitboard pinMaskBishops(const Board &board, Square sq, Bitboard occ_enemy, Bitboard occ_us);
+        template<Color::underlying c>
+        [[nodiscard]] static Bitboard
+        pinMaskBishops(const Board &board, Square sq, Bitboard occ_enemy, Bitboard occ_us);
 
         // Returns the squares that are attacked by the enemy
-        template <Color::underlying c>
+        template<Color::underlying c>
         [[nodiscard]] static Bitboard seenSquares(const Board &board, Bitboard enemy_empty);
 
         // Generate pawn moves.
-        template <Color::underlying c, MoveGenType mt>
+        template<Color::underlying c, MoveGenType mt>
         static void generatePawnMoves(const Board &board, Movelist &moves, Bitboard pin_d, Bitboard pin_hv,
                                       Bitboard checkmask, Bitboard occ_enemy);
 
@@ -1433,27 +1377,24 @@ namespace chess
 
         [[nodiscard]] static Bitboard generateKingMoves(Square sq, Bitboard seen, Bitboard movable_square);
 
-        template <Color::underlying c, MoveGenType mt>
+        template<Color::underlying c, MoveGenType mt>
         [[nodiscard]] static Bitboard generateCastleMoves(const Board &board, Square sq, Bitboard seen, Bitboard pinHV);
 
-        template <typename T>
+        template<typename T>
         static void whileBitboardAdd(Movelist &movelist, Bitboard mask, T func);
 
-        template <Color::underlying c, MoveGenType mt>
+        template<Color::underlying c, MoveGenType mt>
         static void legalmoves(Movelist &movelist, const Board &board, int pieces);
 
-        template <Color::underlying c>
+        template<Color::underlying c>
         static bool isEpSquareValid(const Board &board, Square ep);
 
         friend class Board;
     };
-
 } // namespace chess
 
-namespace chess
-{
-    class Zobrist
-    {
+namespace chess {
+    class Zobrist {
         using U64 = std::uint64_t;
         static constexpr U64 RANDOM_ARRAY[781] = {
             0x9D39247E33776D41, 0x2AF7398005AAA5C7, 0x44DB015024623547, 0x9C15F73E62A76AE2, 0x75834465489C0C89,
@@ -1612,21 +1553,18 @@ namespace chess
             0x56986E2EF3ED091B, 0x917F1DD5F8886C61, 0xD20D8C88C8FFE65F, 0x31D71DCE64B2C310, 0xF165B587DF898190,
             0xA57E6339DD2CF3A0, 0x1EF6E6DBB1961EC9, 0x70CC73D90BC26E24, 0xE21A6B35DF0C3AD7, 0x003A93D8B2806962,
             0x1C99DED33CB890A1, 0xCF3145DE0ADD4289, 0xD0E4427A5514FB72, 0x77C621CC9FB3A483, 0x67A34DAC4356550B,
-            0xF8D626AAAF278509};
+            0xF8D626AAAF278509
+        };
 
-        static constexpr std::array<U64, 16> castlingKey = []() constexpr
-        {
-            auto generateCastlingKey = [](int index) constexpr -> U64
-            {
+        static constexpr std::array<U64, 16> castlingKey = []() constexpr {
+            auto generateCastlingKey = [](int index) constexpr -> U64 {
                 constexpr int RANDOM_OFFSET = 768;
                 constexpr int RANDOM_COUNT = 4;
 
                 U64 key = 0;
 
-                for (int i = 0; i < RANDOM_COUNT; ++i)
-                {
-                    if (index & (1 << i))
-                    {
+                for (int i = 0; i < RANDOM_COUNT; ++i) {
+                    if (index & (1 << i)) {
                         key ^= RANDOM_ARRAY[RANDOM_OFFSET + i];
                     }
                 }
@@ -1644,24 +1582,21 @@ namespace chess
 
         static constexpr int MAP_HASH_PIECE[12] = {1, 3, 5, 7, 9, 11, 0, 2, 4, 6, 8, 10};
 
-        [[nodiscard]] static U64 enpassant(File file) noexcept
-        {
+        [[nodiscard]] static U64 enpassant(File file) noexcept {
 #if __cplusplus >= 202207L
             [[assume(x < 8)]];
 #endif
             return RANDOM_ARRAY[772 + file];
         }
 
-        [[nodiscard]] static U64 castling(int castling) noexcept
-        {
+        [[nodiscard]] static U64 castling(int castling) noexcept {
 #if __cplusplus >= 202207L
             [[assume(x < 16)]];
 #endif
             return castlingKey[castling];
         }
 
-        [[nodiscard]] static U64 castlingIndex(int idx) noexcept
-        {
+        [[nodiscard]] static U64 castlingIndex(int idx) noexcept {
 #if __cplusplus >= 202207L
             [[assume(x < 4)]];
 #endif
@@ -1672,30 +1607,25 @@ namespace chess
 
     public:
         friend class Board;
-        [[nodiscard]] static U64 piece(Piece piece, Square square) noexcept
-        {
+
+        [[nodiscard]] static U64 piece(Piece piece, Square square) noexcept {
 #if __cplusplus >= 202207L
             [[assume(x < 12)]];
 #endif
             return RANDOM_ARRAY[64 * MAP_HASH_PIECE[piece] + square.index()];
         }
     };
-
 } // namespace chess
 
-namespace chess
-{
-
-    enum class GameResult
-    {
+namespace chess {
+    enum class GameResult {
         WIN,
         LOSE,
         DRAW,
         NONE
     };
 
-    enum class GameResultReason
-    {
+    enum class GameResultReason {
         CHECKMATE,
         STALEMATE,
         INSUFFICIENT_MATERIAL,
@@ -1704,33 +1634,27 @@ namespace chess
         NONE
     };
 
-    class Board
-    {
+    class Board {
         using U64 = std::uint64_t;
 
     public:
-        class CastlingRights
-        {
+        class CastlingRights {
         public:
-            enum class Side : uint8_t
-            {
+            enum class Side : uint8_t {
                 KING_SIDE,
                 QUEEN_SIDE
             };
 
-            void setCastlingRight(Color color, Side castle, File rook_file)
-            {
+            void setCastlingRight(Color color, Side castle, File rook_file) {
                 rooks[color][static_cast<int>(castle)] = rook_file;
             }
 
-            void clear()
-            {
+            void clear() {
                 rooks[0].fill(File::NO_FILE);
                 rooks[1].fill(File::NO_FILE);
             }
 
-            int clear(Color color, Side castle)
-            {
+            int clear(Color color, Side castle) {
                 rooks[color][static_cast<int>(castle)] = File::NO_FILE;
                 return color * 2 + static_cast<int>(castle);
             }
@@ -1739,25 +1663,22 @@ namespace chess
 
             bool has(Color color, Side castle) const { return rooks[color][static_cast<int>(castle)] != File::NO_FILE; }
 
-            bool has(Color color) const
-            {
+            bool has(Color color) const {
                 return rooks[color][static_cast<int>(Side::KING_SIDE)] != File::NO_FILE ||
                        rooks[color][static_cast<int>(Side::QUEEN_SIDE)] != File::NO_FILE;
             }
 
             File getRookFile(Color color, Side castle) const { return rooks[color][static_cast<int>(castle)]; }
 
-            int hashIndex() const
-            {
+            int hashIndex() const {
                 return has(Color::WHITE, Side::KING_SIDE) + 2 * has(Color::WHITE, Side::QUEEN_SIDE) +
                        4 * has(Color::BLACK, Side::KING_SIDE) + 8 * has(Color::BLACK, Side::QUEEN_SIDE);
             }
 
             bool isEmpty() const { return !has(Color::WHITE) && !has(Color::BLACK); }
 
-            template <typename T>
-            static constexpr Side closestSide(T sq, T pred)
-            {
+            template<typename T>
+            static constexpr Side closestSide(T sq, T pred) {
                 return sq > pred ? Side::KING_SIDE : Side::QUEEN_SIDE;
             }
 
@@ -1767,8 +1688,7 @@ namespace chess
         };
 
     private:
-        struct State
-        {
+        struct State {
             U64 hash;
             CastlingRights castling;
             Square enpassant;
@@ -1781,20 +1701,20 @@ namespace chess
                   castling(castling),
                   enpassant(enpassant),
                   half_moves(half_moves),
-                  captured_piece(captured_piece) {}
+                  captured_piece(captured_piece) {
+            }
         };
 
-        enum class PrivateCtor
-        {
+        enum class PrivateCtor {
             CREATE
         };
 
         // private constructor to avoid initialization
-        Board(PrivateCtor) {}
+        Board(PrivateCtor) {
+        }
 
     public:
-        explicit Board(Network* net = nullptr, std::string_view fen = constants::STARTPOS, bool chess960 = false)
-        {
+        explicit Board(Network *net = nullptr, std::string_view fen = constants::STARTPOS, bool chess960 = false) {
             this->net = net;
             prev_states_.reserve(256);
             chess960_ = chess960;
@@ -1803,38 +1723,31 @@ namespace chess
 
         virtual void setFen(std::string_view fen) { setFenInternal(fen); }
 
-        [[nodiscard]] std::string getFen(bool move_counters = true) const
-        {
+        [[nodiscard]] std::string getFen(bool move_counters = true) const {
             std::string ss;
             ss.reserve(100);
 
             // Loop through the ranks of the board in reverse order
-            for (int rank = 7; rank >= 0; rank--)
-            {
+            for (int rank = 7; rank >= 0; rank--) {
                 std::uint32_t free_space = 0;
 
                 // Loop through the files of the board
-                for (int file = 0; file < 8; file++)
-                {
+                for (int file = 0; file < 8; file++) {
                     // Calculate the square index
                     const int sq = rank * 8 + file;
 
                     // If there is a piece at the current square
-                    if (Piece piece = at(Square(sq)); piece != Piece::NONE)
-                    {
+                    if (Piece piece = at(Square(sq)); piece != Piece::NONE) {
                         // If there were any empty squares before this piece,
                         // append the number of empty squares to the FEN string
-                        if (free_space)
-                        {
+                        if (free_space) {
                             ss += std::to_string(free_space);
                             free_space = 0;
                         }
 
                         // Append the character representing the piece to the FEN string
                         ss += static_cast<std::string>(piece);
-                    }
-                    else
-                    {
+                    } else {
                         // If there is no piece at the current square, increment the
                         // counter for the number of empty squares
                         free_space++;
@@ -1843,8 +1756,7 @@ namespace chess
 
                 // If there are any empty squares at the end of the rank,
                 // append the number of empty squares to the FEN string
-                if (free_space != 0)
-                {
+                if (free_space != 0) {
                     ss += std::to_string(free_space);
                 }
 
@@ -1860,8 +1772,7 @@ namespace chess
             // whether castling is allowed for each player
             if (cr_.isEmpty())
                 ss += " -";
-            else
-            {
+            else {
                 ss += ' ';
                 ss += getCastleString();
             }
@@ -1870,14 +1781,12 @@ namespace chess
             // and the half-move clock and full move number to the FEN string
             if (ep_sq_ == Square::underlying::NO_SQ)
                 ss += " -";
-            else
-            {
+            else {
                 ss += ' ';
                 ss += static_cast<std::string>(ep_sq_);
             }
 
-            if (move_counters)
-            {
+            if (move_counters) {
                 ss += ' ';
                 ss += std::to_string(halfMoveClock());
                 ss += ' ';
@@ -1888,8 +1797,7 @@ namespace chess
             return ss;
         }
 
-        [[nodiscard]] std::string getEpd() const
-        {
+        [[nodiscard]] std::string getEpd() const {
             std::string ss;
             ss.reserve(100);
 
@@ -1908,9 +1816,8 @@ namespace chess
          * the enpassant square if the enemy can legally capture the pawn on their
          * next move.
          */
-        template <bool EXACT = false>
-        void makeMove(const Move move)
-        {
+        template<bool EXACT = false>
+        void makeMove(const Move move) {
             const auto capture = at(move.to()) != Piece::NONE && move.typeOf() != Move::CASTLING;
             const auto captured = at(move.to());
             const auto pt = at<PieceType>(move.from());
@@ -1924,62 +1831,50 @@ namespace chess
                 key_ ^= Zobrist::enpassant(ep_sq_.file());
             ep_sq_ = Square::underlying::NO_SQ;
 
-            if (capture)
-            {
+            if (capture) {
                 removePiece(captured, move.to());
 
                 hfm_ = 0;
                 key_ ^= Zobrist::piece(captured, move.to());
 
                 // remove castling rights if rook is captured
-                if (captured.type() == PieceType::ROOK && Rank::back_rank(move.to().rank(), ~stm_))
-                {
+                if (captured.type() == PieceType::ROOK && Rank::back_rank(move.to().rank(), ~stm_)) {
                     const auto king_sq = kingSq(~stm_);
                     const auto file = CastlingRights::closestSide(move.to(), king_sq);
 
-                    if (cr_.getRookFile(~stm_, file) == move.to().file())
-                    {
+                    if (cr_.getRookFile(~stm_, file) == move.to().file()) {
                         key_ ^= Zobrist::castlingIndex(cr_.clear(~stm_, file));
                     }
                 }
             }
 
             // remove castling rights if king moves
-            if (pt == PieceType::KING && cr_.has(stm_))
-            {
+            if (pt == PieceType::KING && cr_.has(stm_)) {
                 key_ ^= Zobrist::castling(cr_.hashIndex());
                 cr_.clear(stm_);
                 key_ ^= Zobrist::castling(cr_.hashIndex());
-            }
-            else if (pt == PieceType::ROOK && Square::back_rank(move.from(), stm_))
-            {
+            } else if (pt == PieceType::ROOK && Square::back_rank(move.from(), stm_)) {
                 const auto king_sq = kingSq(stm_);
                 const auto file = CastlingRights::closestSide(move.from(), king_sq);
 
                 // remove castling rights if rook moves from back rank
-                if (cr_.getRookFile(stm_, file) == move.from().file())
-                {
+                if (cr_.getRookFile(stm_, file) == move.from().file()) {
                     key_ ^= Zobrist::castlingIndex(cr_.clear(stm_, file));
                 }
-            }
-            else if (pt == PieceType::PAWN)
-            {
+            } else if (pt == PieceType::PAWN) {
                 hfm_ = 0;
 
                 // double push
-                if (Square::value_distance(move.to(), move.from()) == 16)
-                {
+                if (Square::value_distance(move.to(), move.from()) == 16) {
                     // imaginary attacks from the ep square from the pawn which moved
                     Bitboard ep_mask = attacks::pawn(stm_, move.to().ep_square());
 
                     // add enpassant hash if enemy pawns are attacking the square
-                    if (static_cast<bool>(ep_mask & pieces(PieceType::PAWN, ~stm_)))
-                    {
+                    if (static_cast<bool>(ep_mask & pieces(PieceType::PAWN, ~stm_))) {
                         int found = -1;
 
                         // check if the enemy can legally capture the pawn on the next move
-                        if constexpr (EXACT)
-                        {
+                        if constexpr (EXACT) {
                             const auto piece = at(move.from());
 
                             found = 0;
@@ -1991,12 +1886,9 @@ namespace chess
 
                             bool valid;
 
-                            if (stm_ == Color::WHITE)
-                            {
+                            if (stm_ == Color::WHITE) {
                                 valid = movegen::isEpSquareValid<Color::WHITE>(*this, move.to().ep_square());
-                            }
-                            else
-                            {
+                            } else {
                                 valid = movegen::isEpSquareValid<Color::BLACK>(*this, move.to().ep_square());
                             }
 
@@ -2010,8 +1902,7 @@ namespace chess
                             placePieceInternal(piece, move.from());
                         }
 
-                        if (found != 0)
-                        {
+                        if (found != 0) {
                             ep_sq_ = move.to().ep_square();
                             key_ ^= Zobrist::enpassant(move.to().ep_square().file());
                         }
@@ -2019,8 +1910,7 @@ namespace chess
                 }
             }
 
-            if (move.typeOf() == Move::CASTLING)
-            {
+            if (move.typeOf() == Move::CASTLING) {
                 const bool king_side = move.to() > move.from();
                 const auto rookTo = Square::castling_rook_square(king_side, stm_);
                 const auto kingTo = Square::castling_king_square(king_side, stm_);
@@ -2036,9 +1926,7 @@ namespace chess
 
                 key_ ^= Zobrist::piece(king, move.from()) ^ Zobrist::piece(king, kingTo);
                 key_ ^= Zobrist::piece(rook, move.to()) ^ Zobrist::piece(rook, rookTo);
-            }
-            else if (move.typeOf() == Move::PROMOTION)
-            {
+            } else if (move.typeOf() == Move::PROMOTION) {
                 const auto piece_pawn = Piece(PieceType::PAWN, stm_);
                 const auto piece_prom = Piece(move.promotionType(), stm_);
 
@@ -2046,9 +1934,7 @@ namespace chess
                 placePiece(piece_prom, move.to());
 
                 key_ ^= Zobrist::piece(piece_pawn, move.from()) ^ Zobrist::piece(piece_prom, move.to());
-            }
-            else
-            {
+            } else {
                 const auto piece = at(move.from());
 
                 removePiece(piece, move.from());
@@ -2057,8 +1943,7 @@ namespace chess
                 key_ ^= Zobrist::piece(piece, move.from()) ^ Zobrist::piece(piece, move.to());
             }
 
-            if (move.typeOf() == Move::ENPASSANT)
-            {
+            if (move.typeOf() == Move::ENPASSANT) {
                 const auto piece = Piece(PieceType::PAWN, ~stm_);
 
                 removePiece(piece, move.to().ep_square());
@@ -2070,8 +1955,7 @@ namespace chess
             stm_ = ~stm_;
         }
 
-        void unmakeMove(const Move move)
-        {
+        void unmakeMove(const Move move) {
             const auto prev = prev_states_.back();
             prev_states_.pop_back();
 
@@ -2081,8 +1965,7 @@ namespace chess
             stm_ = ~stm_;
             plies_--;
 
-            if (move.typeOf() == Move::CASTLING)
-            {
+            if (move.typeOf() == Move::CASTLING) {
                 const bool king_side = move.to() > move.from();
                 const auto rook_from_sq = Square(king_side ? File::FILE_F : File::FILE_D, move.from().rank());
                 const auto king_to_sq = Square(king_side ? File::FILE_G : File::FILE_C, move.from().rank());
@@ -2099,40 +1982,32 @@ namespace chess
                 key_ = prev.hash;
 
                 return;
-            }
-            else if (move.typeOf() == Move::PROMOTION)
-            {
+            } else if (move.typeOf() == Move::PROMOTION) {
                 const auto pawn = Piece(PieceType::PAWN, stm_);
                 const auto piece = at(move.to());
 
                 removePiece(piece, move.to());
                 placePiece(pawn, move.from());
 
-                if (prev.captured_piece != Piece::NONE)
-                {
+                if (prev.captured_piece != Piece::NONE) {
                     placePiece(prev.captured_piece, move.to());
                 }
 
                 key_ = prev.hash;
                 return;
-            }
-            else
-            {
+            } else {
                 const auto piece = at(move.to());
 
                 removePiece(piece, move.to());
                 placePiece(piece, move.from());
             }
 
-            if (move.typeOf() == Move::ENPASSANT)
-            {
+            if (move.typeOf() == Move::ENPASSANT) {
                 const auto pawn = Piece(PieceType::PAWN, ~stm_);
                 const auto pawnTo = static_cast<Square>(ep_sq_ ^ 8);
 
                 placePiece(pawn, pawnTo);
-            }
-            else if (prev.captured_piece != Piece::NONE)
-            {
+            } else if (prev.captured_piece != Piece::NONE) {
                 placePiece(prev.captured_piece, move.to());
             }
 
@@ -2142,8 +2017,7 @@ namespace chess
         /**
          * @brief Make a null move. (Switches the side to move)
          */
-        void makeNullMove()
-        {
+        void makeNullMove() {
             prev_states_.emplace_back(key_, cr_, ep_sq_, hfm_, Piece::NONE);
 
             key_ ^= Zobrist::sideToMove();
@@ -2159,8 +2033,7 @@ namespace chess
         /**
          * @brief Unmake a null move. (Switches the side to move)
          */
-        void unmakeNullMove()
-        {
+        void unmakeNullMove() {
             const auto &prev = prev_states_.back();
 
             ep_sq_ = prev.enpassant;
@@ -2196,34 +2069,28 @@ namespace chess
          */
         [[nodiscard]] Bitboard all() const { return us(Color::WHITE) | us(Color::BLACK); }
 
-        [[nodiscard]] Square kingSq(Color color) const
-        {
+        [[nodiscard]] Square kingSq(Color color) const {
             return pieces(PieceType::KING, color).lsb();
         }
 
         [[nodiscard]] Bitboard pieces(PieceType type, Color color) const { return pieces_bb_[type] & occ_bb_[color]; }
 
-        [[nodiscard]] Bitboard pieces(PieceType type) const
-        {
+        [[nodiscard]] Bitboard pieces(PieceType type) const {
             return pieces(type, Color::WHITE) | pieces(type, Color::BLACK);
         }
 
-        template <typename T = Piece>
-        [[nodiscard]] T at(Square sq) const
-        {
-            if constexpr (std::is_same_v<T, PieceType>)
-            {
+        template<typename T = Piece>
+        [[nodiscard]] T at(Square sq) const {
+            if constexpr (std::is_same_v<T, PieceType>) {
                 return board_[sq.index()].type();
-            }
-            else
-            {
+            } else {
                 return board_[sq.index()];
             }
         }
 
-        bool isCapture(const Move move) const
-        {
-            return (at(move.to()) != Piece::NONE && move.typeOf() != Move::CASTLING) || move.typeOf() == Move::ENPASSANT;
+        bool isCapture(const Move move) const {
+            return (at(move.to()) != Piece::NONE && move.typeOf() != Move::CASTLING) || move.typeOf() ==
+                   Move::ENPASSANT;
         }
 
         [[nodiscard]] U64 hash() const { return key_; }
@@ -2233,8 +2100,7 @@ namespace chess
         [[nodiscard]] std::uint32_t halfMoveClock() const { return hfm_; }
         [[nodiscard]] std::uint32_t fullMoveNumber() const { return 1 + plies_ / 2; }
 
-        void set960(bool is960)
-        {
+        void set960(bool is960) {
             chess960_ = is960;
             if (!original_fen_.empty())
                 setFen(original_fen_);
@@ -2242,20 +2108,17 @@ namespace chess
 
         [[nodiscard]] bool chess960() const { return chess960_; }
 
-        [[nodiscard]] std::string getCastleString() const
-        {
-            const auto get_file = [this](Color c, CastlingRights::Side side)
-            {
+        [[nodiscard]] std::string getCastleString() const {
+            const auto get_file = [this](Color c, CastlingRights::Side side) {
                 auto file = static_cast<std::string>(cr_.getRookFile(c, side));
                 return c == Color::WHITE ? std::toupper(file[0]) : file[0];
             };
 
-            if (chess960_)
-            {
+            if (chess960_) {
                 std::string ss;
 
-                for (auto color : {Color::WHITE, Color::BLACK})
-                    for (auto side : {CastlingRights::Side::KING_SIDE, CastlingRights::Side::QUEEN_SIDE})
+                for (auto color: {Color::WHITE, Color::BLACK})
+                    for (auto side: {CastlingRights::Side::KING_SIDE, CastlingRights::Side::QUEEN_SIDE})
                         if (cr_.has(color, side))
                             ss += get_file(color, side);
 
@@ -2276,8 +2139,7 @@ namespace chess
             return ss;
         }
 
-        [[nodiscard]] bool isRepetition(int count = 2) const
-        {
+        [[nodiscard]] bool isRepetition(int count = 2) const {
             uint8_t c = 0;
 
             // We start the loop from the back and go forward in moves, at most to the
@@ -2285,8 +2147,7 @@ namespace chess
             // be across half-moves.
             const auto size = static_cast<int>(prev_states_.size());
 
-            for (int i = size - 2; i >= 0 && i >= size - hfm_ - 1; i -= 2)
-            {
+            for (int i = size - 2; i >= 0 && i >= size - hfm_ - 1; i -= 2) {
                 if (prev_states_[i].hash == key_)
                     c++;
                 if (c == count)
@@ -2310,21 +2171,18 @@ namespace chess
          * @brief Only call this function if isHalfMoveDraw() returns true.
          * @return
          */
-        [[nodiscard]] std::pair<GameResultReason, GameResult> getHalfMoveDrawType() const
-        {
+        [[nodiscard]] std::pair<GameResultReason, GameResult> getHalfMoveDrawType() const {
             Movelist movelist;
             movegen::legalmoves(movelist, *this);
 
-            if (movelist.empty() && inCheck())
-            {
+            if (movelist.empty() && inCheck()) {
                 return {GameResultReason::CHECKMATE, GameResult::LOSE};
             }
 
             return {GameResultReason::FIFTY_MOVE_RULE, GameResult::DRAW};
         }
 
-        [[nodiscard]] bool isInsufficientMaterial() const
-        {
+        [[nodiscard]] bool isInsufficientMaterial() const {
             const auto count = occ().count();
 
             // only kings, draw
@@ -2332,8 +2190,7 @@ namespace chess
                 return true;
 
             // only bishop + knight, cant mate
-            if (count == 3)
-            {
+            if (count == 3) {
                 if (pieces(PieceType::BISHOP, Color::WHITE) || pieces(PieceType::BISHOP, Color::BLACK))
                     return true;
                 if (pieces(PieceType::KNIGHT, Color::WHITE) || pieces(PieceType::KNIGHT, Color::BLACK))
@@ -2341,8 +2198,7 @@ namespace chess
             }
 
             // same colored bishops, cant mate
-            if (count == 4)
-            {
+            if (count == 4) {
                 if (pieces(PieceType::BISHOP, Color::WHITE) && pieces(PieceType::BISHOP, Color::BLACK) &&
                     Square::same_color(pieces(PieceType::BISHOP, Color::WHITE).lsb(),
                                        pieces(PieceType::BISHOP, Color::BLACK).lsb()))
@@ -2352,13 +2208,10 @@ namespace chess
                 auto white_bishops = pieces(PieceType::BISHOP, Color::WHITE);
                 auto black_bishops = pieces(PieceType::BISHOP, Color::BLACK);
 
-                if (white_bishops.count() == 2)
-                {
+                if (white_bishops.count() == 2) {
                     if (Square::same_color(white_bishops.lsb(), white_bishops.msb()))
                         return true;
-                }
-                else if (black_bishops.count() == 2)
-                {
+                } else if (black_bishops.count() == 2) {
                     if (Square::same_color(black_bishops.lsb(), black_bishops.msb()))
                         return true;
                 }
@@ -2373,8 +2226,7 @@ namespace chess
          * If you are writing a chess engine you should not use this function.
          * @return
          */
-        [[nodiscard]] std::pair<GameResultReason, GameResult> isGameOver() const
-        {
+        [[nodiscard]] std::pair<GameResultReason, GameResult> isGameOver() const {
             if (isHalfMoveDraw())
                 return getHalfMoveDrawType();
             if (isInsufficientMaterial())
@@ -2385,8 +2237,7 @@ namespace chess
             Movelist movelist;
             movegen::legalmoves(movelist, *this);
 
-            if (movelist.empty())
-            {
+            if (movelist.empty()) {
                 if (inCheck())
                     return {GameResultReason::CHECKMATE, GameResult::LOSE};
                 return {GameResultReason::STALEMATE, GameResult::DRAW};
@@ -2395,8 +2246,7 @@ namespace chess
             return {GameResultReason::NONE, GameResult::NONE};
         }
 
-        [[nodiscard]] bool isAttacked(Square square, Color color) const
-        {
+        [[nodiscard]] bool isAttacked(Square square, Color color) const {
             // cheap checks first
             if (attacks::pawn(~color, square) & pieces(PieceType::PAWN, color))
                 return true;
@@ -2416,27 +2266,23 @@ namespace chess
 
         [[nodiscard]] bool inCheck() const { return isAttacked(kingSq(stm_), ~stm_); }
 
-        [[nodiscard]] bool hasNonPawnMaterial(Color color) const
-        {
+        [[nodiscard]] bool hasNonPawnMaterial(Color color) const {
             return bool(pieces(PieceType::KNIGHT, color) | pieces(PieceType::BISHOP, color) |
                         pieces(PieceType::ROOK, color) | pieces(PieceType::QUEEN, color));
         }
 
-        [[nodiscard]] U64 zobrist() const
-        {
+        [[nodiscard]] U64 zobrist() const {
             U64 hash_key = 0ULL;
 
             auto wPieces = us(Color::WHITE);
             auto bPieces = us(Color::BLACK);
 
-            while (wPieces.getBits())
-            {
+            while (wPieces.getBits()) {
                 const Square sq = wPieces.pop();
                 hash_key ^= Zobrist::piece(at(sq), sq);
             }
 
-            while (bPieces.getBits())
-            {
+            while (bPieces.getBits()) {
                 const Square sq = bPieces.pop();
                 hash_key ^= Zobrist::piece(at(sq), sq);
             }
@@ -2478,9 +2324,9 @@ namespace chess
         bool chess960_ = false;
 
     private:
-        Network* net;
-        void removePieceInternal(Piece piece, Square sq)
-        {
+        Network *net;
+
+        void removePieceInternal(Piece piece, Square sq) {
             auto type = piece.type();
             auto color = piece.color();
             auto index = sq.index();
@@ -2492,8 +2338,7 @@ namespace chess
             net->updateAccumulator(type, color, sq.index(), false);
         }
 
-        void placePieceInternal(Piece piece, Square sq)
-        {
+        void placePieceInternal(Piece piece, Square sq) {
             auto type = piece.type();
             auto color = piece.color();
             auto index = sq.index();
@@ -2501,12 +2346,11 @@ namespace chess
             pieces_bb_[type].set(index);
             occ_bb_[color].set(index);
             board_[index] = piece;
-            net->updateAccumulator((int)type, (int)color, sq.index(), true);
+            net->updateAccumulator((int) type, (int) color, sq.index(), true);
         }
 
-        template <bool ctor = false>
-        void setFenInternal(std::string_view fen)
-        {
+        template<bool ctor = false>
+        void setFenInternal(std::string_view fen) {
             original_fen_ = fen;
 
             net->refreshAccumulator();
@@ -2527,8 +2371,7 @@ namespace chess
             const auto half_move = params[4].has_value() ? *params[4] : "0";
             const auto full_move = params[5].has_value() ? *params[5] : "1";
 
-            static auto parseStringViewToInt = [](std::string_view sv) -> std::optional<int>
-            {
+            static auto parseStringViewToInt = [](std::string_view sv) -> std::optional<int> {
                 if (!sv.empty() && sv.back() == ';')
                     sv.remove_suffix(1);
 
@@ -2553,37 +2396,25 @@ namespace chess
             cr_.clear();
             prev_states_.clear();
 
-            if (stm_ == Color::BLACK)
-            {
+            if (stm_ == Color::BLACK) {
                 plies_++;
-            }
-            else
-            {
+            } else {
                 key_ ^= Zobrist::sideToMove();
             }
 
             auto square = 56;
-            for (char curr : position)
-            {
-                if (isdigit(curr))
-                {
+            for (char curr: position) {
+                if (isdigit(curr)) {
                     square += (curr - '0');
-                }
-                else if (curr == '/')
-                {
+                } else if (curr == '/') {
                     square -= 16;
-                }
-                else
-                {
+                } else {
                     auto p = Piece(std::string_view(&curr, 1));
 
                     // prevent warnings about virtual method bypassing virtual dispatch
-                    if constexpr (ctor)
-                    {
+                    if constexpr (ctor) {
                         placePieceInternal(p, Square(square));
-                    }
-                    else
-                    {
+                    } else {
                         placePiece(p, square);
                     }
 
@@ -2592,20 +2423,17 @@ namespace chess
                 }
             }
 
-            static const auto find_rook = [](const Board &board, CastlingRights::Side side, Color color)
-            {
+            static const auto find_rook = [](const Board &board, CastlingRights::Side side, Color color) {
                 const auto king_side = CastlingRights::Side::KING_SIDE;
                 const auto king_sq = board.kingSq(color);
                 const auto sq_corner = Square(side == king_side ? Square::underlying::SQ_H1 : Square::underlying::SQ_A1)
-                                           .relative_square(color);
+                        .relative_square(color);
 
                 const auto start = side == king_side ? king_sq + 1 : king_sq - 1;
 
                 for (Square sq = start; (side == king_side ? sq <= sq_corner : sq >= sq_corner);
-                     (side == king_side ? sq++ : sq--))
-                {
-                    if (board.at<PieceType>(sq) == PieceType::ROOK && board.at(sq).color() == color)
-                    {
+                     (side == king_side ? sq++ : sq--)) {
+                    if (board.at<PieceType>(sq) == PieceType::ROOK && board.at(sq).color() == color) {
                         return sq.file();
                     }
                 }
@@ -2613,16 +2441,14 @@ namespace chess
                 return File(File::NO_FILE);
             };
 
-            for (char i : castling)
-            {
+            for (char i: castling) {
                 if (i == '-')
                     break;
 
                 const auto king_side = CastlingRights::Side::KING_SIDE;
                 const auto queen_side = CastlingRights::Side::QUEEN_SIDE;
 
-                if (!chess960_)
-                {
+                if (!chess960_) {
                     if (i == 'K')
                         cr_.setCastlingRight(Color::WHITE, king_side, File::FILE_H);
                     if (i == 'Q')
@@ -2641,18 +2467,15 @@ namespace chess
                 const auto king_sq = kingSq(color);
 
                 // find rook on the right side of the king
-                if (i == 'K' || i == 'k')
-                {
+                if (i == 'K' || i == 'k') {
                     cr_.setCastlingRight(color, king_side, find_rook(*this, king_side, color));
                 }
                 // find rook on the left side of the king
-                else if (i == 'Q' || i == 'q')
-                {
+                else if (i == 'Q' || i == 'q') {
                     cr_.setCastlingRight(color, queen_side, find_rook(*this, queen_side, color));
                 }
                 // correct frc castling encoding
-                else
-                {
+                else {
                     const auto file = File(std::string_view(&i, 1));
                     const auto side = CastlingRights::closestSide(file, king_sq.file());
                     cr_.setCastlingRight(color, side, file);
@@ -2661,22 +2484,17 @@ namespace chess
 
             // check if ep square itself is valid
             if (ep_sq_ != Square::underlying::NO_SQ && !((ep_sq_.rank() == Rank::RANK_3 && stm_ == Color::BLACK) ||
-                                                         (ep_sq_.rank() == Rank::RANK_6 && stm_ == Color::WHITE)))
-            {
+                                                         (ep_sq_.rank() == Rank::RANK_6 && stm_ == Color::WHITE))) {
                 ep_sq_ = Square::underlying::NO_SQ;
             }
 
             // check if ep square is valid, i.e. if there is a pawn that can capture it
-            if (ep_sq_ != Square::underlying::NO_SQ)
-            {
+            if (ep_sq_ != Square::underlying::NO_SQ) {
                 bool valid;
 
-                if (stm_ == Color::WHITE)
-                {
+                if (stm_ == Color::WHITE) {
                     valid = movegen::isEpSquareValid<Color::WHITE>(*this, ep_sq_);
-                }
-                else
-                {
+                } else {
                     valid = movegen::isEpSquareValid<Color::BLACK>(*this, ep_sq_);
                 }
 
@@ -2689,20 +2507,17 @@ namespace chess
             key_ ^= Zobrist::castling(cr_.hashIndex());
         }
 
-        template <int N>
+        template<int N>
         std::array<std::optional<std::string_view>, N> static split_string_view(std::string_view fen,
-                                                                                char delimiter = ' ')
-        {
+            char delimiter = ' ') {
             std::array<std::optional<std::string_view>, N> arr = {};
 
             std::size_t start = 0;
             std::size_t end = 0;
 
-            for (std::size_t i = 0; i < N; i++)
-            {
+            for (std::size_t i = 0; i < N; i++) {
                 end = fen.find(delimiter, start);
-                if (end == std::string::npos)
-                {
+                if (end == std::string::npos) {
                     arr[i] = fen.substr(start);
                     break;
                 }
@@ -2718,12 +2533,9 @@ namespace chess
         std::string original_fen_;
     };
 
-    inline std::ostream &operator<<(std::ostream &os, const Board &b)
-    {
-        for (int i = 63; i >= 0; i -= 8)
-        {
-            for (int j = 7; j >= 0; j--)
-            {
+    inline std::ostream &operator<<(std::ostream &os, const Board &b) {
+        for (int i = 63; i >= 0; i -= 8) {
+            for (int j = 7; j >= 0; j--) {
                 os << " " << static_cast<std::string>(b.board_[i - j]);
             }
 
@@ -2744,30 +2556,26 @@ namespace chess
     }
 } // namespace  chess
 
-namespace chess
-{
-
-    template <Direction direction>
-    [[nodiscard]] inline constexpr Bitboard attacks::shift(const Bitboard b)
-    {
-        switch (direction)
-        {
-        case Direction::NORTH:
-            return b << 8;
-        case Direction::SOUTH:
-            return b >> 8;
-        case Direction::NORTH_WEST:
-            return (b & ~MASK_FILE[0]) << 7;
-        case Direction::WEST:
-            return (b & ~MASK_FILE[0]) >> 1;
-        case Direction::SOUTH_WEST:
-            return (b & ~MASK_FILE[0]) >> 9;
-        case Direction::NORTH_EAST:
-            return (b & ~MASK_FILE[7]) << 9;
-        case Direction::EAST:
-            return (b & ~MASK_FILE[7]) << 1;
-        case Direction::SOUTH_EAST:
-            return (b & ~MASK_FILE[7]) >> 7;
+namespace chess {
+    template<Direction direction>
+    [[nodiscard]] inline constexpr Bitboard attacks::shift(const Bitboard b) {
+        switch (direction) {
+            case Direction::NORTH:
+                return b << 8;
+            case Direction::SOUTH:
+                return b >> 8;
+            case Direction::NORTH_WEST:
+                return (b & ~MASK_FILE[0]) << 7;
+            case Direction::WEST:
+                return (b & ~MASK_FILE[0]) >> 1;
+            case Direction::SOUTH_WEST:
+                return (b & ~MASK_FILE[0]) >> 9;
+            case Direction::NORTH_EAST:
+                return (b & ~MASK_FILE[7]) << 9;
+            case Direction::EAST:
+                return (b & ~MASK_FILE[7]) << 1;
+            case Direction::SOUTH_EAST:
+                return (b & ~MASK_FILE[7]) >> 7;
         }
 
         // c++23
@@ -2778,43 +2586,39 @@ namespace chess
         return {};
     }
 
-    template <Color::underlying c>
-    [[nodiscard]] inline Bitboard attacks::pawnLeftAttacks(const Bitboard pawns)
-    {
-        return c == Color::WHITE ? (pawns << 7) & ~MASK_FILE[static_cast<int>(File::FILE_H)]
-                                 : (pawns >> 7) & ~MASK_FILE[static_cast<int>(File::FILE_A)];
+    template<Color::underlying c>
+    [[nodiscard]] inline Bitboard attacks::pawnLeftAttacks(const Bitboard pawns) {
+        return c == Color::WHITE
+                   ? (pawns << 7) & ~MASK_FILE[static_cast<int>(File::FILE_H)]
+                   : (pawns >> 7) & ~MASK_FILE[static_cast<int>(File::FILE_A)];
     }
 
-    template <Color::underlying c>
-    [[nodiscard]] inline Bitboard attacks::pawnRightAttacks(const Bitboard pawns)
-    {
-        return c == Color::WHITE ? (pawns << 9) & ~MASK_FILE[static_cast<int>(File::FILE_A)]
-                                 : (pawns >> 9) & ~MASK_FILE[static_cast<int>(File::FILE_H)];
+    template<Color::underlying c>
+    [[nodiscard]] inline Bitboard attacks::pawnRightAttacks(const Bitboard pawns) {
+        return c == Color::WHITE
+                   ? (pawns << 9) & ~MASK_FILE[static_cast<int>(File::FILE_A)]
+                   : (pawns >> 9) & ~MASK_FILE[static_cast<int>(File::FILE_H)];
     }
 
     [[nodiscard]] inline Bitboard attacks::pawn(Color c, Square sq) noexcept { return PawnAttacks[c][sq.index()]; }
 
     [[nodiscard]] inline Bitboard attacks::knight(Square sq) noexcept { return KnightAttacks[sq.index()]; }
 
-    [[nodiscard]] inline Bitboard attacks::bishop(Square sq, Bitboard occupied) noexcept
-    {
+    [[nodiscard]] inline Bitboard attacks::bishop(Square sq, Bitboard occupied) noexcept {
         return BishopTable[sq.index()].attacks[BishopTable[sq.index()](occupied)];
     }
 
-    [[nodiscard]] inline Bitboard attacks::rook(Square sq, Bitboard occupied) noexcept
-    {
+    [[nodiscard]] inline Bitboard attacks::rook(Square sq, Bitboard occupied) noexcept {
         return RookTable[sq.index()].attacks[RookTable[sq.index()](occupied)];
     }
 
-    [[nodiscard]] inline Bitboard attacks::queen(Square sq, Bitboard occupied) noexcept
-    {
+    [[nodiscard]] inline Bitboard attacks::queen(Square sq, Bitboard occupied) noexcept {
         return bishop(sq, occupied) | rook(sq, occupied);
     }
 
     [[nodiscard]] inline Bitboard attacks::king(Square sq) noexcept { return KingAttacks[sq.index()]; }
 
-    [[nodiscard]] inline Bitboard attacks::attackers(const Board &board, Color color, Square square) noexcept
-    {
+    [[nodiscard]] inline Bitboard attacks::attackers(const Board &board, Color color, Square square) noexcept {
         const auto queens = board.pieces(PieceType::QUEEN, color);
         const auto occupied = board.occ();
 
@@ -2828,8 +2632,7 @@ namespace chess
         return atks & occupied;
     }
 
-    [[nodiscard]] inline Bitboard attacks::bishopAttacks(Square sq, Bitboard occupied)
-    {
+    [[nodiscard]] inline Bitboard attacks::bishopAttacks(Square sq, Bitboard occupied) {
         Bitboard attacks = 0ULL;
 
         int r, f;
@@ -2837,32 +2640,28 @@ namespace chess
         int br = sq.rank();
         int bf = sq.file();
 
-        for (r = br + 1, f = bf + 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r++, f++)
-        {
+        for (r = br + 1, f = bf + 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r++, f++) {
             auto s = Square(static_cast<Rank>(r), static_cast<File>(f)).index();
             attacks.set(s);
             if (occupied.check(s))
                 break;
         }
 
-        for (r = br - 1, f = bf + 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r--, f++)
-        {
+        for (r = br - 1, f = bf + 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r--, f++) {
             auto s = Square(static_cast<Rank>(r), static_cast<File>(f)).index();
             attacks.set(s);
             if (occupied.check(s))
                 break;
         }
 
-        for (r = br + 1, f = bf - 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r++, f--)
-        {
+        for (r = br + 1, f = bf - 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r++, f--) {
             auto s = Square(static_cast<Rank>(r), static_cast<File>(f)).index();
             attacks.set(s);
             if (occupied.check(s))
                 break;
         }
 
-        for (r = br - 1, f = bf - 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r--, f--)
-        {
+        for (r = br - 1, f = bf - 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(f)); r--, f--) {
             auto s = Square(static_cast<Rank>(r), static_cast<File>(f)).index();
             attacks.set(s);
             if (occupied.check(s))
@@ -2872,8 +2671,7 @@ namespace chess
         return attacks;
     }
 
-    [[nodiscard]] inline Bitboard attacks::rookAttacks(Square sq, Bitboard occupied)
-    {
+    [[nodiscard]] inline Bitboard attacks::rookAttacks(Square sq, Bitboard occupied) {
         Bitboard attacks = 0ULL;
 
         int r, f;
@@ -2881,32 +2679,28 @@ namespace chess
         int rr = sq.rank();
         int rf = sq.file();
 
-        for (r = rr + 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(rf)); r++)
-        {
+        for (r = rr + 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(rf)); r++) {
             auto s = Square(static_cast<Rank>(r), static_cast<File>(rf)).index();
             attacks.set(s);
             if (occupied.check(s))
                 break;
         }
 
-        for (r = rr - 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(rf)); r--)
-        {
+        for (r = rr - 1; Square::is_valid(static_cast<Rank>(r), static_cast<File>(rf)); r--) {
             auto s = Square(static_cast<Rank>(r), static_cast<File>(rf)).index();
             attacks.set(s);
             if (occupied.check(s))
                 break;
         }
 
-        for (f = rf + 1; Square::is_valid(static_cast<Rank>(rr), static_cast<File>(f)); f++)
-        {
+        for (f = rf + 1; Square::is_valid(static_cast<Rank>(rr), static_cast<File>(f)); f++) {
             auto s = Square(static_cast<Rank>(rr), static_cast<File>(f)).index();
             attacks.set(s);
             if (occupied.check(s))
                 break;
         }
 
-        for (f = rf - 1; Square::is_valid(static_cast<Rank>(rr), static_cast<File>(f)); f--)
-        {
+        for (f = rf - 1; Square::is_valid(static_cast<Rank>(rr), static_cast<File>(f)); f--) {
             auto s = Square(static_cast<Rank>(rr), static_cast<File>(f)).index();
             attacks.set(s);
             if (occupied.check(s))
@@ -2917,8 +2711,7 @@ namespace chess
     }
 
     inline void attacks::initSliders(Square sq, Magic table[], U64 magic,
-                                     const std::function<Bitboard(Square, Bitboard)> &attacks)
-    {
+                                     const std::function<Bitboard(Square, Bitboard)> &attacks) {
         // The edges of the board are not considered for the attacks
         // i.e. for the sq h7 edges will be a1-h1, a1-a8, a8-h8, ignoring the edge of the current square
         const Bitboard edges = ((Bitboard(Rank::RANK_1) | Bitboard(Rank::RANK_8)) & ~Bitboard(sq.rank())) |
@@ -2932,59 +2725,50 @@ namespace chess
         table_sq.mask = (attacks(sq, occ) & ~edges).getBits();
         table_sq.shift = 64 - Bitboard(table_sq.mask).count();
 
-        if (sq < 64 - 1)
-        {
+        if (sq < 64 - 1) {
             table[sq.index() + 1].attacks = table_sq.attacks + (1ull << Bitboard(table_sq.mask).count());
         }
 
-        do
-        {
+        do {
             table_sq.attacks[table_sq(occ)] = attacks(sq, occ);
             occ = (occ - table_sq.mask) & table_sq.mask;
         } while (occ);
     }
 
-    inline void attacks::initAttacks()
-    {
+    inline void attacks::initAttacks() {
         BishopTable[0].attacks = BishopAttacks;
         RookTable[0].attacks = RookAttacks;
 
-        for (int i = 0; i < 64; i++)
-        {
+        for (int i = 0; i < 64; i++) {
             initSliders(static_cast<Square>(i), BishopTable, BishopMagics[i], bishopAttacks);
             initSliders(static_cast<Square>(i), RookTable, RookMagics[i], rookAttacks);
         }
     }
 } // namespace chess
 
-namespace chess
-{
-
-    inline auto movegen::init_squares_between()
-    {
+namespace chess {
+    inline auto movegen::init_squares_between() {
         std::array<std::array<Bitboard, 64>, 64> squares_between_bb{};
         Bitboard sqs = 0;
 
-        for (Square sq1 = 0; sq1 < 64; ++sq1)
-        {
-            for (Square sq2 = 0; sq2 < 64; ++sq2)
-            {
+        for (Square sq1 = 0; sq1 < 64; ++sq1) {
+            for (Square sq2 = 0; sq2 < 64; ++sq2) {
                 sqs = Bitboard::fromSquare(sq1) | Bitboard::fromSquare(sq2);
                 if (sq1 == sq2)
                     squares_between_bb[sq1.index()][sq2.index()].clear();
                 else if (sq1.file() == sq2.file() || sq1.rank() == sq2.rank())
                     squares_between_bb[sq1.index()][sq2.index()] = attacks::rook(sq1, sqs) & attacks::rook(sq2, sqs);
                 else if (sq1.diagonal_of() == sq2.diagonal_of() || sq1.antidiagonal_of() == sq2.antidiagonal_of())
-                    squares_between_bb[sq1.index()][sq2.index()] = attacks::bishop(sq1, sqs) & attacks::bishop(sq2, sqs);
+                    squares_between_bb[sq1.index()][sq2.index()] =
+                            attacks::bishop(sq1, sqs) & attacks::bishop(sq2, sqs);
             }
         }
 
         return squares_between_bb;
     }
 
-    template <Color::underlying c>
-    [[nodiscard]] inline std::pair<Bitboard, int> movegen::checkMask(const Board &board, Square sq)
-    {
+    template<Color::underlying c>
+    [[nodiscard]] inline std::pair<Bitboard, int> movegen::checkMask(const Board &board, Square sq) {
         const auto opp_knight = board.pieces(PieceType::KNIGHT, ~c);
         const auto opp_bishop = board.pieces(PieceType::BISHOP, ~c);
         const auto opp_rook = board.pieces(PieceType::ROOK, ~c);
@@ -3008,8 +2792,7 @@ namespace chess
         // check for bishop checks
         Bitboard bishop_attacks = attacks::bishop(sq, board.occ()) & (opp_bishop | opp_queen);
 
-        if (bishop_attacks)
-        {
+        if (bishop_attacks) {
             const auto index = bishop_attacks.lsb();
 
             mask |= SQUARES_BETWEEN_BB[sq.index()][index] | Bitboard::fromSquare(index);
@@ -3018,10 +2801,8 @@ namespace chess
 
         Bitboard rook_attacks = attacks::rook(sq, board.occ()) & (opp_rook | opp_queen);
 
-        if (rook_attacks)
-        {
-            if (rook_attacks.count() > 1)
-            {
+        if (rook_attacks) {
+            if (rook_attacks.count() > 1) {
                 checks = 2;
                 return {mask, checks};
             }
@@ -3032,25 +2813,23 @@ namespace chess
             checks++;
         }
 
-        if (!mask)
-        {
+        if (!mask) {
             return {constants::DEFAULT_CHECKMASK, checks};
         }
 
         return {mask, checks};
     }
 
-    template <Color::underlying c>
-    [[nodiscard]] inline Bitboard movegen::pinMaskRooks(const Board &board, Square sq, Bitboard occ_opp, Bitboard occ_us)
-    {
+    template<Color::underlying c>
+    [[nodiscard]] inline Bitboard movegen::pinMaskRooks(const Board &board, Square sq, Bitboard occ_opp,
+                                                        Bitboard occ_us) {
         const auto opp_rook = board.pieces(PieceType::ROOK, ~c);
         const auto opp_queen = board.pieces(PieceType::QUEEN, ~c);
 
         Bitboard rook_attacks = attacks::rook(sq, occ_opp) & (opp_rook | opp_queen);
         Bitboard pin_hv = 0;
 
-        while (rook_attacks)
-        {
+        while (rook_attacks) {
             const auto index = rook_attacks.pop();
 
             const Bitboard possible_pin = SQUARES_BETWEEN_BB[sq.index()][index] | Bitboard::fromSquare(index);
@@ -3061,18 +2840,16 @@ namespace chess
         return pin_hv;
     }
 
-    template <Color::underlying c>
+    template<Color::underlying c>
     [[nodiscard]] inline Bitboard movegen::pinMaskBishops(const Board &board, Square sq, Bitboard occ_opp,
-                                                          Bitboard occ_us)
-    {
+                                                          Bitboard occ_us) {
         const auto opp_bishop = board.pieces(PieceType::BISHOP, ~c);
         const auto opp_queen = board.pieces(PieceType::QUEEN, ~c);
 
         Bitboard bishop_attacks = attacks::bishop(sq, occ_opp) & (opp_bishop | opp_queen);
         Bitboard pin_diag = 0;
 
-        while (bishop_attacks)
-        {
+        while (bishop_attacks) {
             const auto index = bishop_attacks.pop();
 
             const Bitboard possible_pin = SQUARES_BETWEEN_BB[sq.index()][index] | Bitboard::fromSquare(index);
@@ -3083,14 +2860,12 @@ namespace chess
         return pin_diag;
     }
 
-    template <Color::underlying c>
-    [[nodiscard]] inline Bitboard movegen::seenSquares(const Board &board, Bitboard enemy_empty)
-    {
+    template<Color::underlying c>
+    [[nodiscard]] inline Bitboard movegen::seenSquares(const Board &board, Bitboard enemy_empty) {
         auto king_sq = board.kingSq(~c);
         Bitboard map_king_atk = attacks::king(king_sq) & enemy_empty;
 
-        if (map_king_atk == Bitboard(0ull) && !board.chess960())
-        {
+        if (map_king_atk == Bitboard(0ull) && !board.chess960()) {
             return 0ull;
         }
 
@@ -3103,20 +2878,17 @@ namespace chess
 
         Bitboard seen = attacks::pawnLeftAttacks<c>(pawns) | attacks::pawnRightAttacks<c>(pawns);
 
-        while (knights)
-        {
+        while (knights) {
             const auto index = knights.pop();
             seen |= attacks::knight(index);
         }
 
-        while (bishops)
-        {
+        while (bishops) {
             const auto index = bishops.pop();
             seen |= attacks::bishop(index, occ);
         }
 
-        while (rooks)
-        {
+        while (rooks) {
             const auto index = rooks.pop();
             seen |= attacks::rook(index, occ);
         }
@@ -3127,10 +2899,9 @@ namespace chess
         return seen;
     }
 
-    template <Color::underlying c, movegen::MoveGenType mt>
+    template<Color::underlying c, movegen::MoveGenType mt>
     inline void movegen::generatePawnMoves(const Board &board, Movelist &moves, Bitboard pin_d, Bitboard pin_hv,
-                                           Bitboard checkmask, Bitboard occ_opp)
-    {
+                                           Bitboard checkmask, Bitboard occ_opp) {
         // flipped for black
 
         constexpr auto UP = make_direction(Direction::NORTH, c);
@@ -3152,7 +2923,8 @@ namespace chess
         const Bitboard pinned_pawns_lr = pawns_lr & pin_d;
 
         auto l_pawns = attacks::shift<UP_LEFT>(unpinned_pawns_lr) | (attacks::shift<UP_LEFT>(pinned_pawns_lr) & pin_d);
-        auto r_pawns = attacks::shift<UP_RIGHT>(unpinned_pawns_lr) | (attacks::shift<UP_RIGHT>(pinned_pawns_lr) & pin_d);
+        auto r_pawns = attacks::shift<UP_RIGHT>(unpinned_pawns_lr) | (
+                           attacks::shift<UP_RIGHT>(pinned_pawns_lr) & pin_d);
 
         // Prune moves that don't capture a piece and are not on the checkmask.
         l_pawns &= occ_opp & checkmask;
@@ -3175,16 +2947,14 @@ namespace chess
                                 (attacks::shift<UP>(single_push_pinned & DOUBLE_PUSH_RANK) & ~board.occ())) &
                                checkmask;
 
-        if (pawns & RANK_B_PROMO)
-        {
+        if (pawns & RANK_B_PROMO) {
             Bitboard promo_left = l_pawns & RANK_PROMO;
             Bitboard promo_right = r_pawns & RANK_PROMO;
             Bitboard promo_push = single_push & RANK_PROMO;
 
             // Skip capturing promotions if we are only generating quiet moves.
             // Generates at ALL and CAPTURE
-            while (mt != MoveGenType::QUIET && promo_left)
-            {
+            while (mt != MoveGenType::QUIET && promo_left) {
                 const auto index = promo_left.pop();
                 moves.add(Move::make<Move::PROMOTION>(index + DOWN_RIGHT, index, PieceType::QUEEN));
                 moves.add(Move::make<Move::PROMOTION>(index + DOWN_RIGHT, index, PieceType::ROOK));
@@ -3194,8 +2964,7 @@ namespace chess
 
             // Skip capturing promotions if we are only generating quiet moves.
             // Generates at ALL and CAPTURE
-            while (mt != MoveGenType::QUIET && promo_right)
-            {
+            while (mt != MoveGenType::QUIET && promo_right) {
                 const auto index = promo_right.pop();
                 moves.add(Move::make<Move::PROMOTION>(index + DOWN_LEFT, index, PieceType::QUEEN));
                 moves.add(Move::make<Move::PROMOTION>(index + DOWN_LEFT, index, PieceType::ROOK));
@@ -3205,8 +2974,7 @@ namespace chess
 
             // Skip quiet promotions if we are only generating captures.
             // Generates at ALL and QUIET
-            while (mt != MoveGenType::CAPTURE && promo_push)
-            {
+            while (mt != MoveGenType::CAPTURE && promo_push) {
                 const auto index = promo_push.pop();
                 moves.add(Move::make<Move::PROMOTION>(index + DOWN, index, PieceType::QUEEN));
                 moves.add(Move::make<Move::PROMOTION>(index + DOWN, index, PieceType::ROOK));
@@ -3219,26 +2987,22 @@ namespace chess
         l_pawns &= ~RANK_PROMO;
         r_pawns &= ~RANK_PROMO;
 
-        while (mt != MoveGenType::QUIET && l_pawns)
-        {
+        while (mt != MoveGenType::QUIET && l_pawns) {
             const auto index = l_pawns.pop();
             moves.add(Move::make<Move::NORMAL>(index + DOWN_RIGHT, index));
         }
 
-        while (mt != MoveGenType::QUIET && r_pawns)
-        {
+        while (mt != MoveGenType::QUIET && r_pawns) {
             const auto index = r_pawns.pop();
             moves.add(Move::make<Move::NORMAL>(index + DOWN_LEFT, index));
         }
 
-        while (mt != MoveGenType::CAPTURE && single_push)
-        {
+        while (mt != MoveGenType::CAPTURE && single_push) {
             const auto index = single_push.pop();
             moves.add(Move::make<Move::NORMAL>(index + DOWN, index));
         }
 
-        while (mt != MoveGenType::CAPTURE && double_push)
-        {
+        while (mt != MoveGenType::CAPTURE && double_push) {
             const auto index = double_push.pop();
             moves.add(Move::make<Move::NORMAL>(index + DOWN + DOWN, index));
         }
@@ -3248,21 +3012,19 @@ namespace chess
 
         const Square ep = board.enpassantSq();
 
-        if (ep != Square::underlying::NO_SQ)
-        {
+        if (ep != Square::underlying::NO_SQ) {
             auto m = generateEPMove(board, checkmask, pin_d, pawns_lr, ep, c);
 
-            for (const auto &move : m)
-            {
+            for (const auto &move: m) {
                 if (move != Move::NO_MOVE)
                     moves.add(move);
             }
         }
     }
 
-    [[nodiscard]] inline std::array<Move, 2> movegen::generateEPMove(const Board &board, Bitboard checkmask, Bitboard pin_d,
-                                                                     Bitboard pawns_lr, Square ep, Color c)
-    {
+    [[nodiscard]] inline std::array<Move, 2> movegen::generateEPMove(const Board &board, Bitboard checkmask,
+                                                                     Bitboard pin_d,
+                                                                     Bitboard pawns_lr, Square ep, Color c) {
         std::array<Move, 2> moves = {Move::NO_MOVE, Move::NO_MOVE};
         auto i = 0;
 
@@ -3284,8 +3046,7 @@ namespace chess
         auto epBB = attacks::pawn(~c, ep) & pawns_lr;
 
         // For one en passant square two pawns could potentially take there.
-        while (epBB)
-        {
+        while (epBB) {
             const auto from = epBB.pop();
             const auto to = ep;
 
@@ -3319,16 +3080,14 @@ namespace chess
 
     [[nodiscard]] inline Bitboard movegen::generateKnightMoves(Square sq) { return attacks::knight(sq); }
 
-    [[nodiscard]] inline Bitboard movegen::generateBishopMoves(Square sq, Bitboard pin_d, Bitboard occ_all)
-    {
+    [[nodiscard]] inline Bitboard movegen::generateBishopMoves(Square sq, Bitboard pin_d, Bitboard occ_all) {
         // The Bishop is pinned diagonally thus can only move diagonally.
         if (pin_d & Bitboard::fromSquare(sq))
             return attacks::bishop(sq, occ_all) & pin_d;
         return attacks::bishop(sq, occ_all);
     }
 
-    [[nodiscard]] inline Bitboard movegen::generateRookMoves(Square sq, Bitboard pin_hv, Bitboard occ_all)
-    {
+    [[nodiscard]] inline Bitboard movegen::generateRookMoves(Square sq, Bitboard pin_hv, Bitboard occ_all) {
         // The Rook is pinned horizontally thus can only move horizontally.
         if (pin_hv & Bitboard::fromSquare(sq))
             return attacks::rook(sq, occ_all) & pin_hv;
@@ -3336,16 +3095,14 @@ namespace chess
     }
 
     [[nodiscard]] inline Bitboard movegen::generateQueenMoves(Square sq, Bitboard pin_d, Bitboard pin_hv,
-                                                              Bitboard occ_all)
-    {
+                                                              Bitboard occ_all) {
         Bitboard moves = 0ULL;
 
         if (pin_d & Bitboard::fromSquare(sq))
             moves |= attacks::bishop(sq, occ_all) & pin_d;
         else if (pin_hv & Bitboard::fromSquare(sq))
             moves |= attacks::rook(sq, occ_all) & pin_hv;
-        else
-        {
+        else {
             moves |= attacks::rook(sq, occ_all);
             moves |= attacks::bishop(sq, occ_all);
         }
@@ -3353,15 +3110,13 @@ namespace chess
         return moves;
     }
 
-    [[nodiscard]] inline Bitboard movegen::generateKingMoves(Square sq, Bitboard seen, Bitboard movable_square)
-    {
+    [[nodiscard]] inline Bitboard movegen::generateKingMoves(Square sq, Bitboard seen, Bitboard movable_square) {
         return attacks::king(sq) & movable_square & ~seen;
     }
 
-    template <Color::underlying c, movegen::MoveGenType mt>
+    template<Color::underlying c, movegen::MoveGenType mt>
     [[nodiscard]] inline Bitboard movegen::generateCastleMoves(const Board &board, Square sq, Bitboard seen,
-                                                               Bitboard pin_hv)
-    {
+                                                               Bitboard pin_hv) {
         if constexpr (mt == MoveGenType::CAPTURE)
             return 0ull;
         if (!Square::back_rank(sq, c) || !board.castlingRights().has(c))
@@ -3371,8 +3126,7 @@ namespace chess
 
         Bitboard moves = 0ull;
 
-        for (const auto side : {Board::CastlingRights::Side::KING_SIDE, Board::CastlingRights::Side::QUEEN_SIDE})
-        {
+        for (const auto side: {Board::CastlingRights::Side::KING_SIDE, Board::CastlingRights::Side::QUEEN_SIDE}) {
             if (!rights.has(c, side))
                 continue;
 
@@ -3392,8 +3146,7 @@ namespace chess
                 !(Bitboard::fromSquare(from_rook_sq) & pin_hv.getBits() & sq.rank().bb()) &&
                 !(Bitboard::fromSquare(end_rook_sq) & (withoutRook & withoutKing).getBits()) &&
                 !(Bitboard::fromSquare(end_king_sq) &
-                  (seen | (withoutRook & Bitboard(~Bitboard::fromSquare(sq)))).getBits()))
-            {
+                  (seen | (withoutRook & Bitboard(~Bitboard::fromSquare(sq)))).getBits())) {
                 moves |= Bitboard::fromSquare(from_rook_sq);
             }
         }
@@ -3401,24 +3154,20 @@ namespace chess
         return moves;
     }
 
-    template <typename T>
-    inline void movegen::whileBitboardAdd(Movelist &movelist, Bitboard mask, T func)
-    {
-        while (mask)
-        {
+    template<typename T>
+    inline void movegen::whileBitboardAdd(Movelist &movelist, Bitboard mask, T func) {
+        while (mask) {
             const Square from = mask.pop();
             auto moves = func(from);
-            while (moves)
-            {
+            while (moves) {
                 const Square to = moves.pop();
                 movelist.add(Move::make<Move::NORMAL>(from, to));
             }
         }
     }
 
-    template <Color::underlying c, movegen::MoveGenType mt>
-    inline void movegen::legalmoves(Movelist &movelist, const Board &board, int pieces)
-    {
+    template<Color::underlying c, movegen::MoveGenType mt>
+    inline void movegen::legalmoves(Movelist &movelist, const Board &board, int pieces) {
         /*
          The size of the movelist might not
          be 0! This is done on purpose since it enables
@@ -3447,20 +3196,16 @@ namespace chess
         else // QUIET moves
             movable_square = ~occ_all;
 
-        if (pieces & PieceGenType::KING)
-        {
+        if (pieces & PieceGenType::KING) {
             Bitboard seen = seenSquares<~c>(board, opp_empty);
 
             whileBitboardAdd(movelist, Bitboard::fromSquare(king_sq),
-                             [&](Square sq)
-                             { return generateKingMoves(sq, seen, movable_square); });
+                             [&](Square sq) { return generateKingMoves(sq, seen, movable_square); });
 
-            if (checks == 0)
-            {
+            if (checks == 0) {
                 Bitboard moves_bb = generateCastleMoves<c, mt>(board, king_sq, seen, pin_hv);
 
-                while (moves_bb)
-                {
+                while (moves_bb) {
                     Square to = moves_bb.pop();
                     movelist.add(Move::make<Move::CASTLING>(king_sq, to));
                 }
@@ -3474,54 +3219,47 @@ namespace chess
             return;
 
         // Add the moves to the movelist.
-        if (pieces & PieceGenType::PAWN)
-        {
+        if (pieces & PieceGenType::PAWN) {
             generatePawnMoves<c, mt>(board, movelist, pin_d, pin_hv, checkmask, occ_opp);
         }
 
-        if (pieces & PieceGenType::KNIGHT)
-        {
+        if (pieces & PieceGenType::KNIGHT) {
             // Prune knights that are pinned since these cannot move.
             Bitboard knights_mask = board.pieces(PieceType::KNIGHT, c) & ~(pin_d | pin_hv);
 
-            whileBitboardAdd(movelist, knights_mask, [&](Square sq)
-                             { return generateKnightMoves(sq) & movable_square; });
+            whileBitboardAdd(movelist, knights_mask,
+                             [&](Square sq) { return generateKnightMoves(sq) & movable_square; });
         }
 
-        if (pieces & PieceGenType::BISHOP)
-        {
+        if (pieces & PieceGenType::BISHOP) {
             // Prune horizontally pinned bishops
             Bitboard bishops_mask = board.pieces(PieceType::BISHOP, c) & ~pin_hv;
 
             whileBitboardAdd(movelist, bishops_mask,
-                             [&](Square sq)
-                             { return generateBishopMoves(sq, pin_d, occ_all) & movable_square; });
+                             [&](Square sq) { return generateBishopMoves(sq, pin_d, occ_all) & movable_square; });
         }
 
-        if (pieces & PieceGenType::ROOK)
-        {
+        if (pieces & PieceGenType::ROOK) {
             //  Prune diagonally pinned rooks
             Bitboard rooks_mask = board.pieces(PieceType::ROOK, c) & ~pin_d;
 
             whileBitboardAdd(movelist, rooks_mask,
-                             [&](Square sq)
-                             { return generateRookMoves(sq, pin_hv, occ_all) & movable_square; });
+                             [&](Square sq) { return generateRookMoves(sq, pin_hv, occ_all) & movable_square; });
         }
 
-        if (pieces & PieceGenType::QUEEN)
-        {
+        if (pieces & PieceGenType::QUEEN) {
             // Prune double pinned queens
             Bitboard queens_mask = board.pieces(PieceType::QUEEN, c) & ~(pin_d & pin_hv);
 
             whileBitboardAdd(movelist, queens_mask,
-                             [&](Square sq)
-                             { return generateQueenMoves(sq, pin_d, pin_hv, occ_all) & movable_square; });
+                             [&](Square sq) {
+                                 return generateQueenMoves(sq, pin_d, pin_hv, occ_all) & movable_square;
+                             });
         }
     }
 
-    template <movegen::MoveGenType mt>
-    inline void movegen::legalmoves(Movelist &movelist, const Board &board, int pieces)
-    {
+    template<movegen::MoveGenType mt>
+    inline void movegen::legalmoves(Movelist &movelist, const Board &board, int pieces) {
         movelist.clear();
 
         if (board.sideToMove() == Color::WHITE)
@@ -3530,9 +3268,8 @@ namespace chess
             legalmoves<Color::BLACK, mt>(movelist, board, pieces);
     }
 
-    template <Color::underlying c>
-    inline bool movegen::isEpSquareValid(const Board &board, Square ep)
-    {
+    template<Color::underlying c>
+    inline bool movegen::isEpSquareValid(const Board &board, Square ep) {
         const auto stm = board.sideToMove();
 
         Bitboard occ_us = board.us(stm);
@@ -3548,10 +3285,8 @@ namespace chess
         const auto m = movegen::generateEPMove(board, checkmask, pin_d, pawns_lr, ep, stm);
         bool found = false;
 
-        for (const auto &move : m)
-        {
-            if (move != Move::NO_MOVE)
-            {
+        for (const auto &move: m) {
+            if (move != Move::NO_MOVE) {
                 found = true;
                 break;
             }
@@ -3560,31 +3295,25 @@ namespace chess
         return found;
     }
 
-    inline const std::array<std::array<Bitboard, 64>, 64> movegen::SQUARES_BETWEEN_BB = []
-    {
+    inline const std::array<std::array<Bitboard, 64>, 64> movegen::SQUARES_BETWEEN_BB = [] {
         attacks::initAttacks();
         return movegen::init_squares_between();
     }();
-
 } // namespace chess
 
 #include <sstream>
 
-namespace chess
-{
-    class uci
-    {
+namespace chess {
+    class uci {
     public:
-        [[nodiscard]] static std::string moveToUci(const Move &move, bool chess960 = false) noexcept(false)
-        {
+        [[nodiscard]] static std::string moveToUci(const Move &move, bool chess960 = false) noexcept(false) {
             // Get the from and to squares
             Square from_sq = move.from();
             Square to_sq = move.to();
 
             // If the move is not a chess960 castling move and is a king moving more than one square,
             // update the to square to be the correct square for a regular castling move
-            if (!chess960 && move.typeOf() == Move::CASTLING)
-            {
+            if (!chess960 && move.typeOf() == Move::CASTLING) {
                 to_sq = Square(to_sq > from_sq ? File::FILE_G : File::FILE_C, from_sq.rank());
             }
 
@@ -3595,26 +3324,22 @@ namespace chess
             ss << to_sq;
 
             // If the move is a promotion, add the promoted piece to the string stream
-            if (move.typeOf() == Move::PROMOTION)
-            {
+            if (move.typeOf() == Move::PROMOTION) {
                 ss << static_cast<std::string>(move.promotionType());
             }
 
             return ss.str();
         }
 
-        [[nodiscard]] static Move uciToMove(const Board &board, const std::string &uci) noexcept(false)
-        {
-            if (uci.length() < 4)
-            {
+        [[nodiscard]] static Move uciToMove(const Board &board, const std::string &uci) noexcept(false) {
+            if (uci.length() < 4) {
                 return Move::NO_MOVE;
             }
 
             Square source = Square(uci.substr(0, 2));
             Square target = Square(uci.substr(2, 2));
 
-            if (!source.is_valid() || !target.is_valid())
-            {
+            if (!source.is_valid() || !target.is_valid()) {
                 return Move::NO_MOVE;
             }
 
@@ -3622,88 +3347,71 @@ namespace chess
 
             // castling in chess960
             if (board.chess960() && piece == PieceType::KING && board.at(target).type() == PieceType::ROOK &&
-                board.at(target).color() == board.sideToMove())
-            {
+                board.at(target).color() == board.sideToMove()) {
                 return Move::make<Move::CASTLING>(source, target);
             }
 
             // convert to king captures rook
             // in chess960 the move should be sent as king captures rook already!
-            if (!board.chess960() && piece == PieceType::KING && Square::distance(target, source) == 2)
-            {
+            if (!board.chess960() && piece == PieceType::KING && Square::distance(target, source) == 2) {
                 target = Square(target > source ? File::FILE_H : File::FILE_A, source.rank());
                 return Move::make<Move::CASTLING>(source, target);
             }
 
             // en passant
-            if (piece == PieceType::PAWN && target == board.enpassantSq())
-            {
+            if (piece == PieceType::PAWN && target == board.enpassantSq()) {
                 return Move::make<Move::ENPASSANT>(source, target);
             }
 
             // promotion
-            if (piece == PieceType::PAWN && uci.length() == 5 && Square::back_rank(target, ~board.sideToMove()))
-            {
+            if (piece == PieceType::PAWN && uci.length() == 5 && Square::back_rank(target, ~board.sideToMove())) {
                 auto promotion = PieceType(uci.substr(4, 1));
 
                 if (promotion != PieceType::QUEEN && promotion != PieceType::ROOK && promotion != PieceType::BISHOP &&
-                    promotion != PieceType::KNIGHT)
-                {
+                    promotion != PieceType::KNIGHT) {
                     return Move::NO_MOVE;
                 }
 
                 return Move::make<Move::PROMOTION>(source, target, PieceType(uci.substr(4, 1)));
             }
 
-            switch (uci.length())
-            {
-            case 4:
-                return Move::make<Move::NORMAL>(source, target);
-            default:
-                return Move::NO_MOVE;
+            switch (uci.length()) {
+                case 4:
+                    return Move::make<Move::NORMAL>(source, target);
+                default:
+                    return Move::NO_MOVE;
             }
         }
 
     private:
-        template <bool LAN = false>
-        static void moveToRep(Board board, const Move &move, std::string &str)
-        {
-            if (move.typeOf() == Move::CASTLING)
-            {
+        template<bool LAN = false>
+        static void moveToRep(Board board, const Move &move, std::string &str) {
+            if (move.typeOf() == Move::CASTLING) {
                 str = move.to() > move.from() ? "O-O" : "O-O-O";
                 return;
             }
 
             const PieceType pt = board.at(move.from()).type();
 
-            if (pt != PieceType::PAWN)
-            {
+            if (pt != PieceType::PAWN) {
                 str += std::toupper(static_cast<std::string>(pt)[0]);
             }
 
-            if constexpr (LAN)
-            {
+            if constexpr (LAN) {
                 str += static_cast<std::string>(move.from().file());
                 str += static_cast<std::string>(move.from().rank());
-            }
-            else
-            {
+            } else {
                 Movelist moves;
                 movegen::legalmoves(moves, board);
 
-                for (const auto &m : moves)
-                {
+                for (const auto &m: moves) {
                     // check for ambiguity
                     if (pt != PieceType::PAWN && m != move && board.at(m.from()) == board.at(move.from()) &&
-                        m.to() == move.to())
-                    {
-                        if (m.from().file() == move.from().file())
-                        {
+                        m.to() == move.to()) {
+                        if (m.from().file() == move.from().file()) {
                             str += static_cast<std::string>(move.from().rank());
                             break;
-                        }
-                        else
-                        {
+                        } else {
                             str += static_cast<std::string>(move.from().file());
                             break;
                         }
@@ -3711,10 +3419,8 @@ namespace chess
                 }
             }
 
-            if (board.at(move.to()) != Piece::NONE || move.typeOf() == Move::ENPASSANT)
-            {
-                if (pt == PieceType::PAWN)
-                {
+            if (board.at(move.to()) != Piece::NONE || move.typeOf() == Move::ENPASSANT) {
+                if (pt == PieceType::PAWN) {
                     str += static_cast<std::string>(move.from().file());
                 }
 
@@ -3724,8 +3430,7 @@ namespace chess
             str += static_cast<std::string>(move.to().file());
             str += static_cast<std::string>(move.to().rank());
 
-            if (move.typeOf() == Move::PROMOTION)
-            {
+            if (move.typeOf() == Move::PROMOTION) {
                 const auto promotion_pt = static_cast<std::string>(move.promotionType());
 
                 str += '=';
@@ -3734,17 +3439,13 @@ namespace chess
 
             board.makeMove(move);
 
-            if (!board.inCheck())
-            {
+            if (!board.inCheck()) {
                 return;
             }
 
-            if (board.isGameOver().second == GameResult::LOSE)
-            {
+            if (board.isGameOver().second == GameResult::LOSE) {
                 str += '#';
-            }
-            else
-            {
+            } else {
                 str += '+';
             }
         }
