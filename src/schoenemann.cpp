@@ -22,6 +22,10 @@
 #include <thread>
 #include <memory>
 #include <cstring>
+#include <vector>
+#include <fstream>
+#include <mutex>
+#include <atomic>
 
 #include "consts.h"
 #include "helper.h"
@@ -32,6 +36,11 @@
 #include "tt.h"
 #include "timeman.h"
 #include "see.h"
+
+
+// Define global shared resources for multithreading
+std::mutex outputFileMutex;
+std::atomic<std::uint64_t> totalPositionsGenerated(0);
 
 int main(int argc, char *argv[]) {
     std::uint32_t transpositionTableSize = 16;
@@ -78,24 +87,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    if (argc > 1 && std::strcmp(argv[1], "datagen") == 0) {
-        // Vector to hold threads
-        std::vector<std::thread> threads;
-
-        // Launch multiple threads
-        for (std::uint16_t i = 0; i < 5; ++i) {
-            // threads.emplace_back(std::thread([&board]()
-            //  { generate(board, search, transpositionTable); }));
-        }
-
-        // Join threads to ensure they complete before exiting main
-        for (std::thread &thread: threads) {
-            if (thread.joinable()) {
-                thread.join();
-            }
-        }
-        return 0;
-    }
     // Main UCI-Loop
     do {
         if (argc == 1 && !std::getline(std::cin, cmd)) {
@@ -182,7 +173,46 @@ int main(int argc, char *argv[]) {
         } else if (token == "fen") {
             std::cout << board.getFen() << std::endl;
         } else if (token == "datagen") {
-            // generate(board);
+            // Determine the optimal number of threads to use (e.g., number of CPU cores)
+            unsigned int num_threads = std::thread::hardware_concurrency();
+            if (num_threads == 0) num_threads = 4; // Default to 4 threads if detection fails
+
+            // TODO Set for testing to 2 do not change until done
+            num_threads = 2;
+
+            std::cout << "Starting datagen with " << num_threads << " threads." << std::endl;
+
+            // Open the output file once in append mode
+            std::ofstream outputFile("output.txt", std::ios::app);
+            if (!outputFile.is_open()) {
+                std::cerr << "Error opening output file for datagen!" << std::endl;
+                return 1;
+            }
+
+            std::vector<std::thread> threads;
+            for (unsigned int i = 0; i < num_threads; ++i) {
+                // Launch each thread to run the 'generate' function
+                threads.emplace_back(generate, i, std::ref(outputFile));
+            }
+
+            // Periodically print statistics from the main thread
+            auto startTime = std::chrono::steady_clock::now();
+            while (true) {
+                std::this_thread::sleep_for(std::chrono::seconds(10));
+                auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - startTime).count();
+                if (elapsedTime > 0) {
+                    double pps = static_cast<double>(totalPositionsGenerated) / elapsedTime;
+                    std::cout << "Generated: " << totalPositionsGenerated << " positions | PPS: " << static_cast<int>(pps) << std::endl;
+                }
+            }
+
+            // The program will run indefinitely; this join part is for graceful shutdown logic
+            for (std::thread &t : threads) {
+                if (t.joinable()) {
+                    t.join();
+                }
+            }
+            outputFile.close();
         } else if (token == "bench") {
             Helper::runBenchmark(search.get(), board, params);
         } else if (token == "eval") {

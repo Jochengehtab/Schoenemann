@@ -31,6 +31,7 @@
 struct alignas(8) SearchParams {
     bool isInfinite = false;
     int depth = MAX_PLY;
+    bool minimal = false;
 };
 
 class Search {
