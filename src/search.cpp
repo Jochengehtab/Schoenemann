@@ -546,7 +546,7 @@ void Search::iterativeDeepening(Board &board, const SearchParams &params) {
     rootMoveListSize = moveList.size();
     const int finalDepth = params.depth == MAX_PLY ? MAX_PLY : params.depth + 1;
     for (int i = 1; i < finalDepth; i++) {
-        if ((timeManagement.shouldStopID(start) && !params.isInfinite) || i == MAX_PLY - 1 || nodes == nodeLimit ||
+        if ((timeManagement.shouldStopID(start) && !params.isInfinite) || i == MAX_PLY - 1 || nodes >= nodeLimit ||
             shouldStop) {
             break;
         }
@@ -627,7 +627,7 @@ void Search::iterativeDeepening(Board &board, const SearchParams &params) {
         std::cout << "bestmove " << uci::moveToUci(bestMoveThisIteration) << std::endl;
     }
     shouldStop = false;
-    nodeLimit = -1;
+    nodeLimit = NO_NODE_LIMIT;
 }
 
 std::string Search::scoreToUci() const {

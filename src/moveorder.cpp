@@ -28,15 +28,18 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
     const bool isNullptr = entry == nullptr;
     const std::uint64_t key = board.zobrist();
 
+
     for (int i = 0; i < moveList.size(); i++) {
         Move move = moveList[i];
+        const bool isCapture = board.isCapture(move);
+
         if (!isNullptr) {
             if (entry->key == key && move == entry->move) {
                 scores[i] = hashMoveScore;
                 continue;
             }
         }
-        if (board.isCapture(move)) {
+        if (isCapture) {
             const PieceType captured = board.at<PieceType>(move.to());
             const PieceType capturing = board.at<PieceType>(move.from());
 
@@ -50,7 +53,14 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
             scores[i] = killerScore;
         } else {
             scores[i] += history->getQuietHistory(board, move);
-            scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
+            if ( move != Move::PROMOTION && move != Move::CASTLING && move != Move::ENPASSANT) {
+                if (board.at(move.from()).type() == PieceType::NONE) {
+                    std::cout << uci::moveToUci(move) << std::endl;
+                    std::cout << board << std::endl;
+                    std::cout << board.getFen() << std::endl;
+                }
+                scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
+            }
         }
     }
 }

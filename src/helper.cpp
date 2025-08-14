@@ -126,7 +126,7 @@ void Helper::handleGo(Search &search, TimeManagement &timeManagement, Board &boa
     params.isInfinite = false;
     params.depth = MAX_PLY;
 
-    search.nodeLimit = -1;
+    search.nodeLimit = Search::NO_NODE_LIMIT;
     timeManagement.reset();
 
     // Setup values

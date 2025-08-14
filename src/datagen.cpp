@@ -47,8 +47,6 @@ void generate(int threadId, std::ofstream &outputFile) {
     board.setFen(STARTPOS);
     search->initLMR();
 
-    search->nodeLimit = 10000;
-
     // Seed the random number generator uniquely for each thread
     std::random_device rd;
     std::mt19937 gen(rd() + threadId);
@@ -70,10 +68,6 @@ void generate(int threadId, std::ofstream &outputFile) {
             std::uniform_int_distribution dis(0, moveList.size() - 1);
             Move move = moveList[dis(gen)];
 
-            if (!SEE::see(board, move, 0)) {
-                exitEarly = true;
-                break;
-            }
             board.makeMove(move);
         }
 
@@ -83,8 +77,6 @@ void generate(int threadId, std::ofstream &outputFile) {
 
         std::vector<std::string> outputLines;
         std::string resultString = "none";
-        int moveCount = 0;
-        bool isIllegal = false;
 
         // Play out a game for a maximum of 500 moves
         for (int i = 0; i < 500; i++) {
@@ -94,35 +86,30 @@ void generate(int threadId, std::ofstream &outputFile) {
                 break;
             }
 
+            search->nodeLimit = 1000;
             search->iterativeDeepening(board, params);
             Move bestMove = search->rootBestMove;
 
-            if (board.at(bestMove.from()) == Piece::NONE) {
-                isIllegal = true;
-                break;
-            }
-
             // Skip noisy positions to generate cleaner data
-            if (bestMove.typeOf() == Move::PROMOTION || board.inCheck() || board.isCapture(bestMove) || std::abs(search->currentScore) >= 10000) {
+            if (bestMove.typeOf() == Move::PROMOTION || board.inCheck() || board.isCapture(bestMove) || std::abs(
+                    search->currentScore) >= 10000) {
                 board.makeMove(bestMove);
                 continue;
             }
 
-            int score = (board.sideToMove() == Color::WHITE) ? search->currentScore : -search->currentScore;
+            int score = board.sideToMove() == Color::WHITE ? search->currentScore : -search->currentScore;
             outputLines.push_back(board.getFen() + " | " + std::to_string(score) + " | ");
 
-            moveCount++;
             board.makeMove(bestMove);
         }
 
-        if (resultString == "none" || isIllegal) {
+        if (resultString == "none") {
             continue;
         }
 
-        // 3. THREAD-SAFE FILE WRITING
         if (!outputLines.empty()) {
             std::string finalOutput;
-            for (const auto& line : outputLines) {
+            for (const auto &line: outputLines) {
                 finalOutput += line + resultString + "\n";
             }
 

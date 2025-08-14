@@ -177,8 +177,8 @@ int main(int argc, char *argv[]) {
             unsigned int num_threads = std::thread::hardware_concurrency();
             if (num_threads == 0) num_threads = 4; // Default to 4 threads if detection fails
 
-            // TODO Set for testing to 2 do not change until done
-            num_threads = 2;
+            // TODO Set for testing to 1 do not change until done
+            num_threads = 1;
 
             std::cout << "Starting datagen with " << num_threads << " threads." << std::endl;
 

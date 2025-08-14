@@ -75,6 +75,8 @@ void TimeManagement::reset() {
     softLimit = std::chrono::milliseconds{0};
 }
 
+
+// TODO check if this is really correct
 [[nodiscard]] bool TimeManagement::shouldStopSoft(const std::chrono::steady_clock::time_point& start) const noexcept {
     if (isInfiniteSearch) {
         return false;
