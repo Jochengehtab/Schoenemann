@@ -24,11 +24,11 @@
 #include "timeman.h"
 #include "NNUE/nnue.h"
 #include <random>
-#include <iostream>
 #include <string>
 #include <vector>
 #include <mutex>
 #include <atomic>
+#include <cassert>
 
 // Global resources shared across all threads
 extern std::mutex outputFileMutex;
@@ -50,6 +50,8 @@ void generate(int threadId, std::ofstream &outputFile) {
     // Seed the random number generator uniquely for each thread
     std::random_device rd;
     std::mt19937 gen(rd() + threadId);
+    int positionCount = 0;
+    std::vector<std::string> outputLines;
 
     while (true) {
         board.setFen(STARTPOS);
@@ -75,8 +77,9 @@ void generate(int threadId, std::ofstream &outputFile) {
             continue;
         }
 
-        std::vector<std::string> outputLines;
         std::string resultString = "none";
+
+        int gameLength = 0;
 
         // Play out a game for a maximum of 500 moves
         for (int i = 0; i < 500; i++) {
@@ -99,26 +102,32 @@ void generate(int threadId, std::ofstream &outputFile) {
 
             int score = board.sideToMove() == Color::WHITE ? search->currentScore : -search->currentScore;
             outputLines.push_back(board.getFen() + " | " + std::to_string(score) + " | ");
+            positionCount++;
+            gameLength++;
+            ++totalPositionsGenerated;
 
             board.makeMove(bestMove);
         }
 
-        if (resultString == "none") {
-            continue;
+        assert(resultString != "none");
+
+        for (int i = 0; i < gameLength; i++) {
+            outputLines[i].append(resultString);
         }
 
-        if (!outputLines.empty()) {
-            std::string finalOutput;
-            for (const auto &line: outputLines) {
-                finalOutput += line + resultString + "\n";
+        if (positionCount >= 5000) {
+
+            // Lock the mutex only when ready to write the data for the entire game.
+            if (!outputLines.empty()) {
+                std::lock_guard guard(outputFileMutex);
+                for (const auto &line : outputLines) {
+                    outputFile << line << "\n";
+                }
             }
 
-            // Lock the mutex to ensure exclusive access to the file
-            std::lock_guard guard(outputFileMutex);
-            outputFile << finalOutput;
-
-            // Atomically update the global counter
-            totalPositionsGenerated += outputLines.size();
+            outputFile.flush();
+            outputLines.clear();
+            positionCount = 0;
         }
     }
 }
