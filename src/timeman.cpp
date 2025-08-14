@@ -38,7 +38,7 @@ void TimeManagement::calculateTimeForMove() {
 
     int hardMs = std::min(maxTime, static_cast<int>(baseTime * 3.04));
 
-    const double bmFactor   = 1.3 - 0.05 * bestMoveStabilityCount;
+    const double bmFactor = 1.3 - 0.05 * bestMoveStabilityCount;
     const double evalFactor = 1.3 - 0.05 * bestEvalStabilityCount;
     int softMs = std::min(maxTime, static_cast<int>(baseTime * 0.76 * bmFactor * evalFactor));
 
@@ -77,14 +77,14 @@ void TimeManagement::reset() {
 
 
 // TODO check if this is really correct
-[[nodiscard]] bool TimeManagement::shouldStopSoft(const std::chrono::steady_clock::time_point& start) const noexcept {
+[[nodiscard]] bool TimeManagement::shouldStopSoft(const std::chrono::steady_clock::time_point &start) const noexcept {
     if (isInfiniteSearch) {
         return false;
     }
     return std::chrono::steady_clock::now() - start > hardLimit;
 }
 
-[[nodiscard]] bool TimeManagement::shouldStopID(const std::chrono::steady_clock::time_point& start) const noexcept {
+[[nodiscard]] bool TimeManagement::shouldStopID(const std::chrono::steady_clock::time_point &start) const noexcept {
     if (isInfiniteSearch) {
         return false;
     }

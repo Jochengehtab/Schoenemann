@@ -35,7 +35,6 @@ extern std::mutex outputFileMutex;
 extern std::atomic<std::uint64_t> totalPositionsGenerated;
 
 void generate(int threadId, std::ofstream &outputFile) {
-    // Each thread gets its own set of chess objects to prevent data races.
     tt transpositionTable(16);
     TimeManagement timeManagement;
     Network net;
@@ -44,32 +43,30 @@ void generate(int threadId, std::ofstream &outputFile) {
     SearchParams params;
     params.minimal = true;
     Board board(&net);
-    board.setFen(STARTPOS);
     search->initLMR();
 
-    // Seed the random number generator uniquely for each thread
     std::random_device rd;
     std::mt19937 gen(rd() + threadId);
-    int positionCount = 0;
-    std::vector<std::string> outputLines;
+
+    // The persistent buffer for batching writes.
+    std::vector<std::string> writeBuffer;
+
+    // Pre-allocate memory
+    writeBuffer.reserve(5120);
 
     while (true) {
         board.setFen(STARTPOS);
         bool exitEarly = false;
 
-        // Play a few random moves to get a variety of starting positions
         for (int i = 0; i < 10; i++) {
             Movelist moveList;
             movegen::legalmoves(moveList, board);
-
             if (auto [fst, snd] = board.isGameOver(); snd != GameResult::NONE || moveList.empty()) {
                 exitEarly = true;
                 break;
             }
-
             std::uniform_int_distribution dis(0, moveList.size() - 1);
             Move move = moveList[dis(gen)];
-
             board.makeMove(move);
         }
 
@@ -77,11 +74,11 @@ void generate(int threadId, std::ofstream &outputFile) {
             continue;
         }
 
+        // Temporary storage for the current game
+        std::vector<std::pair<std::string, int> > currentGameData;
         std::string resultString = "none";
 
-        int gameLength = 0;
-
-        // Play out a game for a maximum of 500 moves
+        // Play out the game
         for (int i = 0; i < 500; i++) {
             if (auto [fst, snd] = board.isGameOver(); snd != GameResult::NONE) {
                 if (snd == GameResult::DRAW) resultString = "0.5";
@@ -93,7 +90,6 @@ void generate(int threadId, std::ofstream &outputFile) {
             search->iterativeDeepening(board, params);
             Move bestMove = search->rootBestMove;
 
-            // Skip noisy positions to generate cleaner data
             if (bestMove.typeOf() == Move::PROMOTION || board.inCheck() || board.isCapture(bestMove) || std::abs(
                     search->currentScore) >= 10000) {
                 board.makeMove(bestMove);
@@ -101,33 +97,34 @@ void generate(int threadId, std::ofstream &outputFile) {
             }
 
             int score = board.sideToMove() == Color::WHITE ? search->currentScore : -search->currentScore;
-            outputLines.push_back(board.getFen() + " | " + std::to_string(score) + " | ");
-            positionCount++;
-            gameLength++;
-            ++totalPositionsGenerated;
+
+            // Store FEN and score in the temporary container
+            currentGameData.emplace_back(board.getFen(), score);
 
             board.makeMove(bestMove);
         }
 
-        assert(resultString != "none");
-
-        for (int i = 0; i < gameLength; i++) {
-            outputLines[i].append(resultString);
+        // Discard incomplete games
+        if (resultString == "none") {
+            continue;
         }
 
-        if (positionCount >= 5000) {
+        // Append the result
+        for (const auto &data: currentGameData) {
+            writeBuffer.push_back(data.first + " | " + std::to_string(data.second) + " | " + resultString);
+        }
+        totalPositionsGenerated += currentGameData.size();
 
-            // Lock the mutex only when ready to write the data for the entire game.
-            if (!outputLines.empty()) {
-                std::lock_guard guard(outputFileMutex);
-                for (const auto &line : outputLines) {
-                    outputFile << line << "\n";
-                }
+        // Check if the persistent buffer is full enough to write
+        if (writeBuffer.size() >= 5000) {
+            std::lock_guard guard(outputFileMutex);
+            for (const auto &line: writeBuffer) {
+                outputFile << line << "\n";
             }
-
             outputFile.flush();
-            outputLines.clear();
-            positionCount = 0;
+
+            // Clear the buffer for the next batch
+            writeBuffer.clear();
         }
     }
 }

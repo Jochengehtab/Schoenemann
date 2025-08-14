@@ -36,10 +36,10 @@ public:
     void reset();
 
     [[nodiscard]]
-    bool shouldStopSoft(const std::chrono::steady_clock::time_point& start) const noexcept;
+    bool shouldStopSoft(const std::chrono::steady_clock::time_point &start) const noexcept;
 
     [[nodiscard]]
-    bool shouldStopID(const std::chrono::steady_clock::time_point& start) const noexcept;
+    bool shouldStopID(const std::chrono::steady_clock::time_point &start) const noexcept;
 
     int timeLeft = 0;
     int increment = 0;
@@ -48,10 +48,10 @@ public:
     std::chrono::milliseconds hardLimit{0};
     std::chrono::milliseconds softLimit{0};
     bool isInfiniteSearch = false;
+
 private:
     std::uint16_t bestMoveStabilityCount = 0;
     std::uint16_t bestEvalStabilityCount = 0;
-
 };
 
 

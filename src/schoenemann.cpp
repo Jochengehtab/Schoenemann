@@ -131,15 +131,12 @@ int main(int argc, char *argv[]) {
                 is >> token;
 #ifdef DO_TUNING
                 EngineParameter *param = findEngineParameterByName(token);
-                if (param != nullptr)
-                {
+                if (param != nullptr) {
                     is >> token;
-                    if (token == "value")
-                    {
+                    if (token == "value") {
                         is >> token;
                         param->value = std::stoi(token);
-                        if (param->name == "lmrBase" || param->name == "lmrDivisor")
-                        {
+                        if (param->name == "lmrBase" || param->name == "lmrDivisor") {
                             search->initLMR();
                         }
                     }
@@ -159,7 +156,6 @@ int main(int argc, char *argv[]) {
             stopSearch();
             Helper::handleSetPosition(board, is, token);
         } else if (token == "go") {
-
             // Stop search
             stopSearch();
             search->shouldStop = false;
@@ -199,15 +195,17 @@ int main(int argc, char *argv[]) {
             auto startTime = std::chrono::steady_clock::now();
             while (true) {
                 std::this_thread::sleep_for(std::chrono::seconds(10));
-                auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - startTime).count();
+                auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(
+                    std::chrono::steady_clock::now() - startTime).count();
                 if (elapsedTime > 0) {
                     double pps = static_cast<double>(totalPositionsGenerated) / elapsedTime;
-                    std::cout << "Generated: " << totalPositionsGenerated << " positions | PPS: " << static_cast<int>(pps) << std::endl;
+                    std::cout << "Generated: " << totalPositionsGenerated << " positions | PPS: " << static_cast<int>(
+                        pps) << std::endl;
                 }
             }
 
             // The program will run indefinitely; this join part is for graceful shutdown logic
-            for (std::thread &t : threads) {
+            for (std::thread &t: threads) {
                 if (t.joinable()) {
                     t.join();
                 }
@@ -223,8 +221,7 @@ int main(int argc, char *argv[]) {
             std::cout << engineParameterToSpsaInput() << std::endl;
         } else if (token == "stop") {
             search->shouldStop = true;
-        }
-        else {
+        } else {
             std::cout << "No valid command: '" << token << "'!" << std::endl;
         }
     } while (token != "quit");

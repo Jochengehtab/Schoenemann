@@ -29,7 +29,7 @@
 #include "utils.h"
 #include "incbin.h"
 
-INCBIN_EXTERN(network);
+INCBIN_EXTERN (network);
 
 class Network {
     struct {
@@ -47,7 +47,7 @@ public:
         // Open the NNUE file with the given path
         FILE *nn;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-            fopen_s(&nn, EVALFILE, "rb");
+        fopen_s(&nn, EVALFILE, "rb");
 #else
         nn = fopen(EVALFILE, "rb");
 #endif
