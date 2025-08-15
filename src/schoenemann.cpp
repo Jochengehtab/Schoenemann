@@ -170,11 +170,9 @@ int main(int argc, char *argv[]) {
             std::cout << board.getFen() << std::endl;
         } else if (token == "datagen") {
             // Determine the optimal number of threads to use (e.g., number of CPU cores)
-            unsigned int num_threads = std::thread::hardware_concurrency();
-            if (num_threads == 0) num_threads = 4; // Default to 4 threads if detection fails
-
             // TODO Set for testing to 1 do not change until done
-            num_threads = 1;
+            int num_threads = 2;
+            std::uint64_t positionAmount = 0;
 
             std::cout << "Starting datagen with " << num_threads << " threads." << std::endl;
 
@@ -186,14 +184,14 @@ int main(int argc, char *argv[]) {
             }
 
             std::vector<std::thread> threads;
-            for (unsigned int i = 0; i < num_threads; ++i) {
+            for (int i = 0; i < num_threads; ++i) {
                 // Launch each thread to run the 'generate' function
-                threads.emplace_back(generate, i, std::ref(outputFile));
+                threads.emplace_back(generate, i, std::ref(outputFile), positionAmount);
             }
 
             // Periodically print statistics from the main thread
             auto startTime = std::chrono::steady_clock::now();
-            while (true) {
+            while (totalPositionsGenerated < positionAmount) {
                 std::this_thread::sleep_for(std::chrono::seconds(10));
                 auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(
                     std::chrono::steady_clock::now() - startTime).count();

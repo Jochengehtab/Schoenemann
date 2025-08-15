@@ -34,7 +34,7 @@
 extern std::mutex outputFileMutex;
 extern std::atomic<std::uint64_t> totalPositionsGenerated;
 
-void generate(int threadId, std::ofstream &outputFile) {
+void generate(int threadId, std::ofstream &outputFile, std::uint64_t positionAmount) {
     tt transpositionTable(16);
     TimeManagement timeManagement;
     Network net;
@@ -54,7 +54,7 @@ void generate(int threadId, std::ofstream &outputFile) {
     // Pre-allocate memory
     writeBuffer.reserve(5120);
 
-    while (true) {
+    while (totalPositionsGenerated < positionAmount) {
         board.setFen(STARTPOS);
         bool exitEarly = false;
 
@@ -86,7 +86,7 @@ void generate(int threadId, std::ofstream &outputFile) {
                 break;
             }
 
-            search->nodeLimit = 1000;
+            search->nodeLimit = 5000;
             search->iterativeDeepening(board, params);
             Move bestMove = search->rootBestMove;
 
@@ -110,8 +110,13 @@ void generate(int threadId, std::ofstream &outputFile) {
         }
 
         // Append the result
-        for (const auto &data: currentGameData) {
-            writeBuffer.push_back(data.first + " | " + std::to_string(data.second) + " | " + resultString);
+        for (const auto &[fst, snd]: currentGameData) {
+            std::string line = fst;
+            line.append(" | ");
+            line.append(std::to_string(snd));
+            line.append(" | ");
+            line.append(resultString);
+            writeBuffer.push_back(line);
         }
         totalPositionsGenerated += currentGameData.size();
 

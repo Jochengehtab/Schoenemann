@@ -20,8 +20,9 @@
 #ifndef DATAGEN_H
 #define DATAGEN_H
 
+#include <cstdint>
 #include <fstream>
 
-void generate(int threadId, std::ofstream &outputFile);
+void generate(int threadId, std::ofstream &outputFile, std::uint64_t positionAmount);
 
 #endif
