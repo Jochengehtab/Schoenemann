@@ -132,4 +132,14 @@ void generate(int threadId, std::ofstream &outputFile, std::uint64_t positionAmo
             writeBuffer.clear();
         }
     }
+
+    // After the loop, write any remaining data in the buffer.
+    if (!writeBuffer.empty()) {
+        std::lock_guard guard(outputFileMutex);
+        for (const auto& line : writeBuffer) {
+            outputFile << line << "\n";
+        }
+        outputFile.flush();
+        writeBuffer.clear();
+    }
 }

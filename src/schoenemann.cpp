@@ -26,6 +26,7 @@
 #include <fstream>
 #include <mutex>
 #include <atomic>
+#include <iomanip>
 
 #include "consts.h"
 #include "helper.h"
@@ -169,12 +170,29 @@ int main(int argc, char *argv[]) {
         } else if (token == "fen") {
             std::cout << board.getFen() << std::endl;
         } else if (token == "datagen") {
-            // Determine the optimal number of threads to use (e.g., number of CPU cores)
-            // TODO Set for testing to 1 do not change until done
-            int num_threads = 2;
-            std::uint64_t positionAmount = 0;
+            int numThreads;
+            std::uint64_t positionAmount;
 
-            std::cout << "Starting datagen with " << num_threads << " threads." << std::endl;
+            std::cout << "Enter the number of threads to use (press Enter to use half of the available threads): ";
+            std::string threadInput;
+            std::getline(std::cin, threadInput);
+
+            if (threadInput.empty()) {
+                numThreads = std::max(1u, std::thread::hardware_concurrency() / 2);
+            } else {
+                try {
+                    numThreads = std::stoi(threadInput);
+                } catch ([[maybe_unused]] const std::invalid_argument& ia) {
+                    std::cerr << "Invalid number of threads. Using half of the available threads." << std::endl;
+                    numThreads = std::max(1u, std::thread::hardware_concurrency() / 2);
+                }
+            }
+
+            std::cout << "Enter the number of positions to generate: ";
+            std::cin >> positionAmount;
+            // Consume the rest of the line
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Starting datagen with " << numThreads << " threads." << std::endl;
 
             // Open the output file once in append mode
             std::ofstream outputFile("output.txt", std::ios::app);
@@ -184,7 +202,7 @@ int main(int argc, char *argv[]) {
             }
 
             std::vector<std::thread> threads;
-            for (int i = 0; i < num_threads; ++i) {
+            for (int i = 0; i < numThreads; ++i) {
                 // Launch each thread to run the 'generate' function
                 threads.emplace_back(generate, i, std::ref(outputFile), positionAmount);
             }
@@ -192,15 +210,37 @@ int main(int argc, char *argv[]) {
             // Periodically print statistics from the main thread
             auto startTime = std::chrono::steady_clock::now();
             while (totalPositionsGenerated < positionAmount) {
-                std::this_thread::sleep_for(std::chrono::seconds(10));
+                std::this_thread::sleep_for(std::chrono::seconds(1));
                 auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(
                     std::chrono::steady_clock::now() - startTime).count();
                 if (elapsedTime > 0) {
-                    double pps = static_cast<double>(totalPositionsGenerated) / elapsedTime;
-                    std::cout << "Generated: " << totalPositionsGenerated << " positions | PPS: " << static_cast<int>(
-                        pps) << std::endl;
+                    // Use .load() for safe reading of atomic variable
+                    auto currentPositions = totalPositionsGenerated.load();
+                    double pps = static_cast<double>(currentPositions) / elapsedTime;
+
+                    // Ensure ETA is never negative
+                    double eta = (pps > 0 && currentPositions < positionAmount)
+                                 ? (positionAmount - currentPositions) / pps
+                                 : 0.0;
+
+                    // Cap displayed progress at 100%
+                    double progress = std::min(100.0, static_cast<double>(currentPositions) / positionAmount * 100.0);
+
+                    std::cout << "\r" << std::fixed << std::setprecision(2)
+                              << "Progress: " << progress << "% | "
+                              << "Positions: " << currentPositions << "/" << positionAmount << " | "
+                              << "PPS: " << static_cast<int>(pps) << " | "
+                              << "ETA: " << static_cast<int>(eta) << "s   " << std::flush;
                 }
             }
+
+            // Print the progress bar
+            std::cout << "\r" << std::fixed << std::setprecision(2)
+                      << "Progress: " << 100.00 << "% | "
+                      << "Positions: " << positionAmount << "/" << positionAmount << " | "
+                      << "PPS: " << 0 << " | "
+                      << "ETA: " << 0 << "s   " << std::endl;
+
 
             // The program will run indefinitely; this join part is for graceful shutdown logic
             for (std::thread &t: threads) {
