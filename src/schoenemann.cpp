@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
             } else {
                 try {
                     numThreads = std::stoi(threadInput);
-                } catch ([[maybe_unused]] const std::invalid_argument& ia) {
+                } catch ([[maybe_unused]] const std::invalid_argument &ia) {
                     std::cerr << "Invalid number of threads. Using half of the available threads." << std::endl;
                     numThreads = std::max(1u, std::thread::hardware_concurrency() / 2);
                 }
@@ -220,26 +220,26 @@ int main(int argc, char *argv[]) {
 
                     // Ensure ETA is never negative
                     double eta = (pps > 0 && currentPositions < positionAmount)
-                                 ? (positionAmount - currentPositions) / pps
-                                 : 0.0;
+                                     ? (positionAmount - currentPositions) / pps
+                                     : 0.0;
 
                     // Cap displayed progress at 100%
                     double progress = std::min(100.0, static_cast<double>(currentPositions) / positionAmount * 100.0);
 
                     std::cout << "\r" << std::fixed << std::setprecision(2)
-                              << "Progress: " << progress << "% | "
-                              << "Positions: " << currentPositions << "/" << positionAmount << " | "
-                              << "PPS: " << static_cast<int>(pps) << " | "
-                              << "ETA: " << static_cast<int>(eta) << "s   " << std::flush;
+                            << "Progress: " << progress << "% | "
+                            << "Positions: " << currentPositions << "/" << positionAmount << " | "
+                            << "PPS: " << static_cast<int>(pps) << " | "
+                            << "ETA: " << static_cast<int>(eta) << "s   " << std::flush;
                 }
             }
 
             // Print the progress bar
             std::cout << "\r" << std::fixed << std::setprecision(2)
-                      << "Progress: " << 100.00 << "% | "
-                      << "Positions: " << positionAmount << "/" << positionAmount << " | "
-                      << "PPS: " << 0 << " | "
-                      << "ETA: " << 0 << "s   " << std::endl;
+                    << "Progress: " << 100.00 << "% | "
+                    << "Positions: " << positionAmount << "/" << positionAmount << " | "
+                    << "PPS: " << 0 << " | "
+                    << "ETA: " << 0 << "s   " << std::endl;
 
 
             // The program will run indefinitely; this join part is for graceful shutdown logic
