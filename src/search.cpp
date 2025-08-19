@@ -250,6 +250,8 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                 return singularBeta;
             } else if (hashedScore >= beta) {
                 extensions -= 1;
+            } else if (cutNode) {
+                extensions -= 1;
             }
         }
 
