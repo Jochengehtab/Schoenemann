@@ -218,7 +218,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             // We look at a move if it returns a negative result form SEE.
             // That means when the result is positive the opponent is winning the exchange on
             // the target square of the move. If the move is not a capture then we make a bigger cutoff.
-            if (!pvNode && depth < 7 && !SEE::see(board, move, isQuiet ? seeQuiet : seeNonQuiet)) {
+            if (!pvNode && depth < 6 && !SEE::see(board, move, isQuiet ? seeQuiet : seeNonQuiet)) {
                 continue;
             }
         }
