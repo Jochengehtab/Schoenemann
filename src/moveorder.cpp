@@ -61,6 +61,7 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
                 }
                 scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
             }
+            scores[i] -= history->getRFPHistory(board.hash()) * 100;
         }
     }
 }

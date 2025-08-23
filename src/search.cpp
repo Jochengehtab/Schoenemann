@@ -127,6 +127,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         // By tweaking the return value with beta, we try to adjust it more to the window.
         // As we do this, we make the value more inaccurate, but we are potentially adjusting
         // it more to our window which can probably produce a fail high
+
+
+        history.updateRFPHistory(board.hash(), staticEval);
         return (staticEval + beta) / 2;
     }
 
