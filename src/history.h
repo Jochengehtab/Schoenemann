@@ -25,7 +25,7 @@ class History {
     int quietHistory[2][7][64] = {};
     int continuationHistory[6][64][6][64] = {};
     int pawnCorrectionHistory[2][16384] = {};
-    int rfpHistory[65536] = {};
+    int rfpHistory[2][65536] = {};
 
 private:
     static std::uint64_t getPieceKey(PieceType piece, const Board &board);
@@ -36,12 +36,12 @@ public:
     [[nodiscard]] int getQuietHistory(const Board &board, Move move) const;
 
     int getContinuationHistory(PieceType piece, Move move, int ply, const SearchStack *stack) const;
-    int getRFPHistory(std::uint64_t key) const;
+    int getRFPHistory(std::uint64_t key, Color color) const;
 
     int correctEval(int rawEval, const Board &board) const;
 
     void updateQuietHistory(const Board &board, Move move, int bonus);
-    void updateRFPHistory(std::uint64_t key, int bonus);
+    void updateRFPHistory(std::uint64_t key, Color color, int bonus);
 
     void updatePawnCorrectionHistory(int bonus, const Board &board, int div);
 

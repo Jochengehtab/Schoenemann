@@ -129,7 +129,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         // it more to our window which can probably produce a fail high
 
 
-        history.updateRFPHistory(board.hash(), staticEval);
+        history.updateRFPHistory(board.hash(), board.sideToMove(), staticEval);
         return (staticEval + beta) / 2;
     }
 

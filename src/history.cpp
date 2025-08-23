@@ -41,8 +41,8 @@ void History::updateQuietHistory(const Board &board, const Move move, const int 
             bonus - getQuietHistory(board, move) * std::abs(bonus) / quietHistoryDiv;
 }
 
-void History::updateRFPHistory(const std::uint64_t key, const int bonus) {
-    rfpHistory[static_cast<std::uint16_t>(key)] = bonus;
+void History::updateRFPHistory(const std::uint64_t key,Color color, const int bonus) {
+    rfpHistory[color][static_cast<std::uint16_t>(key)] = bonus;
 }
 
 int History::getContinuationHistory(PieceType piece, const Move move, int ply, const SearchStack *stack) const {
@@ -68,8 +68,8 @@ int History::getContinuationHistory(PieceType piece, const Move move, int ply, c
     return score;
 }
 
-int History::getRFPHistory(const std::uint64_t key) const {
-    return rfpHistory[static_cast<std::uint16_t>(key)];
+int History::getRFPHistory(const std::uint64_t key, Color color) const {
+    return rfpHistory[color][static_cast<std::uint16_t>(key)];
 }
 
 void History::updateContinuationHistory(const PieceType piece, const Move move, const int bonus, const int ply,
