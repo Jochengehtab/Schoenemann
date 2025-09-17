@@ -3,10 +3,10 @@
 ---
 
 Reverse Futility Pruning is a pruning technique that is used to prune branches that are too good for us. The opponent will therefore avoid these branches. This is done by using the upper bound of our search (beta) and comparing it to our static evaluation of our position. If the static evaluation is greater than or equal to beta (or, in other words, caused a fail high), then we prune the branch.
+
 ---
 
 Example code (taken from Schoenemann):
-
 
 ```c++
 
@@ -34,7 +34,7 @@ Let's visualize this with an example. We assume that our static evaluation has t
 
 ---
 
-![](resources/finalValue.png)
+![](../resources/initialWindow.png)
 
 ---
 
@@ -42,7 +42,7 @@ So now we add up the static evaluation and beta. This leads to the following res
 
 ---
 
-!Static eval and beta
+![](../resources/staticEvalPlusBeta.png)
 
 ---
 
@@ -50,7 +50,7 @@ Now finally, we divide by two to get our final return value.
 
 ---
 
-!Final Value
+![](../resources/finalValue.png)
 
 ---
 
