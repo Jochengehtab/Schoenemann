@@ -34,7 +34,7 @@ Let's visualize this with an example. We assume that our static evaluation has t
 
 ---
 
-!Initial Window
+![](resources/finalValue.png)
 
 ---
 
