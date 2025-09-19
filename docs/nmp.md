@@ -42,7 +42,7 @@ We have the following formula for increasing our depth reduction:
 
 which visualized looks like this:
 
-![](nmpDepthScaling.png)
+![](../resources/nmpDepthScaling.png)
 
 
 
