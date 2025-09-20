@@ -664,8 +664,8 @@ void Search::initLMR() {
 }
 
 void Search::initNMPReduction() {
-    const double nmpBase = 35 / 100.0;
-    const double nmpDivisor = 100 / 100.0;
+    const double nmpBase = 50 / 100.0;
+    const double nmpDivisor = 300 / 100.0;
     for (int eval = 0; eval < EVAL_MATE; eval++) {
         for (int depth = 1; depth < MAX_MOVES; depth++) {
             nmpDepthTable[eval][depth] = static_cast<std::uint8_t>(std::clamp(
