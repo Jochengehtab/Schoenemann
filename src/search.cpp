@@ -159,7 +159,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         stack[ply].previousMove = Move::NULL_MOVE;
 
         board.makeNullMove();
-        const int score = -pvs(-beta, -alpha, depth - nmpDepthReduction, ply + 1, board, !cutNode);
+
+        int newDepth = nmpDepthTable[std::abs(staticEval)][depth];
+        const int score = -pvs(-beta, -alpha, depth - newDepth, ply + 1, board, !cutNode);
         board.unmakeNullMove();
 
         if (score >= beta) {
@@ -657,6 +659,17 @@ void Search::initLMR() {
         for (int moveCount = 1; moveCount < MAX_MOVES; moveCount++) {
             reductions[depth][moveCount] = static_cast<std::uint8_t>(std::clamp(
                 lmrBaseFinal + std::log(depth) * std::log(moveCount) / lmrDivisorFinal, 0.0, 255.0));
+        }
+    }
+}
+
+void Search::initNMPReduction() {
+    const double nmpBase = 50 / 100.0;
+    const double nmpDivisor = 200 / 100.0;
+    for (int eval = 0; eval < EVAL_MATE; eval++) {
+        for (int depth = 1; depth < MAX_MOVES; depth++) {
+            nmpDepthTable[eval][depth] = static_cast<std::uint8_t>(std::clamp(
+                nmpBase + std::log(eval) * std::log(depth) / nmpDivisor, 0.0, 255.0));
         }
     }
 }

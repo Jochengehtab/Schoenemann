@@ -58,6 +58,7 @@ public:
     static constexpr std::uint64_t NO_NODE_LIMIT = std::numeric_limits<std::uint64_t>::max();
 
     std::uint8_t reductions[MAX_PLY][MAX_MOVES];
+    std::uint8_t nmpDepthTable[EVAL_MATE][MAX_PLY];
     SearchStack stack[MAX_PLY];
 
     static int scaleOutput(int rawEval, const Board &board);
@@ -71,6 +72,7 @@ public:
     void updatePv(int ply, const Move &move);
     void iterativeDeepening(Board &board, const SearchParams &params);
     void initLMR();
+    void initNMPReduction();
     void resetHistory();
 
 private:
