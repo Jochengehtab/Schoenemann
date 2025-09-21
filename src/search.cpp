@@ -287,6 +287,11 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
                 depthReduction += cutNode;
 
+                // Reduce more if we are not improving
+                if (!improving) {
+                    depthReduction += 1;
+                }
+
                 depthReduction = std::clamp(depthReduction, 0, depth - 1);
             }
 
