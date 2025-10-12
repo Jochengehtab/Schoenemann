@@ -53,14 +53,11 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
             scores[i] = killerScore;
         } else {
             scores[i] += history->getQuietHistory(board, move);
-            if ( move != Move::PROMOTION && move != Move::CASTLING && move != Move::ENPASSANT) {
-                if (board.at(move.from()).type() == PieceType::NONE) {
-                    std::cout << uci::moveToUci(move) << std::endl;
-                    std::cout << board << std::endl;
-                    std::cout << board.getFen() << std::endl;
-                }
+            if (move != Move::PROMOTION && move != Move::CASTLING && move != Move::ENPASSANT) {
                 scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
             }
+
+            scores[i] += history->getThreatHistory(move, board.at(move.from()).type(), board.sideToMove());
         }
     }
 }

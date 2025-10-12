@@ -64,6 +64,20 @@ int History::getContinuationHistory(PieceType piece, const Move move, int ply, c
     return score;
 }
 
+
+void History::updateThreatHistory(const Move move, const PieceType pieceType, const Color color, const int score) {
+    assert(pieceType != PieceType::NONE);
+    assert(color != Color::NONE);
+    nmpThreatHistory[color][pieceType][move.to().index()] = score;
+}
+
+int History::getThreatHistory(const Move move, const PieceType pieceType, const Color color) const {
+    assert(pieceType != PieceType::NONE);
+    assert(color != Color::NONE);
+    return nmpThreatHistory[color][pieceType][move.to().index()];
+}
+
+
 void History::updateContinuationHistory(const PieceType piece, const Move move, const int bonus, const int ply,
                                         const SearchStack *stack) {
     assert(piece != PieceType::NONE);
