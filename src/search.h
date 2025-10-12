@@ -65,7 +65,7 @@ public:
     [[nodiscard]] std::string scoreToUci() const;
     [[nodiscard]] int evaluate(const Board &board) const;
 
-    int pvs(int alpha, int beta, int depth, int ply, Board &board, bool cutNode);
+    int pvs(int alpha, int beta, int depth, int ply, Board &board, bool cutNode, bool nmpSearch);
     int qs(int alpha, int beta, Board &board, int ply);
 
     void updatePv(int ply, const Move &move);

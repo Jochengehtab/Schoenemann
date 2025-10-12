@@ -33,6 +33,7 @@ constexpr int killerScore = 300000;
 constexpr int promotion = 200000;
 constexpr int goodCapture = 400000;
 constexpr int badCapture = -500000;
+constexpr int nmpMoveBonus = 200000;
 
 enum Bound : std::uint8_t {
     EXACT = 0,

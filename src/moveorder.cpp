@@ -51,6 +51,8 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
             scores[i] = captureScore;
         } else if (move == killer && killer != Move::NULL_MOVE) {
             scores[i] = killerScore;
+        } else if (stack[ply].nmpMove == move) {
+            scores[i] = nmpMoveBonus;
         } else {
             scores[i] += history->getQuietHistory(board, move);
             if ( move != Move::PROMOTION && move != Move::CASTLING && move != Move::ENPASSANT) {
