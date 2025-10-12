@@ -367,9 +367,11 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     history.updateContinuationHistory(board.at(move.from()).type(), move, continuationHistoryBonus, ply,
                                                       stack);
 
-                    stack[ply].nmpFailHighMove = move;
+                    if (stack[ply].failHighMargin != Move::NULL_MOVE) {
+                        stack[ply].nmpFailHighMove = move;
+                    }
 
-                    const int nmpMalus = std::min(5 + 15 * depth, 250);
+                    const int nmpMalus = std::min(15 + 170 * depth, 1900);
 
                     // History malus
                     // Since we don't want the history scores to be over saturated, and we want to
