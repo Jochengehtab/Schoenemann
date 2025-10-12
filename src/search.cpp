@@ -157,6 +157,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         const int nmpDepthReduction = nmpBase + depth / nmpDiv;
         stack[ply].previousMovedPiece = PieceType::NONE;
         stack[ply].previousMove = Move::NULL_MOVE;
+        stack[ply].nmpMove = Move::NULL_MOVE;
 
         board.makeNullMove();
         const int score = -pvs(-beta, -beta + 1, depth - nmpDepthReduction, ply + 1, board, !cutNode);
@@ -344,6 +345,10 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     // If the move is quiet but still causes a fail high which is very unusual,
                     // we store the move and later rank it high up in the move ordering
                     stack[ply].killerMove = move;
+
+                    if (stack[ply].nmpMove != Move::NULL_MOVE) {
+                        stack[ply].nmpMove = move;
+                    }
 
                     // Quiet History
                     const int quietHistoryBonus = std::min(qhBB + qhBM * depth, static_cast<int>(qhBC));
