@@ -30,7 +30,6 @@ constexpr int benchDepth = 14;
 
 constexpr int hashMoveScore = 500000;
 constexpr int killerScore = 300000;
-constexpr int promotion = 200000;
 constexpr int goodCapture = 400000;
 constexpr int badCapture = -500000;
 

@@ -39,7 +39,9 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
                 continue;
             }
         }
-        if (isCapture) {
+        if (move == killer && killer != Move::NULL_MOVE) {
+            scores[i] = killerScore;
+        } else if (isCapture) {
             const PieceType captured = board.at<PieceType>(move.to());
             const PieceType capturing = board.at<PieceType>(move.from());
 
@@ -49,18 +51,9 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
             captureScore += mvaLvvMultiplyer * (*PIECE_VALUES[captured]) - (*PIECE_VALUES[capturing]);
 
             scores[i] = captureScore;
-        } else if (move == killer && killer != Move::NULL_MOVE) {
-            scores[i] = killerScore;
         } else {
             scores[i] += history->getQuietHistory(board, move);
-            if ( move != Move::PROMOTION && move != Move::CASTLING && move != Move::ENPASSANT) {
-                if (board.at(move.from()).type() == PieceType::NONE) {
-                    std::cout << uci::moveToUci(move) << std::endl;
-                    std::cout << board << std::endl;
-                    std::cout << board.getFen() << std::endl;
-                }
-                scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
-            }
+            scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
         }
     }
 }
