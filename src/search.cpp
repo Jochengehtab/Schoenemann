@@ -369,7 +369,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
                     stack[ply].nmpFailHighMove = move;
 
-                    const int nmpMalus = std::min(15 + 170 * depth, 1900);
+                    const int nmpMalus = std::min(5 + 15 * depth, 250);
 
                     // History malus
                     // Since we don't want the history scores to be over saturated, and we want to
