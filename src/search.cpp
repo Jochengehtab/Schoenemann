@@ -238,7 +238,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             } else if (singularBeta >= beta) {
                 return singularBeta;
             } else if (hashedScore >= beta) {
-                extensions -= 1;
+                extensions -= 3;
             }
         }
 
