@@ -201,8 +201,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
             // Futility Pruning
             // We skip quiet moves that have less potential to raise alpha
-            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth + moveHistory / 32 < alpha && depth < 6) {
-                
+            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth + moveHistory / 32 < alpha && depth < 6) {                
                 continue;
             }
 
