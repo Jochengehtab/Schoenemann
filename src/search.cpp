@@ -281,6 +281,8 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                 // so we increase the depth reduction
                 depthReduction += cutNode;
 
+                depthReduction -= inCheck;
+
                 // Finally clamp the depth reduction
                 depthReduction = std::clamp(depthReduction, 0, depth - 1);
             }
