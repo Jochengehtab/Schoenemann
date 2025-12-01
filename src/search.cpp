@@ -188,6 +188,8 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         // We consider a move quiet if it isn't a capture or a promotion
         const bool isQuiet = !board.isCapture(move) && move.typeOf() != Move::PROMOTION;
 
+        int moveHistory = isQuiet ? history.getQuietHistory(board, move) : 0;
+
         // Move Pruning
         if (!root && bestScore > -EVAL_MATE_IN_MAX_PLY) {
             // Late Move Pruning
@@ -199,7 +201,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
             // Futility Pruning
             // We skip quiet moves that have less potential to raise alpha
-            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth < alpha && depth < 6) {
+            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth + moveHistory / 32 < alpha && depth < 6) {                
                 continue;
             }
 
