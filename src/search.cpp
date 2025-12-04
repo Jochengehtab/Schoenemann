@@ -134,7 +134,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     // above beta, we can assume that the node will fail high (beta cutoff) and prune it
     // For more information please look at docs/rfp.md
     if (!isSingularSearch && !inCheck && !pvNode && depth < 9 && ttAdjustedEval - rfpSub * (depth - improving) >= beta) {
-        return (staticEval + beta) / 2;
+        return (ttAdjustedEval + beta) / 2;
     }
 
     // Razoring
