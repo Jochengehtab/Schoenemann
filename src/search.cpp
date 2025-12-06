@@ -126,7 +126,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
     int ttAdjustedEval = staticEval;
 
-    if (!isSingularSearch && hashedMove != Move::NULL_MOVE && !inCheck && ((hashedType == Bound::UPPER && hashedScore <= staticEval) || (hashedType == Bound::LOWER && hashedScore >= staticEval) ||  hashedType == EXACT)) {
+    if (!isSingularSearch && hashedMove != Move::NULL_MOVE && !inCheck && ((hashedType == UPPER && hashedScore <= staticEval) || (hashedType == LOWER && hashedScore >= staticEval) ||  hashedType == EXACT)) {
         ttAdjustedEval = hashedScore;
     }
 
