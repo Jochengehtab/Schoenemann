@@ -151,7 +151,8 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     // If the search returns a score above beta we can cut that off.
     // For more information please look at docs/nmp.md
     if (!isSingularSearch && !pvNode && depth > 3 && !inCheck && ttAdjustedEval >= beta) {
-        const int nmpDepthReduction = nmpBase + depth / nmpDiv;
+        int nmpDepthReduction = nmpBase + depth / nmpDiv;
+        nmpDepthReduction += std::min((ttAdjustedEval - beta) / 400, 3);
         stack[ply].previousMovedPiece = PieceType::NONE;
         stack[ply].previousMove = Move::NULL_MOVE;
 
