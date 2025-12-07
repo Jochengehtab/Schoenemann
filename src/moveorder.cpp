@@ -54,11 +54,6 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
         } else {
             scores[i] += history->getQuietHistory(board, move);
             if ( move != Move::PROMOTION && move != Move::CASTLING && move != Move::ENPASSANT) {
-                if (board.at(move.from()).type() == PieceType::NONE) {
-                    std::cout << uci::moveToUci(move) << std::endl;
-                    std::cout << board << std::endl;
-                    std::cout << board.getFen() << std::endl;
-                }
                 scores[i] += history->getContinuationHistory(board.at(move.from()).type(), move, ply, stack);
             }
         }

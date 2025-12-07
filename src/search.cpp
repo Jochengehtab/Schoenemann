@@ -288,7 +288,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
                 // Since it is an expected cuteNode we expect to fail high
                 // so we increase the depth reduction
-                depthReduction += cutNode;
+                if (cutNode) {
+                    depthReduction += 2 * (hashedMove == Move::NULL_MOVE);
+                }
 
                 if (ttPv) {
                     depthReduction -= 1;
