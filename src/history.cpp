@@ -27,7 +27,7 @@
 
 DEFINE_PARAM(quietHistoryDiv, 28000, 10000, 50000);
 DEFINE_PARAM(continuationHistoryDiv, 28000, 10000, 50000);
-DEFINE_PARAM(correctionValueDiv, 30, 1, 600);
+DEFINE_PARAM(correctionValueDiv, 60, 1, 600);
 
 int History::getQuietHistory(const Board &board, const Move move) const {
     return quietHistory[board.sideToMove()][board.at(move.from()).type()][move.to().index()];
@@ -112,11 +112,22 @@ void History::updatePawnCorrectionHistory(const int bonus, const Board &board, c
     pawnCorrectionHistory[board.sideToMove()][pawnHash & pawnCorrectionHistorySize - 1] += scaledBonus;
 }
 
+void History::updateMajorCorrectionHistory(const int bonus, const Board &board, const int div) {
+    const std::uint64_t majorHash = getPieceKey(PieceType::QUEEN, board) ^ getPieceKey(PieceType::ROOK, board);
+    // Gravity
+    const int scaledBonus = bonus - majorCorrectionHistory[board.sideToMove()][
+                                majorHash & majorCorrectionHistorySize - 1] * std::abs(bonus) / div;
+    majorCorrectionHistory[board.sideToMove()][majorHash & majorCorrectionHistorySize - 1] += scaledBonus;
+}
+
 int History::correctEval(const int rawEval, const Board &board) const {
     const int pawnEntry = pawnCorrectionHistory[board.sideToMove()][
         getPieceKey(PieceType::PAWN, board) & pawnCorrectionHistorySize - 1];
 
-    const int corrHistoryBonus = pawnEntry;
+    const int majorEntry = pawnCorrectionHistory[board.sideToMove()][
+        (getPieceKey(PieceType::QUEEN, board) ^ getPieceKey(PieceType::ROOK, board)) & pawnCorrectionHistorySize - 1];
+
+    const int corrHistoryBonus = pawnEntry + majorEntry;
 
     return rawEval + corrHistoryBonus / correctionValueDiv;
 }
