@@ -126,7 +126,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
     int ttAdjustedEval = staticEval;
 
-    if (!isSingularSearch && hashedMove != Move::NULL_MOVE && !inCheck && ((hashedType == UPPER && hashedScore <= staticEval) || (hashedType == LOWER && hashedScore >= staticEval) ||  hashedType == EXACT)) {
+    if (!isSingularSearch && hashedMove != Move::NULL_MOVE && !inCheck && (
+            (hashedType == UPPER && hashedScore <= staticEval) || (hashedType == LOWER && hashedScore >= staticEval) ||
+            hashedType == EXACT)) {
         ttAdjustedEval = hashedScore;
     }
 
@@ -169,7 +171,8 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             int value = beta - score;
             stack[ply].failHighMargin = value;
             const int nmpBonus = std::min(30 + 200 * depth, 2000);
-            history.updateThreatHistory(stack[ply].nmpFailHighMove, board.at(stack[ply].nmpFailHighMove.from()).type(), board.sideToMove(),
+            history.updateThreatHistory(stack[ply].nmpFailHighMove, board.at(stack[ply].nmpFailHighMove.from()).type(),
+                                        board.sideToMove(),
                                         nmpBonus);
         }
     }
@@ -220,7 +223,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
             // Futility Pruning
             // We skip quiet moves that have less potential to raise alpha
-            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth + moveHistory / 32 < alpha && depth < 6) {                
+            if (!inCheck && isQuiet && staticEval + fpAdd + fpMul * depth + moveHistory / 32 < alpha && depth < 6) {
                 continue;
             }
 
@@ -228,7 +231,8 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             // We look at a move if it returns a negative result form SEE.
             // That means when the result is positive the opponent is winning the exchange on
             // the target square of the move. If the move is not a capture then we make a bigger cutoff.
-            if (!pvNode && depth < 4 && !SEE::see(board, move, isQuiet ? seeQuiet - (15 * depth) : seeNonQuiet - (30 * depth))) {
+            if (!pvNode && depth < 4 && !SEE::see(board, move,
+                                                  isQuiet ? seeQuiet - (15 * depth) : seeNonQuiet - (30 * depth))) {
                 continue;
             }
         }
@@ -662,14 +666,14 @@ void Search::iterativeDeepening(Board &board, const SearchParams &params) {
         std::chrono::duration<double, std::milli> elapsed = std::chrono::steady_clock::now() - start;
         if (!params.minimal) {
             std::cout
-                << "info depth " << i
-                << scoreToUci()
-                << " nodes " << nodes
-                << " nps " << static_cast<std::uint64_t>(nodes / (elapsed.count() + 1) * 1000)
-                << " hashfull " << transpositionTable.estimateHashfull()
-                << " time " << static_cast<std::uint64_t>(elapsed.count() + 1)
-                << " pv " << getPVLine()
-                << std::endl;
+                    << "info depth " << i
+                    << scoreToUci()
+                    << " nodes " << nodes
+                    << " nps " << static_cast<std::uint64_t>(nodes / (elapsed.count() + 1) * 1000)
+                    << " hashfull " << transpositionTable.estimateHashfull()
+                    << " time " << static_cast<std::uint64_t>(elapsed.count() + 1)
+                    << " pv " << getPVLine()
+                    << std::endl;
         }
 
         // std::cout << "Time for this move: " << timeForMove << " | Time used: " << static_cast<int>(elapsed.count()) << " | Depth: " << i << " | bestmove: " << bestMove << std::endl;
