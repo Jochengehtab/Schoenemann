@@ -64,6 +64,22 @@ int History::getContinuationHistory(PieceType piece, const Move move, int ply, c
     return score;
 }
 
+void History::updateCaptureHistory(const Board &board, const Move &move, const int bonus) {
+    const int to = move.to().index();
+    const PieceType piece = board.at(move.from()).type();
+    const PieceType capturedPiece = board.at(move.to()).type();
+
+    captureHistory[piece][to][capturedPiece] += bonus - captureHistory[piece][to][capturedPiece] * std::abs(bonus) / captureHistorySize;
+}
+
+int History::getCaptureHistory(const Board &board, const Move &move) const {
+    const int to = move.to().index();
+    const PieceType piece = board.at(move.from()).type();
+    const PieceType capturedPiece = board.at(move.to()).type();
+    return captureHistory[piece][to][capturedPiece];
+}
+
+
 void History::updateContinuationHistory(const PieceType piece, const Move move, const int bonus, const int ply,
                                         const SearchStack *stack) {
     assert(piece != PieceType::NONE);

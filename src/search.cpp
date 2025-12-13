@@ -184,8 +184,10 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
     int bestScore = -EVAL_INFINITE;
     int moveCount = 0;
     int quietMoveCount = 0;
+    int noisyMoveCount = 0;
     Move bestMoveInPVS = Move::NULL_MOVE;
     Move quietMoves[MAX_MOVES] = {};
+    Move noisyMoves[MAX_MOVES] = {};
 
     for (int i = 0; i < moveList.size(); i++) {
         const Move move = MoveOrder::sortByScore(moveList, scoreMoves, i);
@@ -266,6 +268,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         if (isQuiet) {
             quietMoves[quietMoveCount] = move;
             quietMoveCount++;
+        } else {
+            noisyMoves[noisyMoveCount] = move;
+            noisyMoveCount++;
         }
 
         // PVS
@@ -376,6 +381,20 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                         history.updateContinuationHistory(board.at(madeMove.from()).type(), madeMove,
                                                           -continuationHistoryMalus, ply, stack);
                     }
+                } else {
+                    const int captureHistoryBonus = std::min(25 + 100 * depth, static_cast<int>(4096));
+                    history.updateCaptureHistory(board, move, captureHistoryBonus);
+                }
+
+                const int captureHistoryMalus = std::min(25 + 100 * depth, static_cast<int>(4096));
+                // Capture History Malus
+                for (int x = 0; x < noisyMoveCount; x++) {
+
+                    Move madeMove = noisyMoves[x];
+                    if (madeMove == bestMoveInPVS) {
+                        continue;
+                    }
+                    history.updateCaptureHistory(board, madeMove, -captureHistoryMalus);
                 }
                 break;
             }
