@@ -49,6 +49,7 @@ void MoveOrder::orderMoves(const History *history, Movelist &moveList, const Has
             captureScore += mvaLvvMultiplyer * (*PIECE_VALUES[captured]) - (*PIECE_VALUES[capturing]);
 
             scores[i] += captureScore;
+
             scores[i] += history->getCaptureHistory(board, move);
         } else if (move == killer && killer != Move::NULL_MOVE) {
             scores[i] = killerScore;
