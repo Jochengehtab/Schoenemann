@@ -130,7 +130,6 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         ttAdjustedEval = hashedScore;
     }
 
-
     // Reverse Futility Pruning
     // If we subtract a margin from our static evaluation, and it is still far
     // above beta, we can assume that the node will fail high (beta cutoff) and prune it
