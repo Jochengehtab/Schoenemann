@@ -297,7 +297,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                 depthReduction += cutNode;
 
                 if (ttPv) {
-                    depthReduction -= 1;
+                    depthReduction -= 1 + pvNode;
                 }
 
                 // Finally clamp the depth reduction
