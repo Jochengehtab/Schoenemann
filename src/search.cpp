@@ -300,6 +300,10 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     depthReduction -= 1;
                 }
 
+                if (depthReduction >= depth) {
+                    depth = 1;
+                }
+
                 // Finally clamp the depth reduction
                 depthReduction = std::clamp(depthReduction, 0, depth - 1);
             }
