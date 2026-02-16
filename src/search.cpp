@@ -300,19 +300,17 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     depthReduction -= 1;
                 }
 
-
                 bool f = false;
                 if (depthReduction >= depth) {
                     f = true;
                 }
 
-                if (f) {
-                    // Finally clamp the depth reduction
+                // Finally clamp the depth reduction
+                if (f && !pvNode && depth < 9) {
                     depth = 1;
                 } else {
                     depthReduction = std::clamp(depthReduction, 0, depth - 1);
                 }
-
             }
 
             // Since we assumed that our first move was the best we search every other
