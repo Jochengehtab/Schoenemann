@@ -59,7 +59,7 @@ void Helper::transpositionTableTest(const tt &transpositionTable) {
 
 // Print the uci info
 void Helper::uciPrint() {
-    std::cout << "id name Schoenemann" << std::endl
+    std::cout << "id name Schoenemann 0.6.0-dev" << std::endl
             << "option name Hash type spin default 64 min 1 max 4096" << std::endl
             << "option name Threads type spin default 1 min 1 max 1" << std::endl;
 }
@@ -123,7 +123,7 @@ void Helper::handleSetPosition(Board &board, std::istringstream &is, std::string
 
 
 void Helper::handleGo(Search &search, TimeManagement &timeManagement, Board &board,
-                      std::istringstream &is, SearchParams params) {
+                      std::istringstream &is, SearchParams &params) {
 
     // Reset everything for a new search
     params.isInfinite = false;

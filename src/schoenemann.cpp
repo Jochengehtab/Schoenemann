@@ -119,10 +119,10 @@ int main(int argc, char *argv[]) {
             // Clear the transposition table
             transpositionTable.clear();
 
-            // Reset the time mangement
+            // Reset the time management
             timeManagement.reset();
 
-            // Also reset all the historys
+            // Also reset all the history's
             search->resetHistory();
         } else if (token == "setoption") {
             stopSearch();
@@ -260,7 +260,9 @@ int main(int argc, char *argv[]) {
         } else if (token == "stop") {
             search->shouldStop = true;
         } else {
-            std::cout << "No valid command: '" << token << "'!" << std::endl;
+            if (token != "quit") {
+                std::cout << "No valid command: '" << token << "'!" << std::endl;
+            }
         }
     } while (token != "quit");
 
