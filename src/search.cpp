@@ -224,6 +224,14 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             if (!pvNode && depth < 4 && !SEE::see(board, move, isQuiet ? seeQuiet - (15 * depth) : seeNonQuiet - (30 * depth))) {
                 continue;
             }
+
+            // If the move isn't quiet but a qs search presents a score above beta we can skip the move
+            if (!isQuiet && !inCheck && depth > 6) {
+                int s = qs(alpha, beta, board, ply);
+                if (s >= beta) {
+                    continue;
+                }
+            }
         }
 
         int extensions = 0;
