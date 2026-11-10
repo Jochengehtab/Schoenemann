@@ -428,6 +428,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         history.updatePawnCorrectionHistory(bonus, board, 768);
         history.updateMajorCorrectionHistory(bonus, board, 768);
+        history.updateMinorCorrectionHistory(bonus, board, 768);
     }
 
     return bestScore;

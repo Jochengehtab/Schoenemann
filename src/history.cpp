@@ -115,6 +115,17 @@ void History::updateMajorCorrectionHistory(int bonus, const Board &board, int di
 }
 
 
+void History::updateMinorCorrectionHistory(int bonus, const Board &board, int div) {
+    const std::uint64_t minorHash = getPieceKey(PieceType::KNIGHT, board) ^
+                                    getPieceKey(PieceType::BISHOP, board) ^
+                                        getPieceKey(PieceType::KING, board);
+    // Gravity
+    const int scaledBonus = bonus - minorCorrectionHistory[board.sideToMove()][
+                                minorHash & minorCorrectionHistorySize - 1] * std::abs(bonus) / div;
+    minorCorrectionHistory[board.sideToMove()][minorHash & minorCorrectionHistorySize - 1] += scaledBonus;
+}
+
+
 void History::updatePawnCorrectionHistory(const int bonus, const Board &board, const int div) {
     const std::uint64_t pawnHash = getPieceKey(PieceType::PAWN, board);
     // Gravity
@@ -132,10 +143,15 @@ int History::correctEval(const int rawEval, const Board &board) const {
                                 getPieceKey(PieceType::ROOK, board) ^
                                     getPieceKey(PieceType::KING, board)) & majorCorrectionHistorySize - 1];
 
-    const int corrHistoryBonus =  (3 * pawnEntry) + (1 * majorEntry);
+    const int minorEntry = minorCorrectionHistory[board.sideToMove()][
+    (getPieceKey(PieceType::KNIGHT, board) ^
+                                getPieceKey(PieceType::BISHOP, board) ^
+                                    getPieceKey(PieceType::KING, board)) & minorCorrectionHistorySize - 1];
+
+    const int corrHistoryBonus =  (6 * pawnEntry) + (2 * majorEntry) + (1 * minorEntry);
 
 
-    return rawEval + corrHistoryBonus / (correctionValueDiv * 4);
+    return rawEval + corrHistoryBonus / (correctionValueDiv * 9);
 }
 
 std::uint64_t History::getPieceKey(const PieceType piece, const Board &board) {
@@ -153,5 +169,6 @@ void History::resetHistories() {
     std::memset(&continuationHistory, 0, sizeof(continuationHistory));
     std::memset(&pawnCorrectionHistory, 0, sizeof(pawnCorrectionHistory));
     std::memset(&majorCorrectionHistory, 0, sizeof(majorCorrectionHistory));
+    std::memset(&minorCorrectionHistory, 0, sizeof(minorCorrectionHistory));
     std::memset(&captureHistory, 0, sizeof(captureHistory));
 }
