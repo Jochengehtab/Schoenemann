@@ -37,7 +37,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -fsanitize=address,undef
 
 # Eval file definition (source directory)
 set(EVALFILE "quantised.bin" CACHE STRING "Path to evaluation file in source directory")
-add_definitions(-DEVALFILE=\"${EVALFILE}\")
+get_filename_component(EVALFILE_ABSOLUTE "${EVALFILE}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+add_definitions(-DEVALFILE=\"${EVALFILE_ABSOLUTE}\")
 
 # Source files
 set(SOURCES
@@ -64,6 +65,6 @@ target_link_libraries(null PRIVATE Threads::Threads)
 # Copy the evaluation file from parent source directory to build output
 add_custom_command(TARGET null POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/${EVALFILE}
+        "${EVALFILE_ABSOLUTE}"
         $<TARGET_FILE_DIR:null>    # copy next to the executable
 )

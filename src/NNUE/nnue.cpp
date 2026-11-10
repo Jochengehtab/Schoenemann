@@ -1,3 +1,3 @@
 #include "incbin.h"
 
-INCBIN(network, "quantised.bin");
+INCBIN(network, EVALFILE);
