@@ -148,10 +148,10 @@ int History::correctEval(const int rawEval, const Board &board) const {
                                 getPieceKey(PieceType::BISHOP, board) ^
                                     getPieceKey(PieceType::KING, board)) & minorCorrectionHistorySize - 1];
 
-    const int corrHistoryBonus =  (6 * pawnEntry) + (2 * majorEntry) + (1 * minorEntry);
+    const int corrHistoryBonus =  (4 * pawnEntry) + (2 * majorEntry) + (1 * minorEntry);
 
 
-    return rawEval + corrHistoryBonus / (correctionValueDiv * 9);
+    return rawEval + corrHistoryBonus / (correctionValueDiv * 7);
 }
 
 std::uint64_t History::getPieceKey(const PieceType piece, const Board &board) {
