@@ -107,8 +107,7 @@ void History::updateContinuationHistory(const PieceType piece, const Move move, 
 void History::updateMajorCorrectionHistory(int bonus, const Board &board, int div) {
     const std::uint64_t majorHash = getPieceKey(PieceType::QUEEN, board) ^
                                     getPieceKey(PieceType::ROOK, board) ^
-                                        getPieceKey(PieceType::KNIGHT, board) ^
-                                            getPieceKey(PieceType::BISHOP, board);
+                                        getPieceKey(PieceType::KING, board);
     // Gravity
     const int scaledBonus = bonus - majorCorrectionHistory[board.sideToMove()][
                                 majorHash & majorCorrectionHistorySize - 1] * std::abs(bonus) / div;
@@ -131,8 +130,7 @@ int History::correctEval(const int rawEval, const Board &board) const {
     const int majorEntry = majorCorrectionHistory[board.sideToMove()][
     (getPieceKey(PieceType::QUEEN, board) ^
                                 getPieceKey(PieceType::ROOK, board) ^
-                                    getPieceKey(PieceType::KNIGHT, board) ^
-                                        getPieceKey(PieceType::BISHOP, board)) & majorCorrectionHistorySize - 1];
+                                    getPieceKey(PieceType::KING, board)) & majorCorrectionHistorySize - 1];
 
     const int corrHistoryBonus =  (3 * pawnEntry) + (1 * majorEntry);
 

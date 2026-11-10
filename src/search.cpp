@@ -418,7 +418,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                                      rawEval, ttPv);
     }
 
-    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (
+    if (!inCheck && !isSingularSearch && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (
             (flag == EXACT) || (flag == UPPER && bestScore <= staticEval) || (
                 flag == LOWER && bestScore > staticEval))) {
         const int bonus = std::clamp((bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4,
