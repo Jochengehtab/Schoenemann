@@ -29,6 +29,7 @@
 
 DEFINE_PARAM(lmrBase, 80, 50, 105);
 DEFINE_PARAM(lmrDivisor, 250, 200, 280);
+DEFINE_PARAM(correctionHistoryBonusFactor, 96, 1, 300);
 
 int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, bool cutNode) {
     assert(-EVAL_INFINITE <= alpha && alpha < beta && beta <= EVAL_INFINITE);
@@ -418,12 +419,15 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                                      rawEval, ttPv);
     }
 
-    if (!inCheck && (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (
+    if (!inCheck && !isSingularSearch && std::abs(bestScore) < EVAL_MATE_IN_MAX_PLY &&
+        (bestMoveInPVS == Move::NULL_MOVE || !board.isCapture(bestMoveInPVS)) && (
             (flag == EXACT) || (flag == UPPER && bestScore <= staticEval) || (
                 flag == LOWER && bestScore > staticEval))) {
-        const int bonus = std::clamp((bestScore - staticEval) * depth * 180 / 768, -CORRHIST_LIMIT / 4,
-                                     CORRHIST_LIMIT / 4);
+        const int bonus = std::clamp(
+            (bestScore - staticEval) * depth * correctionHistoryBonusFactor / 768,
+            -CORRHIST_LIMIT / 4, CORRHIST_LIMIT / 4);
         history.updatePawnCorrectionHistory(bonus, board, 768);
+        history.updateMajorCorrectionHistory(bonus, board, 768);
     }
 
     return bestScore;
