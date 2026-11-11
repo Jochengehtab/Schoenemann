@@ -300,8 +300,15 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                 // so we increase the depth reduction
                 depthReduction += cutNode;
 
+                // If the current position was at some point our best line we reduce less
+                // the term `hashedScore <= alpha` has the following idea: If the previous score
+                // (the score from the ttPv position) isn't greater than our current alpha the
+                // assumption that this ttPv is useful is not that strong
                 if (ttPv) {
                     depthReduction -= 1;
+                    if (ttHit && hashedScore <= alpha) {
+                        depthReduction += 1;
+                    }
                 }
 
                 if (isCapture) {
