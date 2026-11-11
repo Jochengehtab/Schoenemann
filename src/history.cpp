@@ -69,14 +69,14 @@ void History::updateCaptureHistory(const Board &board, const Move &move, const i
     const PieceType piece = board.at(move.from()).type();
     const PieceType capturedPiece = board.at(move.to()).type();
 
-    captureHistory[piece][to][capturedPiece] += bonus - captureHistory[piece][to][capturedPiece] * std::abs(bonus) / captureHistorySize;
+    captureHistory[board.sideToMove()][piece][to][capturedPiece] += bonus - captureHistory[board.sideToMove()][piece][to][capturedPiece] * std::abs(bonus) / captureHistorySize;
 }
 
 int History::getCaptureHistory(const Board &board, const Move &move) const {
     const int to = move.to().index();
     const PieceType piece = board.at(move.from()).type();
     const PieceType capturedPiece = board.at(move.to()).type();
-    return captureHistory[piece][to][capturedPiece];
+    return captureHistory[board.sideToMove()][piece][to][capturedPiece];
 }
 
 
