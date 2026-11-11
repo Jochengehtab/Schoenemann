@@ -303,7 +303,7 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                 // If the current position was at some point our best line we reduce less
                 // the term `hashedScore <= alpha` has the following idea: If the previous score
                 // (the score form the ttPv position) wasn't able to raise our current alpha the
-                // assumption that this ttPv is usefull is not that strong
+                // assumption that this ttPv is useful is not that strong
                 if (ttPv && hashedScore <= alpha) {
                     depthReduction -= 1;
                 }
