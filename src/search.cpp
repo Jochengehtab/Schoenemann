@@ -260,6 +260,9 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
         stack[ply].previousMovedPiece = board.at(move.from()).type();
         stack[ply].previousMove = move;
 
+        int captureHistoryScore = history.getCaptureHistory(board, move);
+        bool isCapture = board.isCapture(move);
+
         board.makeMove(move);
         moveCount++;
 
@@ -299,6 +302,12 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
 
                 if (ttPv) {
                     depthReduction -= 1;
+                }
+
+                if (isCapture) {
+
+                    // If we get a high history score, it should be worth searching this move deeper
+                    depthReduction -= static_cast<int>(captureHistoryScore / 12000);
                 }
 
                 // Finally clamp the depth reduction

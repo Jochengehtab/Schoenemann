@@ -26,7 +26,7 @@ class History {
     int continuationHistory[6][64][6][64] = {};
     int pawnCorrectionHistory[2][16384] = {};
     int majorCorrectionHistory[2][16384] = {};
-    int captureHistory[12][64][12] = {};
+    int captureHistory[2][12][64][12] = {};
 
 private:
     static std::uint64_t getPieceKey(PieceType piece, const Board &board);
