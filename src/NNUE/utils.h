@@ -38,12 +38,36 @@ public:
         const std::array<std::int16_t, inputHiddenSize> &outputBias,
         const std::uint32_t usOffset,
         const std::uint32_t themOffset) {
+
+#ifdef __AVX2__
+
+        for (std::uint32_t i = 0; i < hiddenSize; i += 16) {
+
+            // Load the us Vector beginning with position i (so 256 bits get loaded in total)
+            const __m256i usVec = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(us.data() + i));
+
+            // Load the corresponding us weights with the same schema (but the offset is different)
+            const __m256i usWeights = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(outputBias.data() + usOffset + i));
+
+            // Now add up the two vectors (usVec and usWeights) and store the result back into the us array
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(us.data() + i), _mm256_add_epi16(usVec, usWeights));
+
+            // Load the them Vector beginning with position i (so 256 bits get loaded in total)
+            const __m256i themVec = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(them.data() + i));
+
+            // Load the corresponding them weights with the same schema (but the offset is different)
+            const __m256i themWeights = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(outputBias.data() + themOffset + i));
+
+            // Now add up the two vectors (themVec and themWeights) and store the result back into the them array
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(them.data() + i), _mm256_add_epi16(themVec, themWeights));
+        }
+#else
         for (std::uint16_t i = 0; i < hiddenSize; i++) {
             us[i] += outputBias[usOffset + i];
-        }
-        for (std::uint16_t i = 0; i < hiddenSize; i++) {
             them[i] += outputBias[themOffset + i];
         }
+#endif
+
     }
 
     static void subAll(
@@ -53,12 +77,35 @@ public:
         const std::uint32_t usOffset,
         const std::uint32_t themOffset) {
         // Subtract the outputBias from the input arrays:
+
+#ifdef __AVX2__
+
+        for (std::uint32_t i = 0; i < hiddenSize; i += 16) {
+
+            // Load the us Vector beginning with position i (so 256 bits get loaded in total)
+            const __m256i usVec = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(us.data() + i));
+
+            // Load the corresponding us weights with the same schema (but the offset is different)
+            const __m256i usWeights = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(outputBias.data() + usOffset + i));
+
+            // Now sub the two vectors (usVec and usWeights) and store the result back into the us array
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(us.data() + i), _mm256_sub_epi16(usVec, usWeights));
+
+            // Load the them Vector beginning with position i (so 256 bits get loaded in total)
+            const __m256i themVec = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(them.data() + i));
+
+            // Load the corresponding them weights with the same schema (but the offset is different)
+            const __m256i themWeights = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(outputBias.data() + themOffset + i));
+
+            // Now sub the two vectors (themVec and themWeights) and store the result back into the them array
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(them.data() + i), _mm256_sub_epi16(themVec, themWeights));
+        }
+#else
         for (std::uint16_t i = 0; i < hiddenSize; i++) {
             us[i] -= outputBias[usOffset + i];
-        }
-        for (std::uint16_t i = 0; i < hiddenSize; i++) {
             them[i] -= outputBias[themOffset + i];
         }
+#endif
     }
 
     static int forward(
