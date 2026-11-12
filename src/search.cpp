@@ -236,7 +236,16 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
             hashedType != UPPER &&
             std::abs(hashedScore) < EVAL_MATE_IN_MAX_PLY &&
             !root) {
-            const int singularBeta = hashedScore - depth * 2;
+            int singularBeta = hashedScore;
+
+            // If we are in a pvNode or ttPv node we make it more difficult
+            // to prove the singularity for these kinds of nodes
+            if (pvNode || ttPv) {
+                singularBeta -= depth * 2;
+            } else {
+                singularBeta -= depth;
+            }
+
             const std::uint8_t singularDepth = (depth - seNewDepthSub) / 2;
 
             stack[ply].excludedMove = move;
