@@ -311,6 +311,12 @@ int Search::pvs(int alpha, int beta, int depth, const int ply, Board &board, boo
                     }
                 }
 
+                // If the move is Quiet but our position is still improving we
+                // should investigate this move further
+                if (isQuiet && improving) {
+                    depthReduction -= 1;
+                }
+
                 if (isCapture) {
 
                     // If we get a high history score, it should be worth searching this move deeper
